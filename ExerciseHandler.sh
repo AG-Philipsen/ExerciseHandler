@@ -29,22 +29,28 @@ ParseCommandLineParameters $@
 
 
 
-
-#TODO: 1) Put .tex files in TeX folder modifying the template
-#         in order to input Packages.tex, Preamble.tex, Document.tex
-#      2) Create functions to build each of the .tex above
-#      3) Ingredients needed:
-#          - Parser for Exercise file (extraction of user packages, commands)
-#          - Logic with user variables for Preamble commands (e.g. lecture, prof, etc.)
-#      4) Implement interactive part to choose exercise (suppose Pool folder
-#         to be given by the user in a local variable)
-#      5) Implement main part where the exercise are processed, the Sheet.tex
-#         file is created, compiled and deleted (if everything fine, only .pdf should
-#         be kept; maybe do compilation in separate folder so that the user can
-#         investigate in case!?)
-#
 #NOTE: Ideally this git should be only a collection of tools. The user should
 #      elsewhere create one or two localdefs files and then call this file from there.
 #      Therefore, this script should look for the file with the localdefs from where it
 #      is run (give default names and maybe make an option to change their name). 
-#      If this file it is not found, a template should be created!
+#      If this file it is not found, a template should be created and the user warned!
+#      Flow of the script:
+#      1) Check template
+#      2) Ask user for exercises
+#      3) Create main file that basically will input:
+#           Packages.tex  Preamble.tex  Localdefs.tex  Document.tex
+#      4) Create each of the files needed
+#      5) Compile main file (in separate folder!?)
+#      6) Delete aux files if everything is fine (and open pdf!?).
+#
+#TODO: 1) Think about possible bunch of packages always used. Make them up to the user
+#         in a possible file that the user can create locally!?
+#         Ingredients needed:
+#          - Parser for Exercise file (extraction of user packages, commands)
+#          - Logic with user variables for Preamble commands (e.g. lecture, prof, etc.)
+#      2) Implement interactive part to choose exercise (suppose Pool folder
+#         to be given by the user in a local variable)
+#      3) Implement main part where the exercise are processed, the Sheet.tex
+#         file is created, compiled and deleted (if everything fine, only .pdf should
+#         be kept; maybe do compilation in separate folder so that the user can
+#         investigate in case!?)
