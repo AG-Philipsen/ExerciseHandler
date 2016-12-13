@@ -37,3 +37,18 @@ function CheckTexLocaldefsTemplate(){
     done < "$TEMPLATE_FILENAME"  && unset -v 'LINE'
 
 }
+
+function ProduceTexMainFile(){
+    local TEX_MAIN_FILENAME="$1"
+    #Redirect standard output to file
+    exec 3>&1 1>$TEX_MAIN_FILENAME
+    #Template production, overwriting the file
+    rm -f $TEX_MAIN_FILENAME
+    echo '\documentclass[a4paper]{article}'
+    echo '\input{Packages}'
+    echo '\input{Preamble}'
+    echo '\input{Localdefs}'
+    echo '\input{Document}'
+    #Restore standard output
+    exec 1>&3
+}
