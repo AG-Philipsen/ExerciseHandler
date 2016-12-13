@@ -1,8 +1,20 @@
 #!/bin/bash
 
-####################
-# Exercise handler #
-####################
+#---------------------------------------------------------------------------------------#
+#      ____ _  __ ____ ___   _____ ____ ____ ____      __  ___ ___    __ __ ____ ___    #
+#     / __/| |/_// __// _ \ / ___//  _// __// __/     /  |/  // _ |  / //_// __// _ \   #
+#    / _/ _>  < / _/ / , _// /__ _/ / _\ \ / _/      / /|_/ // __ | / ,<  / _/ / , _/   #
+#   /___//_/|_|/___//_/|_| \___//___//___//___/     /_/  /_//_/ |_|/_/|_|/___//_/|_|    #
+#                                                                                       #   
+#---------------------------------------------------------------------------------------#
+#                                                                                       #
+#    Copyright (c) Alessandro Sciarra: sciarra@th.physik.uni-frankfurt.de               #
+#                    Francesca Cuteri:  cuteri@th.physik.uni-frankfurt.de               #
+#                                                                                       #
+#---------------------------------------------------------------------------------------#
+
+#Warning that the script is in developement phase!
+printf "\n\e[38;5;11m \e[1m\e[4mWARNING\e[24m:\e[21m Script under developement! Do not use it!\e[0m\n\n"
 
 #Sourcing auxiliary files
 source AuxiliaryFunctions.sh || exit -2

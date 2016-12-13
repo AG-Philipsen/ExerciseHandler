@@ -1,5 +1,5 @@
 function ParseCommandLineParameters(){
-    while [ $1 != '' ]; do
+    while [ "$1" != '' ]; do
         case $1 in
             -h | --help )
                 printf "\e[38;5;2m\n"
@@ -32,6 +32,7 @@ function CheckTexLocaldefsTemplate(){
     local TEMPLATE_FILENAME="$1"
     #Parse file line by line
     while read -r LINE || [[ -n "$LINE" ]]; do # [[ -n "$LINE" ]] is to read also last line if it does not end with \n
+        echo
         #Add parsing
     done < "$TEMPLATE_FILENAME"  && unset -v 'LINE'
 
