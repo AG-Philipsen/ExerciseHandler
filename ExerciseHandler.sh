@@ -8,8 +8,8 @@
 #                                                                                        #   
 #----------------------------------------------------------------------------------------#
 #                                                                                        #
-#    Copyright (c) Alessandro Sciarra: sciarra@th.physik.uni-frankfurt.de                #
-#                    Francesca Cuteri:  cuteri@th.physik.uni-frankfurt.de                #
+#       Copyright (c) 2016 Alessandro Sciarra: sciarra@th.physik.uni-frankfurt.de        #
+#                            Francesca Cuteri:  cuteri@th.physik.uni-frankfurt.de        #
 #                                                                                        #
 #----------------------------------------------------------------------------------------#
 
