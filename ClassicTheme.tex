@@ -1,0 +1,24 @@
+\makeatletter
+\@ifpackageloaded{xargs}{}{\usepackage{xargs}}
+\makeatother
+
+\newcommand{\Heading}{\centerline{\large\scshape\lecture~--~\semester~--~\professor}%
+                      \vskip 3pt%
+                      \hrule%
+                      \vskip 5pt%
+                      \centerline{\textsc{\tutor:} \texttt{\tutorMail}}
+                      \vskip 18pt}
+
+\newcommandx{\Sheet}[2][1=, 2=Monday]{\centerline{\Large\textbf{Exercise sheet #1}}
+                       \centerline{\textit{to be handed in on #2}}\vskip 20pt}
+
+\newlength{\myskip}\setlength{\myskip}{1cm plus 2mm minus 5mm}
+\newcounter{Exercise}
+\newenvironment{exercise}[1][optional]
+{
+  \refstepcounter{Exercise}
+  \vspace{\myskip}\par
+  \noindent
+  \textbf{Exercise \theExercise} $\quad$[\textit{#1}]\newline
+}
+{}
