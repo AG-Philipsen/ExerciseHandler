@@ -32,6 +32,11 @@ that you wish to put in the exercise sheet.
 
 EXERCISE FORMAT
 
+Run the main script with the -n (or --newExercise) option to create a new empty exercise,
+which will be added to the pool of exercises. As you can see, the exercise itself has to
+be put into the "exercise" environment that has an optional argument that can be used to
+specify some additional information (e.g. exercise points).
+
 An exercise sheet is divided in three blocks: PACKAGES, DEFINITIONS and BODY. Each of them
 is marked by a begin and end guards that look like
 

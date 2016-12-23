@@ -31,6 +31,9 @@ function ProduceNewEmptyExercise(){
     local NEW_EXERCISE_FILENAME
     while read NEW_EXERCISE_FILENAME; do
         [ "$NEW_EXERCISE_FILENAME" = '' ] && printf "\e[u\e[1A" && continue
+        if [[ ! $NEW_EXERCISE_FILENAME =~ [.]tex$ ]]; then
+            NEW_EXERCISE_FILENAME+=".tex"
+        fi
         if [ -f $EXERCISE_POOL_FOLDER/$NEW_EXERCISE_FILENAME ]; then
             printf "\n\e[1;38;5;202m File \"$NEW_EXERCISE_FILENAME\" already existing!\e[21m\e[38;5;11m Please, provide a different name: \e[0m\e[s"
             continue
@@ -42,7 +45,10 @@ function ProduceNewEmptyExercise(){
     exec 3>&1 1>$EXERCISE_POOL_FOLDER/$NEW_EXERCISE_FILENAME
     echo -e '%__BEGIN_PACKAGES__%\n\n%__END_PACKAGES__%\n\n\n'
     echo -e '%__BEGIN_DEFINITIONS__%\n\n%__END_DEFINITIONS__%\n\n\n'
-    echo -e '%__BEGIN_BODY__%\n\n%__END_BODY__%\n\n\n'
+    echo -e '%__BEGIN_BODY__%'
+    echo -e '\\begin{exercise}[]\n'
+    echo -e '\\end{exercise}'
+    echo -e '%__END_BODY__%\n\n\n'
     #Restore standard output
     exec 1>&3    
 }

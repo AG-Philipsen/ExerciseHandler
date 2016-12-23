@@ -70,7 +70,7 @@ ProduceTexMainFile      $COMPILATION_FOLDER/${EXERCISE_SHEET_NAME}.tex
 cd $COMPILATION_FOLDER
 pdflatex -interaction=batchmode ${EXERCISE_SHEET_NAME}.tex >/dev/null 2>&1
 if [ $? -ne 0 ]; then
-    PrintError "Error occurred in pdflatex compilation!! No file will be removed from \"$COMPILATION_FOLDER\" directory!"
+    PrintError "Error occurred in pdflatex compilation!! Files can be found in \"$COMPILATION_FOLDER\" directory to investigate!"
 else
     cd $INVOKING_DIRECTORY
     mkdir -p $PDF_FOLDER
@@ -82,45 +82,21 @@ fi
 
 exit 0
 
-#NOTE: Ideally this git should be only a collection of tools. The user should
-#      elsewhere create one or two localdefs files and then call this file from there.
-#      Therefore, this script should look for the file with the localdefs from where it
-#      is run (give default names and maybe make an option to change their name). 
-#      If this file it is not found, a template should be created and the user warned!
-#      Flow of the script:
-#      1) Check template                                                DONE
-#      2) Ask user for exercises                                        DONE
-#      3) Create main file that basically will input:                   DONE
-#           Packages.tex  Preamble.tex  Localdefs.tex  Document.tex     DONE
-#      4) Create each of the files needed
-#           Packages.tex                                                DONE
-#           Preamble.tex                                                DONE
-#           Localdefs.tex                                               DONE
-#           Document.tex                                                DONE
-#      5) Compile main file (in separate folder)                        DONE
-#      6) Delete aux files if everything is fine (and open pdf!?).      DONE
-#
-#TODO: 1) Think about possible bunch of packages always used. Make them up to the user
-#         in a possible file that the user can create locally!?
-#         Ingredients needed:
-#          - Parser for Exercise file (extraction of user packages, commands)
-#          - Logic with user variables for Preamble commands (e.g. lecture, prof, etc.)
-#      2) Implement main part where the exercise are processed, the Sheet.tex
-#         file is created, compiled and deleted (if everything fine, only .pdf should
-#         be kept; maybe do compilation in separate folder so that the user can
-#         investigate in case!?)
-#      3) Implement a --final option in order to move the produced file (also the .tex
+#TODO: 1) Implement a --final option in order to move the produced file (also the .tex
 #         in this case) to a separate folder which should be created the first time and
 #         which should have a name related to the lecture (e.g. lectureName_semester).
 #         Think of whether to use this for numbering of sheet.
-#      4) Create a log file mechanism in pool of exercises so that the visualization of
+#      2) Create a log file mechanism in pool of exercises so that the visualization of
 #         the list of exercises can distinguish between already used exercises (use
 #         colours? Do not show already used exercises?)
-#      5) Trap CTRL-C in a nice way: cleaning files/folders. etc. -> DISCUSS
-#      6) Implement an option to give exercise numbers and therefore skip interactive step!
-#      7) DISCUSS about latex commands: which arguments are needed? How to set them?
+#      3) Trap CTRL-C in a nice way: cleaning files/folders. etc. -> DISCUSS
+#      4) Implement an option to give exercise numbers and therefore skip interactive step!
+#         Maybe allow reanges in specifying the numbers!
+#      5) DISCUSS about latex commands: which arguments are needed? How to set them?
 #         For example, put in localdefs the hand in day of the week? Make command line option?!
-#      8) Give the possibility to the user to create her/his own theme. Implement option
+#         How to set the number of the sheet? Assume the user run the sheet with the final
+#         option and therefore use the final folder counting there the number of files?!
+#      7) Give the possibility to the user to create her/his own theme. Implement option
 #         to abilitate this and pass the file. This should contain the needed commands
 #         (\Heading, etc.) and it should be input in the main tex file. Add description
 #         to README file where commands to be provided should be listed.
