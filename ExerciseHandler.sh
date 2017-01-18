@@ -85,18 +85,40 @@ exit 0
 #TODO: 1) Implement a --final option in order to move the produced file (also the .tex
 #         in this case) to a separate folder which should be created the first time and
 #         which should have a name related to the lecture (e.g. lectureName_semester).
+#         An expected name for the folder can be set using the fields in the template.
+#         This way the folder can be looked for by the script or created if it does not exist.
+#         Having subfolders whose name contains the number of the corresponding sheet is
+#         useful because figures might come along with the tex file and the pdf of a given
+#         exercise/solution. That being the case, it would be ideal to have a command line
+#         option to specify the number for the sheet when the --final option is given.
+#         If such an option is not given, the script will automatically set the sheet number
+#         to the consecutive one, given the already existing folders in the "lectureName_semester"
+#         folder (the command line option is useful because we might want to produce sheet n+1
+#         while sheet n is not produced yet). Better having the sheet number both in the
+#         subfolder names and in exercises/solution tex files.
 #         Think of whether to use this for numbering of sheet.
 #      2) Create a log file mechanism in pool of exercises so that the visualization of
 #         the list of exercises can distinguish between already used exercises (use
 #         colours? Do not show already used exercises?)
 #      3) Trap CTRL-C in a nice way: cleaning files/folders. etc. -> DISCUSS
 #      4) Implement an option to give exercise numbers and therefore skip interactive step!
-#         Maybe allow reanges in specifying the numbers!
+#         Maybe allow ranges in specifying the numbers!
 #      5) DISCUSS about latex commands: which arguments are needed? How to set them?
 #         For example, put in localdefs the hand in day of the week? Make command line option?!
-#         How to set the number of the sheet? Assume the user run the sheet with the final
-#         option and therefore use the final folder counting there the number of files?!
+#         For the "subtitle" of the exercise sheet that can range from "To be handed in on
+#         DAYOFTHEWEEK" to "Solution given on DD/MM/YY" it would be ideal to deal with two
+#         arguments. The first is the "wording" which is surely common to any sheet, while
+#         the second is the time specification that might change. For the first it is ideal
+#         to have a corresponding field in the localdefs and no command line option. For the
+#         second the interplay between a field in localdefs and a command line option could work.
+#      6) If no Exercise folder is there, at the creation of the first new exercise it 
+#         can be automatically created.
 #      7) Give the possibility to the user to create her/his own theme. Implement option
 #         to abilitate this and pass the file. This should contain the needed commands
 #         (\Heading, etc.) and it should be input in the main tex file. Add description
-#         to README file where commands to be provided should be listed.
+#         to README file where commands to be provided should be listed. Decide whether we
+#         expect to get the full path to the custom theme as an argument to the command line
+#         option, or we use a field in localdefs for the path and the command line option to
+#         just pass the name (useful also if we will ever have a folder with many available themes).
+#      8) Decide how to handle the production of exercise solutions that might not be there when the
+#         script is run with the --final option for the exercise sheet production

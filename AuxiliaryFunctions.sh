@@ -11,14 +11,28 @@ function ParseCommandLineParameters(){
         case $1 in
             -h | --help )
                 printf "\e[38;5;2m\n"
-                printf "Helper to be written!"
+                printf " -h | --help \n"
+                printf " -t | --themeFile                 ->    default value = ClassicTheme \n"
+                printf "                                        The user can provide a custom theme file.\n"
+                printf " -n | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
+                printf " -f | --final                     ->    Move the produced files ( .tex .pdf and possibly figures) to the tutorial folder. \n"
+                printf "                                        in the subfolder corresponding to the sheet number.\n"
+                printf "                                        \e[1;32mThe sheet number is automatically set unless specified via the -N option. \e[0;32m \n"
+                printf " -N | --sheetNumber               ->    Set the sheet number to appear in the exercise name and sheet subfolders of the tutorial folder. \n"
+                printf " -d | --dueTime                   ->    Set the due day for the exercise solution to be handed-in/presented. \n" # TODO: add default value in case it is set based on localdefs
                 printf "\e[0m\n\n"
                 exit 0
                 shift ;;
+            -t | --themeFile )
+                printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
             -n | --newExercise )
                 PRODUCE_NEW_EXERCISE='TRUE'
                 shift ;;
             -f | --final )
+                printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
+            -N | --sheetNumber )
+                printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
+            -d | --dueTime )
                 printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
             *)
                 printf "\e[38;5;9m\n Unrecognized option \e[1m$1\e[21m! Aborting...\n\n\e[0m"; exit -1; shift ;;
@@ -66,6 +80,8 @@ function CreateTexLocaldefsTemplate(){
     echo '\def\tutorMail{} % '
     echo '\def\semester{}  % '
     echo -e '%__END_DEFINITIONS__%\n\n\n'
+    echo -e '%__BEGIN_BODY__%'
+    echo -e '%__END_BODY__%\n\n\n'
     #Restore standard output
     exec 1>&3
 }
