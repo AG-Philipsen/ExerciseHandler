@@ -14,23 +14,22 @@
 #-------------------------------------------------------------------------------------------------#
 
 #Variables
-REPOSITORY_DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-INVOKING_DIRECTORY="$(pwd)"
-TEX_LOCALDEFS_FILENAME="TexLocaldefs.tex"
-EXERCISE_POOL_FOLDER="Exercises"
-EXERCISE_LIST=(); CHOOSEN_EXERCISES=() #These arrays contain the basenames of the files
-COMPILATION_FOLDER="TemporaryCompilationFolder"
-EXERCISE_SHEET_NAME="ExerciseSheet"
-THEME_TEX_FILE="ClassicTheme.tex"
-PACKAGES_TEX_FILE="Packages.tex"
-#USER_PREAMBLE_TEX_FILE="Preamble.tex"
-DEFINITIONS_TEX_FILE="Definitions.tex"
-DOCUMENT_TEX_FILE="Document.tex"
-PDF_FOLDER="Pdf"
-PRODUCE_NEW_EXERCISE='FALSE'
+EXHND_repositoryDirectory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+EXHND_invokingDirectory="$(pwd)"
+EXHND_texLocaldefsFilename="TexLocaldefs.tex"
+EXHND_themeFilename="ClassicTheme.tex"
+EXHND_exercisePoolFolder="Exercises"
+EXHND_exerciseList=(); EXHND_choosenExercises=() #These arrays contain the basenames of the files
+EXHND_compilationFolder="TemporaryCompilationFolder"
+EXHND_exerciseSheetName="ExerciseSheet"
+EXHND_packagesFilename="Packages.tex"
+EXHND_definitionsFilename="Definitions.tex"
+EXHND_bodyFilename="Document.tex"
+EXHND_pdfFolder="Pdf"
+EXHND_produceNewExercise='FALSE'
 
 #Sourcing auxiliary file(s)
-source $REPOSITORY_DIRECTORY/AuxiliaryFunctions.sh || exit -2
+source ${EXHND_repositoryDirectory}/AuxiliaryFunctions.sh || exit -2
 
 #Warning that the script is in developement phase!
 PrintWarning "Script under developement and in a beta phase! Not everything is guaranteed to work!!"
@@ -39,12 +38,12 @@ PrintWarning "Script under developement and in a beta phase! Not everything is g
 ParseCommandLineParameters $@
 
 #If user needs exercise template just produce it and exit
-[ $PRODUCE_NEW_EXERCISE = 'TRUE' ] && ProduceNewEmptyExercise && exit 0
+[ ${EXHND_produceNewExercise} = 'TRUE' ] && ProduceNewEmptyExercise && exit 0
 
 #Check if template for latex is present, if not or not complete, terminate and warn user
-if [ ! -f $TEX_LOCALDEFS_FILENAME ]; then
+if [ ! -f ${EXHND_texLocaldefsFilename} ]; then
     CreateTexLocaldefsTemplate
-    printf "\n\e[38;5;39m \e[1m\e[4mNOTE\e[24m:\e[21m The local definitions file \"$TEX_LOCALDEFS_FILENAME\""
+    printf "\n\e[38;5;39m \e[1m\e[4mNOTE\e[24m:\e[21m The local definitions file \"${EXHND_texLocaldefsFilename}\""
     printf "has not been found and an empty template to be filled out has been created.\n"
     printf "       Please, provide required information in it and run again this script.\e[0m\n\n"
 else
@@ -53,32 +52,33 @@ fi
 
 #Present list of exercises and ask user which ones she/he wants
 LookForExercisesAndMakeList
-PrintListOfExercises ${EXERCISE_LIST[@]}
-PickupExercises ${EXERCISE_LIST[@]}
+PrintListOfExercises ${EXHND_exerciseList[@]}
+PickupExercises ${EXHND_exerciseList[@]}
 CheckChoosenExercises
 
 #TeX part: set up main and sub-files before compilation
-[ -d $COMPILATION_FOLDER ] && mv $COMPILATION_FOLDER ${COMPILATION_FOLDER}_$(date +%d.%m.%Y_%H%M%S)
-mkdir $COMPILATION_FOLDER || { PrintError "Cannot create \"$COMPILATION_FOLDER\"! Aborting..." && exit -2; }
-ProduceTexAuxiliaryFile $COMPILATION_FOLDER/$PACKAGES_TEX_FILE    "PACKAGES"
-ProduceTexAuxiliaryFile $COMPILATION_FOLDER/$DEFINITIONS_TEX_FILE "DEFINITIONS"
-ProduceTexAuxiliaryFile $COMPILATION_FOLDER/$DOCUMENT_TEX_FILE    "BODY"
+[ -d ${EXHND_compilationFolder} ] && mv ${EXHND_compilationFolder} ${EXHND_compilationFolder}_$(date +%d.%m.%Y_%H%M%S)
+mkdir ${EXHND_compilationFolder} || { PrintError "Cannot create \"${EXHND_compilationFolder}\"! Aborting..." && exit -2; }
+ProduceTexAuxiliaryFile ${EXHND_compilationFolder}/${EXHND_packagesFilename}    "PACKAGES"
+ProduceTexAuxiliaryFile ${EXHND_compilationFolder}/${EXHND_definitionsFilename} "DEFINITIONS"
+ProduceTexAuxiliaryFile ${EXHND_compilationFolder}/${EXHND_bodyFilename}        "BODY"
 CheckTexPackagesFile
 CheckTexDefinitionsFile
-ProduceTexMainFile      $COMPILATION_FOLDER/${EXERCISE_SHEET_NAME}.tex
+ProduceTexMainFile      ${EXHND_compilationFolder}/${EXHND_exerciseSheetName}.tex
 
 #Compilation
-cd $COMPILATION_FOLDER
-pdflatex -interaction=batchmode ${EXERCISE_SHEET_NAME}.tex >/dev/null 2>&1
+cd ${EXHND_compilationFolder}
+pdflatex -interaction=batchmode ${EXHND_exerciseSheetName}.tex >/dev/null 2>&1
 if [ $? -ne 0 ]; then
-    PrintError "Error occurred in pdflatex compilation!! Files can be found in \"$COMPILATION_FOLDER\" directory to investigate!"
+    PrintError "Error occurred in pdflatex compilation!! Files can be found in \"${EXHND_compilationFolder}\" directory to investigate!"
 else
-    cd $INVOKING_DIRECTORY
-    mkdir -p $PDF_FOLDER
-    NEW_PDF_FILENAME=${EXERCISE_SHEET_NAME}_$(date +%d.%m.%Y_%H%M%S)
-    cp $COMPILATION_FOLDER/${EXERCISE_SHEET_NAME}.pdf $PDF_FOLDER/$NEW_PDF_FILENAME
-    xdg-open $PDF_FOLDER/$NEW_PDF_FILENAME >/dev/null 2>&1 &
-    rm -r $COMPILATION_FOLDER
+    cd ${EXHND_invokingDirectory}
+    mkdir -p ${EXHND_pdfFolder}
+    newPdfFilename=${EXHND_exerciseSheetName}_$(date +%d.%m.%Y_%H%M%S)
+    cp ${EXHND_compilationFolder}/${EXHND_exerciseSheetName}.pdf ${EXHND_pdfFolder}/${newPdfFilename}
+    xdg-open ${EXHND_pdfFolder}/${newPdfFilename} >/dev/null 2>&1 &
+    unset -v 'newPdfFilename'
+    rm -r $EXHND_compilationFolder
 fi
 
 exit 0
