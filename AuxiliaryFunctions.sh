@@ -64,7 +64,7 @@ function ProduceNewEmptyExercise(){
     echo -e '\\end{exercise}'
     echo -e '%__END_BODY__%\n\n\n'
     #Restore standard output
-    exec 1>&3    
+    exec 1>&3
 }
 
 function CreateTexLocaldefsTemplate(){
@@ -72,16 +72,23 @@ function CreateTexLocaldefsTemplate(){
     rm -f $TEX_LOCALDEFS_FILENAME
     #Redirect standard output to file
     exec 3>&1 1>$TEX_LOCALDEFS_FILENAME
-    echo -e '%__BEGIN_PACKAGES__%\n\n%__END_PACKAGES__%\n\n\n'
+    echo '%__BEGIN_PACKAGES__%'
+    echo '\usepackage{arrayjob}'
+    echo -e '%__END_PACKAGES__%\n\n\n'
     echo '%__BEGIN_DEFINITIONS__%'
-    echo '\def\lecture{}   % '
-    echo '\def\professor{} % '
-    echo '\def\tutor{}     % '
-    echo '\def\tutorMail{} % '
-    echo '\def\semester{}  % '
+    echo '\def\lecture{}      %'
+    echo '\def\professor{}    %'
+    echo '\def\semester{}     %'
+    echo '\newarray\Tutor     %'
+    echo '\newarray\TutorMail %'
+    echo '\Tutor(1)={}        %'
+    echo '\TutorMail(1)={}    %'
+    echo '%\Tutor(2)={}        %'
+    echo '%\TutorMail(2)={}    %'
+    echo '%\Tutor(3)={}        %'
+    echo '%\TutorMail(3)={}    %'
     echo -e '%__END_DEFINITIONS__%\n\n\n'
-    echo -e '%__BEGIN_BODY__%'
-    echo -e '%__END_BODY__%\n\n\n'
+    echo -e '%__BEGIN_BODY__%\n%__END_BODY__%\n\n\n'
     #Restore standard output
     exec 1>&3
 }
@@ -107,7 +114,7 @@ function CheckTexLocaldefsTemplate(){
     done < "$TEX_LOCALDEFS_FILENAME"
     #General checks on blocks
     CheckBlocksInFile "$TEX_LOCALDEFS_FILENAME" "PACKAGES" "DEFINITIONS" "BODY"
-} 
+}
 
 function LookForExercisesAndMakeList(){
     if [ ! -d $EXERCISE_POOL_FOLDER ]; then
@@ -158,7 +165,7 @@ function PickupExercises(){
 function CheckChoosenExercises(){
     for EXERCISE in ${CHOOSEN_EXERCISES[@]}; do
         CheckBlocksInFile $EXERCISE_POOL_FOLDER/$EXERCISE  "PACKAGES" "DEFINITIONS" "BODY"
-    done    
+    done
 }
 
 
@@ -175,6 +182,9 @@ function ProduceTexAuxiliaryFile(){
     local OUTPUT_FILE="$1"
     local PART_OF_DOCUMENT="$2"
     local EXERCISE
+    if [ $PART_OF_DOCUMENT = 'PACKAGES' ]; then
+        ExtractBlockFromFileAndAppendToAnotherFile  $REPOSITORY_DIRECTORY/$THEME_TEX_FILE  $OUTPUT_FILE  $PART_OF_DOCUMENT
+    fi
     ExtractBlockFromFileAndAppendToAnotherFile  $TEX_LOCALDEFS_FILENAME  $OUTPUT_FILE  $PART_OF_DOCUMENT
     for EXERCISE in ${CHOOSEN_EXERCISES[@]}; do
         ExtractBlockFromFileAndAppendToAnotherFile  $EXERCISE_POOL_FOLDER/$EXERCISE  $OUTPUT_FILE  $PART_OF_DOCUMENT
@@ -206,11 +216,11 @@ function ProduceTexMainFile(){
     echo ''
     echo '\input{Definitions}'
     echo ''
-    echo "\input{$REPOSITORY_DIRECTORY/ClassicTheme}"
+    echo "\input{$REPOSITORY_DIRECTORY/${THEME_TEX_FILE%.tex}}"
     echo ''
     echo '\begin{document}'
     echo '  \Heading'
-    echo '  \Sheet[1]'
+    echo '  \Sheet[1][hello world]'
     echo '  %Exercises'
     echo '  \input{Document}'
     echo '\end{document}'

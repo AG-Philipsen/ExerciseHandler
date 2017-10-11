@@ -5,7 +5,7 @@
 #     / __/| |/_// __// _ \ / ___//  _// __// __/     /  |/  // _ |  / //_// __// _ \    #
 #    / _/ _>  < / _/ / , _// /__ _/ / _\ \ / _/      / /|_/ // __ | / ,<  / _/ / , _/    #
 #   /___//_/|_|/___//_/|_| \___//___//___//___/     /_/  /_//_/ |_|/_/|_|/___//_/|_|     #
-#                                                                                        #   
+#                                                                                        #
 #----------------------------------------------------------------------------------------#
 #                                                                                        #
 #       Copyright (c) 2016 Alessandro Sciarra: sciarra@th.physik.uni-frankfurt.de        #
@@ -21,6 +21,7 @@ EXERCISE_POOL_FOLDER="Exercises"
 EXERCISE_LIST=(); CHOOSEN_EXERCISES=() #These arrays contain the basenames of the files
 COMPILATION_FOLDER="TemporaryCompilationFolder"
 EXERCISE_SHEET_NAME="ExerciseSheet"
+THEME_TEX_FILE="ClassicTheme.tex"
 PACKAGES_TEX_FILE="Packages.tex"
 #USER_PREAMBLE_TEX_FILE="Preamble.tex"
 DEFINITIONS_TEX_FILE="Definitions.tex"
@@ -111,7 +112,7 @@ exit 0
 #         the second is the time specification that might change. For the first it is ideal
 #         to have a corresponding field in the localdefs and no command line option. For the
 #         second the interplay between a field in localdefs and a command line option could work.
-#      6) If no Exercise folder is there, at the creation of the first new exercise it 
+#      6) If no Exercise folder is there, at the creation of the first new exercise it
 #         can be automatically created.
 #      7) Give the possibility to the user to create her/his own theme. Implement option
 #         to abilitate this and pass the file. This should contain the needed commands

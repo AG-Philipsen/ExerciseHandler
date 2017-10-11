@@ -1,24 +1,58 @@
-\makeatletter
-\@ifpackageloaded{xargs}{}{\usepackage{xargs}}
-\makeatother
+%__BEGIN_PACKAGES__%
+\usepackage{xifthen}
+\usepackage{xargs}
+%__END_PACKAGES__%
 
-\newcommand{\Heading}{\centerline{\large\scshape\lecture~--~\semester~--~\professor}%
-                      \vskip 3pt%
-                      \hrule%
-                      \vskip 5pt%
-                      \centerline{\textsc{\tutor:} \texttt{\tutorMail}}
-                      \vskip 18pt}
+\newlength{\myskip}
+\setlength{\myskip}{6mm plus 2mm minus 3mm}
 
-\newcommandx{\Sheet}[2][1=, 2=Monday]{\centerline{\Large\textbf{Exercise sheet #1}}
-                       \centerline{\textit{to be handed in on #2}}\vskip 20pt}
+\newcommand{\PrintTutorList}{
+    \newboolean{tutorsToBePrinted}                 % xifthen package
+    \setboolean{tutorsToBePrinted}{true}           % xifthen package
+    \newcounter{Tutor}
+    \whiledo{\boolean{tutorsToBePrinted}}{         % xifthen package
+        \refstepcounter{Tutor}
+        \checkTutor(\theTutor)                     % arrayjob package
+        \ifemptydata                               % arrayjob package
+            \setboolean{tutorsToBePrinted}{false}  % xifthen package
+        \else
+            \centerline{
+                \textsc{\Tutor(\theTutor):}
+                \texttt{\TutorMail(\theTutor)}
+            }
+        \fi
+    }
+}
 
-\newlength{\myskip}\setlength{\myskip}{1cm plus 2mm minus 5mm}
+\newcommand{\Heading}{
+    \centerline{\Large\scshape\lecture}%
+    \vskip 2pt%
+    \centerline{\scshape\semester~--~\professor}%
+    \vskip 3pt%
+    \hrule%
+    \vskip 5pt%
+    \PrintTutorList
+    \vspace{\myskip}
+}
+
+\newcommandx{\Sheet}[2][1=, 2=]{
+    \ifthenelse{\isempty{#1}}{
+        \centerline{\Large\textbf{Exercise sheet}}
+    }{
+        \centerline{\Large\textbf{Exercise sheet #1}}
+    }
+    \ifthenelse{\isempty{#2}}{}{
+        \centerline{\textit{#2}}
+    }
+    \vspace{\myskip}
+}
+
 \newcounter{Exercise}
 \newenvironment{exercise}[1][optional]
 {
   \refstepcounter{Exercise}
   \vspace{\myskip}\par
   \noindent
-  \textbf{Exercise \theExercise} $\quad$[\textit{#1}]\newline
+  \textbf{Exercise \theExercise} $\;$[\textit{#1}]\newline
 }
 {}
