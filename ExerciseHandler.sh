@@ -33,6 +33,7 @@ EXHND_pdfFolder="Pdf"
 
 #Variables with input from user
 EXHND_exerciseSheetSubtitlePostfix=''
+EXHND_exerciseSheetNumber=''
 
 #Behaviour options
 EXHND_doSetup='FALSE'
@@ -54,6 +55,11 @@ if [ ${EXHND_doSetup} = 'TRUE' ]; then
 elif [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
     ProduceNewEmptyExercise
     exit 0
+fi
+
+#If user did not give number for the sheet, set it
+if [ "$EXHND_exerciseSheetNumber" = '' ]; then
+    EXHND_exerciseSheetNumber=$(DetermineSheetNumber)
 fi
 
 #Check if template for latex is present, if not or not complete, terminate and warn user

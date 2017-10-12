@@ -24,13 +24,13 @@ function ParseCommandLineParameters(){
                 printf "    -n | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
                 printf "\e[21;38;5;2m\n"
                 printf "    -p | --exerciseSheetPostfix      ->    Set the exercise sheet subtitle postfix. \n"
+                printf "    -N | --sheetNumber               ->    Set the sheet number to appear in the exercise sheet title. \n"
 
                 printf "    -t | --themeFile                 ->    default value = ClassicTheme \n"
                 printf "                                           The user can provide a custom theme file.\n"
                 printf "    -f | --final                     ->    Move the produced files ( .tex .pdf and possibly figures) to the tutorial folder. \n"
                 printf "                                           in the subfolder corresponding to the sheet number.\n"
                 printf "                                           \e[1;32mThe sheet number is automatically set unless specified via the -N option. \e[0;32m \n"
-                printf "    -N | --sheetNumber               ->    Set the sheet number to appear in the exercise name and sheet subfolders of the tutorial folder. \n"
                 printf "\n\n\e[38;5;14m  \e[1m\e[4mNOTE\e[24m:\e[21m"
                 printf " The \e[1;38;5;4mblue\e[21;38;5;14m options are mutually exclusive!"
                 printf "\e[0m\n\n\n"
@@ -47,12 +47,13 @@ function ParseCommandLineParameters(){
             -p | --exerciseSheetPostfix )
                 EXHND_exerciseSheetSubtitlePostfix="$2"
                 shift 2 ;;
+            -N | --sheetNumber )
+                EXHND_exerciseSheetNumber="$2"
+                shift 2 ;;
 
             -t | --themeFile )
                 printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
             -f | --final )
-                printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
-            -N | --sheetNumber )
                 printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
             *)
                 printf "\e[38;5;9m\n Unrecognized option \e[1m$1\e[21m! Aborting...\n\n\e[0m"; exit -1; shift ;;
@@ -63,6 +64,10 @@ function ParseCommandLineParameters(){
         PrintError "Multiple mutually exclusive options were passed to the script! Use the \"--help\" option to check. Aborting..."
         exit -1
     fi
+}
+
+function DetermineSheetNumber(){
+    echo '1'
 }
 
 function CreateTexLocaldefsTemplate(){
@@ -279,7 +284,7 @@ function ProduceTexMainFile(){
     echo ''
     echo '\begin{document}'
     echo '  \Heading'
-    echo "  \Sheet[1][$EXHND_exerciseSheetSubtitlePostfix]"
+    echo "  \Sheet[${EXHND_exerciseSheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
     echo '  %Exercises'
     echo '  \input{Document}'
     echo '\end{document}'
