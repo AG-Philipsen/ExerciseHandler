@@ -34,6 +34,7 @@ EXHND_pdfFolder="Pdf"
 #Variables with input from user
 EXHND_exerciseSheetSubtitlePostfix=''
 EXHND_exerciseSheetNumber=''
+EXHND_exercisesFromPoolAsNumbers=''
 
 #Behaviour options
 EXHND_doSetup='FALSE'
@@ -75,8 +76,17 @@ fi
 
 #Present list of exercises and ask user which ones she/he wants
 LookForExercisesAndMakeList
-PrintListOfExercises ${EXHND_exerciseList[@]}
-PickupExercises ${EXHND_exerciseList[@]}
+if [ "$EXHND_exercisesFromPoolAsNumbers" = '' ]; then
+    PrintListOfExercises ${EXHND_exerciseList[@]}
+    PickupExercises ${EXHND_exerciseList[@]}
+else
+    EXHND_exercisesFromPoolAsNumbers=( $(GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges ${EXHND_exercisesFromPoolAsNumbers}) )
+    if IsAnyExerciseNotExisting ${#EXHND_exerciseList[@]} ${EXHND_exercisesFromPoolAsNumbers[@]}; then
+        PrintError "Some of the chosen exercises are not existing! Aborting..."; exit 0
+    else
+        FillChoosenExercisesArray "${EXHND_exercisesFromPoolAsNumbers[*]}" "${EXHND_exerciseList[*]}" #https://stackoverflow.com/a/16628100
+    fi
+fi
 CheckChoosenExercises
 
 #TeX part: set up main and sub-files before compilation

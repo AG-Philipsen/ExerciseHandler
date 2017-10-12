@@ -23,6 +23,9 @@ function ParseCommandLineParameters(){
                 printf "    -s | --setup                     ->    Set up of the evironment creating local definitions template and folders.\n"
                 printf "    -n | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
                 printf "\e[21;38;5;2m\n"
+                printf "    -e | --exercisesFromPool         ->    Avoid interactive selection of exercises and choose them directly. \n"
+                printf "                                           Use a comma separated list, where ranges X-Y are allowed (boundaries included).\n"
+                printf "                                           Order is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].\n"
                 printf "    -p | --exerciseSheetPostfix      ->    Set the exercise sheet subtitle postfix. \n"
                 printf "    -N | --sheetNumber               ->    Set the sheet number to appear in the exercise sheet title. \n"
 
@@ -44,6 +47,13 @@ function ParseCommandLineParameters(){
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_produceNewExercise='TRUE'
                 shift ;;
+            -e | --exercisesFromPool )
+                if [[ $2 =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]]; then
+                    EXHND_exercisesFromPoolAsNumbers="$2"
+                else
+                    printf "\e[38;5;9m The value of the option \e[1m$1\e[21m was not correctly specified!"; exit -1
+                fi
+                shift 2 ;;
             -p | --exerciseSheetPostfix )
                 EXHND_exerciseSheetSubtitlePostfix="$2"
                 shift 2 ;;
@@ -52,11 +62,11 @@ function ParseCommandLineParameters(){
                 shift 2 ;;
 
             -t | --themeFile )
-                printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
+                PrintError "Option \"$1\" still to be implemented! Aborting..."; exit -1; shift ;;
             -f | --final )
-                printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
+                PrintError "Option \"$1\" still to be implemented! Aborting..."; exit -1; shift ;;
             *)
-                printf "\e[38;5;9m\n Unrecognized option \e[1m$1\e[21m! Aborting...\n\n\e[0m"; exit -1; shift ;;
+                PrintError "Unrecognized option \"$1\"! Aborting..."; exit -1; shift ;;
         esac
     done
 
@@ -201,25 +211,50 @@ function PrintListOfExercises(){
     #TODO: Print list going vertically and not horizontally!
 }
 
+function GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges(){
+    local string
+    string="$1"
+    awk 'BEGIN{RS=","}/\-/{split($0, res, "-"); if(res[1]<=res[2]){for(i=res[1]; i<=res[2]; i++){printf "%d\n", i}}else{for(i=res[1]; i>=res[2]; i--){printf "%d\n", i}}; next}{printf "%d\n", $0}' <<< "${string}"
+}
+
+function FillChoosenExercisesArray(){
+    local index pool numbersOfChosenExercises
+    numbersOfChosenExercises=( $1 )
+    pool=( $2 )
+    for index in ${numbersOfChosenExercises[@]}; do
+        EXHND_choosenExercises+=( ${pool[$((index-1))]} )
+    done
+}
+
+function IsAnyExerciseNotExisting(){
+    local index maximum numbersOfChosenExercises
+    maximum=$1; shift; numbersOfChosenExercises=( $@ )
+    for index in ${numbersOfChosenExercises[@]}; do
+        if [ ${index} -gt ${maximum} ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 function PickupExercises(){
-    printf "\e[38;5;207m\n Please, insert the exercise numbers that you wish to include in the exercise sheet (sperated by space): \e[0m\e[s"
-    local selectedExercises index givenList
+    printf "\e[38;5;14m\n Please, insert the exercise numbers that you wish to include in the exercise sheet.\n"
+    printf " Use a comma separated list WITHOUT SPACES; ranges X-Y are allowed (boundaries included)\n"
+    printf " and order is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9]: \e[0m\e[s"
+    local selectedExercises index givenList oldIFS
     givenList=( $@ )
-    while read -a selectedExercises; do
-        [ ${#selectedExercises[@]} -eq 0 ] && printf "\e[u\e[1A" && continue
-        for index in ${selectedExercises[@]}; do
-            if [[ ${index} =~ ^[1-9][0-9]*$ ]] && [ ${index} -le ${#givenList[@]} ]; then
-                continue
-            else
-                printf "\n\e[1;38;5;208m Invalid input!\e[21m\e[38;5;207m Please, insert the \e[1mexercise numbers sperated by space\e[21m: \e[0m\e[s"
-                continue 2
-            fi
-        done
+    while read selectedExercises; do #Here selectedExercises is a variable
+        [ "${selectedExercises}" = '' ] && printf "\e[u\e[1A" && continue
+        if [[ ! ${selectedExercises} =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]]; then
+            printf "\n\e[1;38;5;208m Invalid input!\e[21m\e[38;5;14m Please, insert the exercise numbers: \e[0m\e[s"; continue
+        fi
+        selectedExercises=( $(GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges ${selectedExercises}) ) #Here selectedExercises becomes an array!
+        if IsAnyExerciseNotExisting ${#givenList[@]} ${selectedExercises[@]}; then
+            printf "\n\e[1;38;5;208m Not existent exercise inserted!\e[21m\e[38;5;14m Please, insert the exercise numbers: \e[0m\e[s"; continue 2
+        fi
         break
     done
-    for index in ${selectedExercises[@]}; do
-        EXHND_choosenExercises+=( ${givenList[$((index-1))]} )
-    done
+    FillChoosenExercisesArray "${selectedExercises[*]}" "${givenList[*]}" #https://stackoverflow.com/a/16628100
     echo
 }
 
