@@ -268,6 +268,11 @@ function CheckChoosenExercises(){
 
 #=========================================================================================================================================================#
 
+function CreateTemporaryCompilationFolder(){
+    [ -d ${EXHND_compilationFolder} ] && mv ${EXHND_compilationFolder} ${EXHND_compilationFolder}_$(date +%d.%m.%Y_%H%M%S)
+    mkdir ${EXHND_compilationFolder} || { PrintError "Cannot create \"${EXHND_compilationFolder}\"! Aborting..." && exit -2; }
+}
+
 function ExtractBlockFromFileAndAppendToAnotherFile(){
     local inputFilename outputFilename partOfDocument
     inputFilename="$1"
@@ -281,7 +286,7 @@ function ProduceTexAuxiliaryFile(){
     outputFilename="$1"
     partOfDocument="$2"
     if [ ${partOfDocument} = 'PACKAGES' ]; then
-        ExtractBlockFromFileAndAppendToAnotherFile  ${EXHND_repositoryDirectory}/${EXHND_themeFilename}  ${outputFilename}  ${partOfDocument}
+        ExtractBlockFromFileAndAppendToAnotherFile  ${EXHND_themeFilename}  ${outputFilename}  ${partOfDocument}
     fi
     ExtractBlockFromFileAndAppendToAnotherFile  ${EXHND_texLocaldefsFilename}  ${outputFilename}  ${partOfDocument}
     for exercise in ${EXHND_choosenExercises[@]}; do
@@ -291,6 +296,12 @@ function ProduceTexAuxiliaryFile(){
     #      For example, to extract packages one could do something like,
     #         awk '{split($0, res, "%"); if(res[1] !~ /^[ ]*$/){print res[1]}}' file.tex | sed 's/^[[:blank:]]*//g' | tr '\n' ' ' | grep -Eo '\\usepackage(\[[^]]*\])?{[^}]+}'
     #      but there are many cases that could break this down.
+}
+
+function ProduceTexAuxiliaryFiles(){
+    ProduceTexAuxiliaryFile ${EXHND_packagesFilename}    "PACKAGES"
+    ProduceTexAuxiliaryFile ${EXHND_definitionsFilename} "DEFINITIONS"
+    ProduceTexAuxiliaryFile ${EXHND_bodyFilename}        "BODY"
 }
 
 function CheckTexPackagesFile(){
@@ -303,11 +314,9 @@ function CheckTexDefinitionsFile(){
 
 
 function ProduceTexMainFile(){
-    local mainTexFilename
-    mainTexFilename="$1"
-    rm -f ${mainTexFilename}
+    rm -f ${EXHND_mainFilename}
     #Redirect standard output to file
-    exec 3>&1 1>${mainTexFilename}
+    exec 3>&1 1>${EXHND_mainFilename}
     #Template production, overwriting the file
     echo '\documentclass[a4paper]{article}'
     echo ''
@@ -315,7 +324,7 @@ function ProduceTexMainFile(){
     echo ''
     echo '\input{Definitions}'
     echo ''
-    echo "\input{$EXHND_repositoryDirectory/${EXHND_themeFilename%.tex}}"
+    echo "\input{${EXHND_themeFilename%.tex}}"
     echo ''
     echo '\begin{document}'
     echo '  \Heading'

@@ -15,21 +15,20 @@
 
 #Global internal variables
 EXHND_repositoryDirectory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+EXHND_themeFilename="${EXHND_repositoryDirectory}/ClassicTheme.tex"
 EXHND_invokingDirectory="$(pwd)"
-EXHND_texLocaldefsFilename='TexLocaldefs.tex'
-EXHND_themeFilename='ClassicTheme.tex'
-EXHND_exercisePoolFolder='Exercises'
-EXHND_solutionPoolFolder='Solutions'
-EXHND_finalExerciseSheetFolder='FinalExerciseSheets'
-EXHND_finalSolutionSheetFolder='FinalSolutionSheets'
-EXHND_temporaryFolder='tmp'
+EXHND_texLocaldefsFilename="${EXHND_invokingDirectory}/TexLocaldefs.tex"
+EXHND_exercisePoolFolder="${EXHND_invokingDirectory}/Exercises"
+EXHND_solutionPoolFolder="${EXHND_invokingDirectory}/Solutions"
+EXHND_finalExerciseSheetFolder="${EXHND_invokingDirectory}/FinalExerciseSheets"
+EXHND_finalSolutionSheetFolder="${EXHND_invokingDirectory}/FinalSolutionSheets"
+EXHND_temporaryFolder="${EXHND_invokingDirectory}/tmp"
+EXHND_compilationFolder="${EXHND_temporaryFolder}/TemporaryCompilationFolder"
+EXHND_packagesFilename="${EXHND_compilationFolder}/Packages.tex"
+EXHND_definitionsFilename="${EXHND_compilationFolder}/Definitions.tex"
+EXHND_bodyFilename="${EXHND_compilationFolder}/Document.tex"
+EXHND_mainFilename="${EXHND_compilationFolder}/ExerciseSheet.tex"
 EXHND_exerciseList=(); EXHND_choosenExercises=() #These arrays contain the basenames of the files
-EXHND_compilationFolder="TemporaryCompilationFolder"
-EXHND_exerciseSheetName="ExerciseSheet"
-EXHND_packagesFilename="Packages.tex"
-EXHND_definitionsFilename="Definitions.tex"
-EXHND_bodyFilename="Document.tex"
-EXHND_pdfFolder="Pdf"
 
 #Variables with input from user
 EXHND_exerciseSheetSubtitlePostfix=''
@@ -90,26 +89,22 @@ fi
 CheckChoosenExercises
 
 #TeX part: set up main and sub-files before compilation
-[ -d ${EXHND_compilationFolder} ] && mv ${EXHND_compilationFolder} ${EXHND_compilationFolder}_$(date +%d.%m.%Y_%H%M%S)
-mkdir ${EXHND_compilationFolder} || { PrintError "Cannot create \"${EXHND_compilationFolder}\"! Aborting..." && exit -2; }
-ProduceTexAuxiliaryFile ${EXHND_compilationFolder}/${EXHND_packagesFilename}    "PACKAGES"
-ProduceTexAuxiliaryFile ${EXHND_compilationFolder}/${EXHND_definitionsFilename} "DEFINITIONS"
-ProduceTexAuxiliaryFile ${EXHND_compilationFolder}/${EXHND_bodyFilename}        "BODY"
+CreateTemporaryCompilationFolder
+ProduceTexAuxiliaryFiles
 CheckTexPackagesFile
 CheckTexDefinitionsFile
-ProduceTexMainFile      ${EXHND_compilationFolder}/${EXHND_exerciseSheetName}.tex
+ProduceTexMainFile
 
 #Compilation
 cd ${EXHND_compilationFolder}
-pdflatex -interaction=batchmode ${EXHND_exerciseSheetName}.tex >/dev/null 2>&1
+pdflatex -interaction=batchmode ${EXHND_mainFilename} >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     PrintError "Error occurred in pdflatex compilation!! Files can be found in \"${EXHND_compilationFolder}\" directory to investigate!"
 else
     cd ${EXHND_invokingDirectory}
-    mkdir -p ${EXHND_pdfFolder}
-    newPdfFilename=${EXHND_exerciseSheetName}_$(date +%d.%m.%Y_%H%M%S)
-    cp ${EXHND_compilationFolder}/${EXHND_exerciseSheetName}.pdf ${EXHND_pdfFolder}/${newPdfFilename}
-    xdg-open ${EXHND_pdfFolder}/${newPdfFilename} >/dev/null 2>&1 &
+    newPdfFilename="${EXHND_temporaryFolder}/$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
+    cp "${EXHND_mainFilename/.tex/.pdf}" "${newPdfFilename}"
+    xdg-open "${newPdfFilename}" >/dev/null 2>&1 &
     unset -v 'newPdfFilename'
     rm -r $EXHND_compilationFolder
 fi
