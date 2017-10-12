@@ -41,8 +41,19 @@
     }{
         \centerline{\Large\textbf{Exercise sheet #1}}
     }
-    \ifthenelse{\isempty{#2}}{}{
-        \centerline{\textit{#2}}
+    % Here we have to print as subtitle a string which is the concatenation
+    % of \exerciseSheetSubtitlePrefix and #2, which could be empty or not in
+    % all the possible combinations. So test them.
+    \ifthenelse{\isempty{\exerciseSheetSubtitlePrefix}}{
+        \ifthenelse{\isempty{#2}}{}{
+            \centerline{\textit{#2}}
+        }
+    }{
+        \ifthenelse{\isempty{#2}}{
+            \centerline{\textit{\exerciseSheetSubtitlePrefix}}
+        }{
+            \centerline{\textit{\exerciseSheetSubtitlePrefix{} #2}}
+        }
     }
     \vspace{\myskip}
 }

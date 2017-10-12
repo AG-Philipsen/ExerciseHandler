@@ -9,7 +9,7 @@ function PrintError(){
 function ParseCommandLineParameters(){
     local mutuallyExclusiveOptionsPassed
     mutuallyExclusiveOptionsPassed=()
-    while [ "$1" != '' ]; do
+    while [ $# -gt 0 ]; do
         case $1 in
             -h | --help )
                 printf "\e[1;38;5;44m\n"
@@ -19,34 +19,40 @@ function ParseCommandLineParameters(){
                 printf "           /___//_/|_|/___//_/|_| \___//___//___//___/     /_//_//_/ |_|/_/|_//____//____//___//_/|_|    \n"
                 printf "                                                                                                         \n"
                 printf "\n"
-                printf "\e[21;38;5;2m\n"
+                printf "\e[21;38;5;4m\n"
                 printf "    -s | --setup                     ->    Set up of the evironment creating local definitions template and folders.\n"
+                printf "    -n | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
+                printf "\e[21;38;5;2m\n"
+                printf "    -p | --exerciseSheetPostfix      ->    Set the exercise sheet subtitle postfix. \n"
+
                 printf "    -t | --themeFile                 ->    default value = ClassicTheme \n"
                 printf "                                           The user can provide a custom theme file.\n"
-                printf "    -n | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
                 printf "    -f | --final                     ->    Move the produced files ( .tex .pdf and possibly figures) to the tutorial folder. \n"
                 printf "                                           in the subfolder corresponding to the sheet number.\n"
                 printf "                                           \e[1;32mThe sheet number is automatically set unless specified via the -N option. \e[0;32m \n"
                 printf "    -N | --sheetNumber               ->    Set the sheet number to appear in the exercise name and sheet subfolders of the tutorial folder. \n"
-                printf "    -d | --dueTime                   ->    Set the due day for the exercise solution to be handed-in/presented. \n" # TODO: add default value in case it is set based on localdefs
-                printf "\e[0m\n\n"
+                printf "\n\n\e[38;5;14m  \e[1m\e[4mNOTE\e[24m:\e[21m"
+                printf " The \e[1;38;5;4mblue\e[21;38;5;14m options are mutually exclusive!"
+                printf "\e[0m\n\n\n"
                 exit 0
                 shift ;;
             -s | --setup )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_doSetup="TRUE"
                 shift;;
-            -t | --themeFile )
-                printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
             -n | --newExercise )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_produceNewExercise='TRUE'
                 shift ;;
+            -p | --exerciseSheetPostfix )
+                EXHND_exerciseSheetSubtitlePostfix="$2"
+                shift 2 ;;
+
+            -t | --themeFile )
+                printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
             -f | --final )
                 printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
             -N | --sheetNumber )
-                printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
-            -d | --dueTime )
                 printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
             *)
                 printf "\e[38;5;9m\n Unrecognized option \e[1m$1\e[21m! Aborting...\n\n\e[0m"; exit -1; shift ;;
@@ -68,17 +74,18 @@ function CreateTexLocaldefsTemplate(){
     echo '\usepackage{arrayjob}'
     echo -e '%__END_PACKAGES__%\n\n\n'
     echo '%__BEGIN_DEFINITIONS__%'
-    echo '\def\lecture{}      %'
-    echo '\def\professor{}    %'
-    echo '\def\semester{}     %'
-    echo '\newarray\Tutor     %'
-    echo '\newarray\TutorMail %'
-    echo '\Tutor(1)={}        %'
-    echo '\TutorMail(1)={}    %'
-    echo '%\Tutor(2)={}        %'
-    echo '%\TutorMail(2)={}    %'
-    echo '%\Tutor(3)={}        %'
-    echo '%\TutorMail(3)={}    %'
+    echo '\def\lecture{}      '
+    echo '\def\professor{}    '
+    echo '\def\semester{}     '
+    echo '\newarray\Tutor     '
+    echo '\newarray\TutorMail '
+    echo '\Tutor(1)={}        '
+    echo '\TutorMail(1)={}    '
+    echo '%\Tutor(2)={}       '
+    echo '%\TutorMail(2)={}   '
+    echo '%\Tutor(3)={}       '
+    echo '%\TutorMail(3)={}   '
+    echo '\def\exerciseSheetSubtitlePrefix{}'
     echo -e '%__END_DEFINITIONS__%\n\n\n'
     echo -e '%__BEGIN_BODY__%\n%__END_BODY__%\n\n\n'
     #Restore standard output
@@ -137,13 +144,24 @@ function CheckBlocksInFile(){
 }
 
 function CheckTexLocaldefsTemplate(){
-    local line
+    local line brackets oldIFS
     #Parse file line by line
     while read -r line || [[ -n "${line}" ]]; do # [[ -n "${line}" ]] is to read also last line if it does not end with \n
-        if [ "$(grep -o "{.*}" <<< "${line}")" = '{}' ]; then
-            PrintWarning "Found empty field(s) in \"${TEMPLATE_FILENAME}\"! Final result could be affected!\e[0m\n\n"
-            break
+        if [[ $line =~ ^[[:space:]]*% ]]; then
+            continue
         fi
+        if [[ $line =~ \\def\\exerciseSheetSubtitlePrefix\{\} ]]; then # to skip optional fields in the check
+            continue
+        fi
+        oldIFS=${IFS}
+        IFS=$'\n'
+        for brackets in $(grep -o "{[^{}]*}" <<< "${line}"); do
+            if [ "$brackets" = '{}' ]; then
+                PrintWarning "Found empty field(s) in \"${EXHND_texLocaldefsFilename}\"! Final result could be affected!"
+                break 2
+            fi
+        done
+        IFS=${oldIFS}
     done < "${EXHND_texLocaldefsFilename}"
     #General checks on blocks
     CheckBlocksInFile "${EXHND_texLocaldefsFilename}" "PACKAGES" "DEFINITIONS" "BODY"
@@ -197,6 +215,7 @@ function PickupExercises(){
     for index in ${selectedExercises[@]}; do
         EXHND_choosenExercises+=( ${givenList[$((index-1))]} )
     done
+    echo
 }
 
 function CheckChoosenExercises(){
@@ -260,7 +279,7 @@ function ProduceTexMainFile(){
     echo ''
     echo '\begin{document}'
     echo '  \Heading'
-    echo '  \Sheet[1][hello world]'
+    echo "  \Sheet[1][$EXHND_exerciseSheetSubtitlePostfix]"
     echo '  %Exercises'
     echo '  \input{Document}'
     echo '\end{document}'

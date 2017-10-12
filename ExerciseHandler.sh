@@ -13,7 +13,7 @@
 #                                                                                                 #
 #-------------------------------------------------------------------------------------------------#
 
-#Variables
+#Global internal variables
 EXHND_repositoryDirectory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 EXHND_invokingDirectory="$(pwd)"
 EXHND_texLocaldefsFilename='TexLocaldefs.tex'
@@ -31,6 +31,9 @@ EXHND_definitionsFilename="Definitions.tex"
 EXHND_bodyFilename="Document.tex"
 EXHND_pdfFolder="Pdf"
 
+#Variables with input from user
+EXHND_exerciseSheetSubtitlePostfix=''
+
 #Behaviour options
 EXHND_doSetup='FALSE'
 EXHND_produceNewExercise='FALSE'
@@ -42,7 +45,7 @@ source ${EXHND_repositoryDirectory}/AuxiliaryFunctions.sh || exit -2
 echo; PrintWarning "Script under developement and in a beta phase! Not everything is guaranteed to work!!"
 
 #Parse command line parameters
-ParseCommandLineParameters $@
+ParseCommandLineParameters "$@"
 
 #If user needs exercise template just produce it and exit
 if [ ${EXHND_doSetup} = 'TRUE' ]; then
@@ -59,6 +62,7 @@ if [ ! -f ${EXHND_texLocaldefsFilename} ]; then
     printf "\n\e[38;5;39m \e[1m\e[4mNOTE\e[24m:\e[21m The local definitions file \"${EXHND_texLocaldefsFilename}\""
     printf "has not been found and an empty template to be filled out has been created.\n"
     printf "       Please, provide required information in it and run again this script.\e[0m\n\n"
+    exit 0
 else
     CheckTexLocaldefsTemplate
 fi
@@ -117,20 +121,12 @@ exit 0
 #      3) Trap CTRL-C in a nice way: cleaning files/folders. etc. -> DISCUSS
 #      4) Implement an option to give exercise numbers and therefore skip interactive step!
 #         Maybe allow ranges in specifying the numbers!
-#      5) DISCUSS about latex commands: which arguments are needed? How to set them?
-#         For example, put in localdefs the hand in day of the week? Make command line option?!
-#         For the "subtitle" of the exercise sheet that can range from "To be handed in on
-#         DAYOFTHEWEEK" to "Solution given on DD/MM/YY" it would be ideal to deal with two
-#         arguments. The first is the "wording" which is surely common to any sheet, while
-#         the second is the time specification that might change. For the first it is ideal
-#         to have a corresponding field in the localdefs and no command line option. For the
-#         second the interplay between a field in localdefs and a command line option could work.
-#      6) Give the possibility to the user to create her/his own theme. Implement option
+#      5) Give the possibility to the user to create her/his own theme. Implement option
 #         to abilitate this and pass the file. This should contain the needed commands
 #         (\Heading, etc.) and it should be input in the main tex file. Add description
 #         to README file where commands to be provided should be listed. Decide whether we
 #         expect to get the full path to the custom theme as an argument to the command line
 #         option, or we use a field in localdefs for the path and the command line option to
 #         just pass the name (useful also if we will ever have a folder with many available themes).
-#      7) Decide how to handle the production of exercise solutions that might not be there when the
+#      6) Decide how to handle the production of exercise solutions that might not be there when the
 #         script is run with the --final option for the exercise sheet production
