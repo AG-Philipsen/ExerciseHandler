@@ -1,31 +1,45 @@
 function PrintWarning(){
-    printf "\n\e[38;5;11m \e[1m\e[4mWARNING\e[24m:\e[21m %s\e[0m\n\n" "$1"
+    printf "\e[38;5;11m \e[1m\e[4mWARNING\e[24m:\e[21m %s\e[0m\n\n" "$1"
 }
 
 function PrintError(){
-    printf "\n\e[38;5;9m \e[1m\e[4mERROR\e[24m:\e[21m %s\e[0m\n\n" "$1"
+    printf "\e[38;5;9m \e[1m\e[4mERROR\e[24m:\e[21m %s\e[0m\n\n" "$1"
 }
 
 function ParseCommandLineParameters(){
+    local mutuallyExclusiveOptionsPassed
+    mutuallyExclusiveOptionsPassed=()
     while [ "$1" != '' ]; do
         case $1 in
             -h | --help )
-                printf "\e[38;5;2m\n"
-                printf " -h | --help \n"
-                printf " -t | --themeFile                 ->    default value = ClassicTheme \n"
-                printf "                                        The user can provide a custom theme file.\n"
-                printf " -n | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
-                printf " -f | --final                     ->    Move the produced files ( .tex .pdf and possibly figures) to the tutorial folder. \n"
-                printf "                                        in the subfolder corresponding to the sheet number.\n"
-                printf "                                        \e[1;32mThe sheet number is automatically set unless specified via the -N option. \e[0;32m \n"
-                printf " -N | --sheetNumber               ->    Set the sheet number to appear in the exercise name and sheet subfolders of the tutorial folder. \n"
-                printf " -d | --dueTime                   ->    Set the due day for the exercise solution to be handed-in/presented. \n" # TODO: add default value in case it is set based on localdefs
+                printf "\e[1;38;5;44m\n"
+                printf "              ____ _  __ ____ ___   _____ ____ ____ ____      __ __ ___    _  __ ___   __    ____ ___    \n"
+                printf "             / __/| |/_// __// _ \ / ___//  _// __// __/     / // // _ |  / |/ // _ \ / /   / __// _ \   \n"
+                printf "            / _/ _>  < / _/ / , _// /__ _/ / _\ \ / _/      / _  // __ | /    // // // /__ / _/ / , _/   \n"
+                printf "           /___//_/|_|/___//_/|_| \___//___//___//___/     /_//_//_/ |_|/_/|_//____//____//___//_/|_|    \n"
+                printf "                                                                                                         \n"
+                printf "\n"
+                printf "\e[21;38;5;2m\n"
+                printf "    -s | --setup                     ->    Set up of the evironment creating local definitions template and folders.\n"
+                printf "    -t | --themeFile                 ->    default value = ClassicTheme \n"
+                printf "                                           The user can provide a custom theme file.\n"
+                printf "    -n | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
+                printf "    -f | --final                     ->    Move the produced files ( .tex .pdf and possibly figures) to the tutorial folder. \n"
+                printf "                                           in the subfolder corresponding to the sheet number.\n"
+                printf "                                           \e[1;32mThe sheet number is automatically set unless specified via the -N option. \e[0;32m \n"
+                printf "    -N | --sheetNumber               ->    Set the sheet number to appear in the exercise name and sheet subfolders of the tutorial folder. \n"
+                printf "    -d | --dueTime                   ->    Set the due day for the exercise solution to be handed-in/presented. \n" # TODO: add default value in case it is set based on localdefs
                 printf "\e[0m\n\n"
                 exit 0
                 shift ;;
+            -s | --setup )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_doSetup="TRUE"
+                shift;;
             -t | --themeFile )
                 printf "\e[38;5;9m\n Option \e[1m$1\e[21m! still to be implemented! Aborting...\n\n\e[0m"; exit -1; shift ;;
             -n | --newExercise )
+                mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_produceNewExercise='TRUE'
                 shift ;;
             -f | --final )
@@ -38,6 +52,49 @@ function ParseCommandLineParameters(){
                 printf "\e[38;5;9m\n Unrecognized option \e[1m$1\e[21m! Aborting...\n\n\e[0m"; exit -1; shift ;;
         esac
     done
+
+    if [ ${#mutuallyExclusiveOptionsPassed[@]} -gt 1 ]; then
+        PrintError "Multiple mutually exclusive options were passed to the script! Use the \"--help\" option to check. Aborting..."
+        exit -1
+    fi
+}
+
+function CreateTexLocaldefsTemplate(){
+    #Template production, overwriting the file
+    rm -f ${EXHND_texLocaldefsFilename}
+    #Redirect standard output to file
+    exec 3>&1 1>${EXHND_texLocaldefsFilename}
+    echo '%__BEGIN_PACKAGES__%'
+    echo '\usepackage{arrayjob}'
+    echo -e '%__END_PACKAGES__%\n\n\n'
+    echo '%__BEGIN_DEFINITIONS__%'
+    echo '\def\lecture{}      %'
+    echo '\def\professor{}    %'
+    echo '\def\semester{}     %'
+    echo '\newarray\Tutor     %'
+    echo '\newarray\TutorMail %'
+    echo '\Tutor(1)={}        %'
+    echo '\TutorMail(1)={}    %'
+    echo '%\Tutor(2)={}        %'
+    echo '%\TutorMail(2)={}    %'
+    echo '%\Tutor(3)={}        %'
+    echo '%\TutorMail(3)={}    %'
+    echo -e '%__END_DEFINITIONS__%\n\n\n'
+    echo -e '%__BEGIN_BODY__%\n%__END_BODY__%\n\n\n'
+    #Restore standard output
+    exec 1>&3
+}
+
+function MakeSetup(){
+    mkdir -p\
+          ${EXHND_exercisePoolFolder}\
+          ${EXHND_solutionPoolFolder}\
+          ${EXHND_finalExerciseSheetFolder}\
+          ${EXHND_finalSolutionSheetFolder}\
+          ${EXHND_temporaryFolder}
+    if [ ! -f ${EXHND_texLocaldefsFilename} ]; then
+        CreateTexLocaldefsTemplate
+    fi
 }
 
 function ProduceNewEmptyExercise(){
@@ -67,31 +124,6 @@ function ProduceNewEmptyExercise(){
     exec 1>&3
 }
 
-function CreateTexLocaldefsTemplate(){
-    #Template production, overwriting the file
-    rm -f ${EXHND_texLocaldefsFilename}
-    #Redirect standard output to file
-    exec 3>&1 1>${EXHND_texLocaldefsFilename}
-    echo '%__BEGIN_PACKAGES__%'
-    echo '\usepackage{arrayjob}'
-    echo -e '%__END_PACKAGES__%\n\n\n'
-    echo '%__BEGIN_DEFINITIONS__%'
-    echo '\def\lecture{}      %'
-    echo '\def\professor{}    %'
-    echo '\def\semester{}     %'
-    echo '\newarray\Tutor     %'
-    echo '\newarray\TutorMail %'
-    echo '\Tutor(1)={}        %'
-    echo '\TutorMail(1)={}    %'
-    echo '%\Tutor(2)={}        %'
-    echo '%\TutorMail(2)={}    %'
-    echo '%\Tutor(3)={}        %'
-    echo '%\TutorMail(3)={}    %'
-    echo -e '%__END_DEFINITIONS__%\n\n\n'
-    echo -e '%__BEGIN_BODY__%\n%__END_BODY__%\n\n\n'
-    #Restore standard output
-    exec 1>&3
-}
 
 function CheckBlocksInFile(){
     local filename blocksName block

@@ -9,16 +9,20 @@
 #-------------------------------------------------------------------------------------------------#
 #                                                                                                 #
 #         Copyright (c) 2016-2017 Alessandro Sciarra: sciarra@th.physik.uni-frankfurt.de          #
-#         Copyright (c) 2016-2017   Francesca Cuteri:  cuteri@th.physik.uni-frankfurt.de          #
+#         Copyright (c) 2016        Francesca Cuteri:  cuteri@th.physik.uni-frankfurt.de          #
 #                                                                                                 #
 #-------------------------------------------------------------------------------------------------#
 
 #Variables
 EXHND_repositoryDirectory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 EXHND_invokingDirectory="$(pwd)"
-EXHND_texLocaldefsFilename="TexLocaldefs.tex"
-EXHND_themeFilename="ClassicTheme.tex"
-EXHND_exercisePoolFolder="Exercises"
+EXHND_texLocaldefsFilename='TexLocaldefs.tex'
+EXHND_themeFilename='ClassicTheme.tex'
+EXHND_exercisePoolFolder='Exercises'
+EXHND_solutionPoolFolder='Solutions'
+EXHND_finalExerciseSheetFolder='FinalExerciseSheets'
+EXHND_finalSolutionSheetFolder='FinalSolutionSheets'
+EXHND_temporaryFolder='tmp'
 EXHND_exerciseList=(); EXHND_choosenExercises=() #These arrays contain the basenames of the files
 EXHND_compilationFolder="TemporaryCompilationFolder"
 EXHND_exerciseSheetName="ExerciseSheet"
@@ -26,19 +30,28 @@ EXHND_packagesFilename="Packages.tex"
 EXHND_definitionsFilename="Definitions.tex"
 EXHND_bodyFilename="Document.tex"
 EXHND_pdfFolder="Pdf"
+
+#Behaviour options
+EXHND_doSetup='FALSE'
 EXHND_produceNewExercise='FALSE'
 
 #Sourcing auxiliary file(s)
 source ${EXHND_repositoryDirectory}/AuxiliaryFunctions.sh || exit -2
 
 #Warning that the script is in developement phase!
-PrintWarning "Script under developement and in a beta phase! Not everything is guaranteed to work!!"
+echo; PrintWarning "Script under developement and in a beta phase! Not everything is guaranteed to work!!"
 
 #Parse command line parameters
 ParseCommandLineParameters $@
 
 #If user needs exercise template just produce it and exit
-[ ${EXHND_produceNewExercise} = 'TRUE' ] && ProduceNewEmptyExercise && exit 0
+if [ ${EXHND_doSetup} = 'TRUE' ]; then
+    MakeSetup
+    exit 0
+elif [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
+    ProduceNewEmptyExercise
+    exit 0
+fi
 
 #Check if template for latex is present, if not or not complete, terminate and warn user
 if [ ! -f ${EXHND_texLocaldefsFilename} ]; then
@@ -112,14 +125,12 @@ exit 0
 #         the second is the time specification that might change. For the first it is ideal
 #         to have a corresponding field in the localdefs and no command line option. For the
 #         second the interplay between a field in localdefs and a command line option could work.
-#      6) If no Exercise folder is there, at the creation of the first new exercise it
-#         can be automatically created.
-#      7) Give the possibility to the user to create her/his own theme. Implement option
+#      6) Give the possibility to the user to create her/his own theme. Implement option
 #         to abilitate this and pass the file. This should contain the needed commands
 #         (\Heading, etc.) and it should be input in the main tex file. Add description
 #         to README file where commands to be provided should be listed. Decide whether we
 #         expect to get the full path to the custom theme as an argument to the command line
 #         option, or we use a field in localdefs for the path and the command line option to
 #         just pass the name (useful also if we will ever have a folder with many available themes).
-#      8) Decide how to handle the production of exercise solutions that might not be there when the
+#      7) Decide how to handle the production of exercise solutions that might not be there when the
 #         script is run with the --final option for the exercise sheet production
