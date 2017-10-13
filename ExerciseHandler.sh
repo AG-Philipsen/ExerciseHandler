@@ -22,6 +22,7 @@ EXHND_exercisePoolFolder="${EXHND_invokingDirectory}/Exercises"
 EXHND_solutionPoolFolder="${EXHND_invokingDirectory}/Solutions"
 EXHND_finalExerciseSheetFolder="${EXHND_invokingDirectory}/FinalExerciseSheets"
 EXHND_finalSolutionSheetFolder="${EXHND_invokingDirectory}/FinalSolutionSheets"
+EXHND_figuresFolder="${EXHND_invokingDirectory}/Figures"
 EXHND_temporaryFolder="${EXHND_invokingDirectory}/tmp"
 EXHND_compilationFolder="${EXHND_temporaryFolder}/TemporaryCompilationFolder"
 EXHND_packagesFilename="${EXHND_compilationFolder}/Packages.tex"
@@ -38,6 +39,7 @@ EXHND_exercisesFromPoolAsNumbers=''
 #Behaviour options
 EXHND_doSetup='FALSE'
 EXHND_produceNewExercise='FALSE'
+EXHND_isFinal='FALSE'
 
 #Sourcing auxiliary file(s)
 source ${EXHND_repositoryDirectory}/AuxiliaryFunctions.sh || exit -2
@@ -95,24 +97,15 @@ CheckTexPackagesFile
 CheckTexDefinitionsFile
 ProduceTexMainFile
 MakeCompilationInTemporaryFolder
+if [ $EXHND_isFinal = 'FALSE' ]; then
+    MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder
+else
+    MoveExerciseSheetFilesToFinalFolderOpenItAndRemoveCompilationFolder
+fi
 
 exit 0
 
-#TODO: 1) Implement a --final option in order to move the produced file (also the .tex
-#         in this case) to a separate folder which should be created the first time and
-#         which should have a name related to the lecture (e.g. lectureName_semester).
-#         An expected name for the folder can be set using the fields in the template.
-#         This way the folder can be looked for by the script or created if it does not exist.
-#         Having subfolders whose name contains the number of the corresponding sheet is
-#         useful because figures might come along with the tex file and the pdf of a given
-#         exercise/solution. That being the case, it would be ideal to have a command line
-#         option to specify the number for the sheet when the --final option is given.
-#         If such an option is not given, the script will automatically set the sheet number
-#         to the consecutive one, given the already existing folders in the "lectureName_semester"
-#         folder (the command line option is useful because we might want to produce sheet n+1
-#         while sheet n is not produced yet). Better having the sheet number both in the
-#         subfolder names and in exercises/solution tex files.
-#         Think of whether to use this for numbering of sheet.
+#TODO: 1) Implement an automatic procedure to determine the sheet number.
 #      2) Create a log file mechanism in pool of exercises so that the visualization of
 #         the list of exercises can distinguish between already used exercises (use
 #         colours? Do not show already used exercises?)

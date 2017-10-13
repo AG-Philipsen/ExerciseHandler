@@ -28,12 +28,10 @@ function ParseCommandLineParameters(){
                 printf "                                           Order is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].\n"
                 printf "    -p | --exerciseSheetPostfix      ->    Set the exercise sheet subtitle postfix. \n"
                 printf "    -N | --sheetNumber               ->    Set the sheet number to appear in the exercise sheet title. \n"
+                printf "    -f | --final                     ->    Move the produced pdf file to the corresponding final folder. \n"
 
                 printf "    -t | --themeFile                 ->    default value = ClassicTheme \n"
                 printf "                                           The user can provide a custom theme file.\n"
-                printf "    -f | --final                     ->    Move the produced files ( .tex .pdf and possibly figures) to the tutorial folder. \n"
-                printf "                                           in the subfolder corresponding to the sheet number.\n"
-                printf "                                           \e[1;32mThe sheet number is automatically set unless specified via the -N option. \e[0;32m \n"
                 printf "\n\n\e[38;5;14m  \e[1m\e[4mNOTE\e[24m:\e[21m"
                 printf " The \e[1;38;5;4mblue\e[21;38;5;14m options are mutually exclusive!"
                 printf "\e[0m\n\n\n"
@@ -60,10 +58,11 @@ function ParseCommandLineParameters(){
             -N | --sheetNumber )
                 EXHND_exerciseSheetNumber="$2"
                 shift 2 ;;
+            -f | --final )
+                EXHND_isFinal='TRUE'
+                shift ;;
 
             -t | --themeFile )
-                PrintError "Option \"$1\" still to be implemented! Aborting..."; exit -1; shift ;;
-            -f | --final )
                 PrintError "Option \"$1\" still to be implemented! Aborting..."; exit -1; shift ;;
             *)
                 PrintError "Unrecognized option \"$1\"! Aborting..."; exit -1; shift ;;
@@ -87,6 +86,7 @@ function CreateTexLocaldefsTemplate(){
     exec 3>&1 1>${EXHND_texLocaldefsFilename}
     echo '%__BEGIN_PACKAGES__%'
     echo '\usepackage{arrayjob}'
+    echo '%\usepackage{graphicx} %Uncomment this line if your exercises needs figures'
     echo -e '%__END_PACKAGES__%\n\n\n'
     echo '%__BEGIN_DEFINITIONS__%'
     echo '\def\lecture{}      '
@@ -101,6 +101,7 @@ function CreateTexLocaldefsTemplate(){
     echo '%\Tutor(3)={}       '
     echo '%\TutorMail(3)={}   '
     echo '\def\exerciseSheetSubtitlePrefix{}'
+    echo '%\graphicspath{{'"${EXHND_figuresFolder}/"'}} %Uncomment this line if your exercises needs figures'
     echo -e '%__END_DEFINITIONS__%\n\n\n'
     echo -e '%__BEGIN_BODY__%\n%__END_BODY__%\n\n\n'
     #Restore standard output
@@ -113,6 +114,7 @@ function MakeSetup(){
           ${EXHND_solutionPoolFolder}\
           ${EXHND_finalExerciseSheetFolder}\
           ${EXHND_finalSolutionSheetFolder}\
+          ${EXHND_figuresFolder}\
           ${EXHND_temporaryFolder}
     if [ ! -f ${EXHND_texLocaldefsFilename} ]; then
         CreateTexLocaldefsTemplate
@@ -269,8 +271,8 @@ function CheckChoosenExercises(){
 #=========================================================================================================================================================#
 
 function CreateTemporaryCompilationFolder(){
-    [ -d ${EXHND_compilationFolder} ] && mv ${EXHND_compilationFolder} ${EXHND_compilationFolder}_$(date +%d.%m.%Y_%H%M%S)
-    mkdir ${EXHND_compilationFolder} || { PrintError "Cannot create \"${EXHND_compilationFolder}\"! Aborting..." && exit -2; }
+    [ -d "${EXHND_compilationFolder}" ] && mv "${EXHND_compilationFolder}" "${EXHND_compilationFolder}_$(date +%d.%m.%Y_%H%M%S)"
+    mkdir "${EXHND_compilationFolder}" 2>/dev/null || { PrintError "Cannot create \"${EXHND_compilationFolder}\"! Aborting..." && exit -2; }
 }
 
 function ExtractBlockFromFileAndAppendToAnotherFile(){
@@ -342,11 +344,33 @@ function MakeCompilationInTemporaryFolder(){
     pdflatex -interaction=batchmode ${EXHND_mainFilename} >/dev/null 2>&1
     if [ $? -ne 0 ]; then
         PrintError "Error occurred in pdflatex compilation!! Files can be found in \"${EXHND_compilationFolder}\" directory to investigate!"
-    else
-        local newPdfFilename
-        newPdfFilename="${EXHND_temporaryFolder}/$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
-        cp "${EXHND_mainFilename/.tex/.pdf}" "${newPdfFilename}"
-        xdg-open "${newPdfFilename}" >/dev/null 2>&1 &
-        rm -r $EXHND_compilationFolder
+        exit 0
     fi
+}
+
+function MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder(){
+    local newPdfFilename
+    newPdfFilename="${EXHND_temporaryFolder}/$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
+    cp "${EXHND_mainFilename/.tex/.pdf}" "${newPdfFilename}" || exit -2
+    xdg-open "${newPdfFilename}" >/dev/null 2>&1 &
+    rm -r "${EXHND_compilationFolder}"
+}
+
+function MoveExerciseSheetFilesToFinalFolderOpenItAndRemoveCompilationFolder(){
+    local newExerciseFilename destinationFolder texFile
+    newExerciseFilename="$(basename ${EXHND_mainFilename%.tex})_$(printf "%02d" ${EXHND_exerciseSheetNumber})"
+    destinationFolder="${EXHND_finalExerciseSheetFolder}/${newExerciseFilename}"
+    if [ -d "${destinationFolder}" ]; then
+        PrintError "Folder \"$(basename ${destinationFolder})\" for final sheet is already existing! Aborting..."; exit -2
+    else
+        mkdir "${destinationFolder}" || exit -2
+    fi
+    #Rename .tex file so that then I can move to final folder all .tex files from compilation folder
+    mv "${EXHND_mainFilename}"  "${EXHND_mainFilename%/*}/${newExerciseFilename}.tex" || exit -2
+    for texFile in ${EXHND_compilationFolder}/*.tex; do
+        mv "${texFile}" "${destinationFolder}"
+    done
+    cp "${EXHND_mainFilename/.tex/.pdf}" "${destinationFolder}/${newExerciseFilename}.pdf" || exit -2
+    xdg-open "${destinationFolder}/${newExerciseFilename}.pdf" >/dev/null 2>&1 &
+    rm -r "${EXHND_compilationFolder}"
 }
