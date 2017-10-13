@@ -94,20 +94,7 @@ ProduceTexAuxiliaryFiles
 CheckTexPackagesFile
 CheckTexDefinitionsFile
 ProduceTexMainFile
-
-#Compilation
-cd ${EXHND_compilationFolder}
-pdflatex -interaction=batchmode ${EXHND_mainFilename} >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    PrintError "Error occurred in pdflatex compilation!! Files can be found in \"${EXHND_compilationFolder}\" directory to investigate!"
-else
-    cd ${EXHND_invokingDirectory}
-    newPdfFilename="${EXHND_temporaryFolder}/$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
-    cp "${EXHND_mainFilename/.tex/.pdf}" "${newPdfFilename}"
-    xdg-open "${newPdfFilename}" >/dev/null 2>&1 &
-    unset -v 'newPdfFilename'
-    rm -r $EXHND_compilationFolder
-fi
+MakeCompilationInTemporaryFolder
 
 exit 0
 
