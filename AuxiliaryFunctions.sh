@@ -85,7 +85,7 @@ function CreateTexLocaldefsTemplate(){
     #Redirect standard output to file
     exec 3>&1 1>${EXHND_texLocaldefsFilename}
     echo '%__BEGIN_PACKAGES__%'
-    echo '\usepackage{arrayjob}'
+    echo '\usepackage{arrayjobx}'
     echo '%\usepackage{graphicx} %Uncomment this line if your exercises needs figures'
     echo -e '%__END_PACKAGES__%\n\n\n'
     echo '%__BEGIN_DEFINITIONS__%'
@@ -133,7 +133,7 @@ function ProduceNewEmptyExercise(){
             printf "\n\e[1;38;5;202m File \"${newExerciseFilename}\" already existing!\e[21m\e[38;5;11m Please, provide a different name: \e[0m\e[s"
             continue
         else
-            break
+            echo; break
         fi
     done
     #Redirect standard output to file
@@ -339,13 +339,15 @@ function ProduceTexMainFile(){
 }
 
 function MakeCompilationInTemporaryFolder(){
-    #Compilation
+    local index
     cd ${EXHND_compilationFolder}
-    pdflatex -interaction=batchmode ${EXHND_mainFilename} >/dev/null 2>&1
-    if [ $? -ne 0 ]; then
-        PrintError "Error occurred in pdflatex compilation!! Files can be found in \"${EXHND_compilationFolder}\" directory to investigate!"
-        exit 0
-    fi
+    for index in {1..2}; do
+        pdflatex -interaction=batchmode ${EXHND_mainFilename} >/dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            PrintError "Error occurred in pdflatex compilation!! Files can be found in \"${EXHND_compilationFolder}\" directory to investigate!"
+            exit 0
+        fi
+    done
 }
 
 function MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder(){
