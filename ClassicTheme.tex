@@ -61,9 +61,12 @@
 \newcounter{Exercise}
 \newenvironment{exercise}[1][optional]
 {
-  \refstepcounter{Exercise}
-  \vspace{\myskip}\par
-  \noindent
-  \textbf{Exercise \theExercise} $\;$[\textit{#1}]\newline
+    \refstepcounter{Exercise}
+    \vspace{\myskip}\par%
+    \ifthenelse{\isempty{#1}}{
+        \noindent\textbf{Exercise \theExercise}\newline
+    }{
+        \noindent\textbf{Exercise \theExercise} $\;$[\textit{#1}]\newline
+    }
 }
 {}
