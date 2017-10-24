@@ -64,9 +64,9 @@
     \refstepcounter{Exercise}
     \vspace{\myskip}\par%
     \ifthenelse{\isempty{#1}}{
-        \noindent\textbf{Exercise \theExercise}\newline
+        \noindent{\large\textbf{Exercise \theExercise}}\\[0.75ex]
     }{
-        \noindent\textbf{Exercise \theExercise} $\;$[\textit{#1}]\newline
+        \noindent{\large\textbf{Exercise \theExercise}} $\;$[\textit{#1}]\\[0.75ex]
     }
 }
 {}
