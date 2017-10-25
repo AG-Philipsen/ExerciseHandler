@@ -101,7 +101,6 @@ function CreateTexLocaldefsTemplate(){
     echo '%\Tutor(3)={}       '
     echo '%\TutorMail(3)={}   '
     echo '\def\exerciseSheetSubtitlePrefix{}'
-    echo '%\graphicspath{{'"${EXHND_figuresFolder}/"'}} %Uncomment this line if your exercises needs figures'
     echo -e '%__END_DEFINITIONS__%\n\n\n'
     echo -e '%__BEGIN_BODY__%\n%__END_BODY__%\n\n\n'
     #Restore standard output
@@ -325,6 +324,7 @@ function ProduceTexMainFile(){
     echo '\input{Packages}'
     echo ''
     echo '\input{Definitions}'
+    echo '\graphicspath{{'"${EXHND_figuresFolder}/"'}}'
     echo ''
     echo "\input{${EXHND_themeFilename%.tex}}"
     echo ''
