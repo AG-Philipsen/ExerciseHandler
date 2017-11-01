@@ -78,7 +78,7 @@ function ParseCommandLineParameters(){
 function DetermineSheetNumber(){
     local lastSheetNumber;
     lastSheetNumber=$(ls "${EXHND_finalExerciseSheetFolder}" | tail -n1 | grep -o "[0-9]\+" | sed 's/^0*//')
-    if [[ lastSheetNumber =~ ^[0-9]+$ ]]; then
+    if [[ $lastSheetNumber =~ ^[0-9]*$ ]]; then
         echo $((lastSheetNumber+1))
     else
         echo '1'
