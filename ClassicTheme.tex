@@ -55,18 +55,17 @@
             \centerline{\textit{\exerciseSheetSubtitlePrefix{} #2}}
         }
     }
-    \vspace{\myskip}
+    \vspace{2\myskip}
 }
 
 \newcounter{Exercise}
 \newenvironment{exercise}[1][optional]
 {
     \refstepcounter{Exercise}
-    \vspace{\myskip}\par%
     \ifthenelse{\isempty{#1}}{
         \noindent{\large\textbf{Exercise \theExercise}}\\[0.75ex]
     }{
         \noindent{\large\textbf{Exercise \theExercise}} $\;$[\textit{#1}]\\[0.75ex]
     }
 }
-{}
+{\par\vspace{\myskip}}
