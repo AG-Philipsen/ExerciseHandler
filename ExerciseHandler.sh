@@ -127,3 +127,5 @@ exit 0
 #         just pass the name (useful also if we will ever have a folder with many available themes).
 #      3) Decide how to handle the production of exercise solutions that might not be there when the
 #         script is run with the --final option for the exercise sheet production
+#      4) Add option to remove final sheet updating the exercise log file
+#      5) Add option to force production of already existing final sheet updating exercise log file
