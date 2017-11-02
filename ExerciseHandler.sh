@@ -21,6 +21,7 @@ EXHND_texLocaldefsFilename="${EXHND_invokingDirectory}/TexLocaldefs.tex"
 EXHND_exercisePoolFolder="${EXHND_invokingDirectory}/Exercises"
 EXHND_solutionPoolFolder="${EXHND_invokingDirectory}/Solutions"
 EXHND_finalExerciseSheetFolder="${EXHND_invokingDirectory}/FinalExerciseSheets"
+EXHND_exercisesLogFilename="${EXHND_invokingDirectory}/.exercises.log"
 EXHND_finalSolutionSheetFolder="${EXHND_invokingDirectory}/FinalSolutionSheets"
 EXHND_figuresFolder="${EXHND_invokingDirectory}/Figures"
 EXHND_temporaryFolder="${EXHND_invokingDirectory}/tmp"
@@ -40,6 +41,7 @@ EXHND_exercisesFromPoolAsNumbers=''
 EXHND_doSetup='FALSE'
 EXHND_produceNewExercise='FALSE'
 EXHND_isFinal='FALSE'
+EXHND_displayAlreadyUsedExercises='FALSE'
 
 #Sourcing auxiliary file(s)
 source ${EXHND_repositoryDirectory}/AuxiliaryFunctions.sh || exit -2
@@ -101,21 +103,18 @@ if [ $EXHND_isFinal = 'FALSE' ]; then
     MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder
 else
     MoveExerciseSheetFilesToFinalFolderOpenItAndRemoveCompilationFolder
+    UpdateExerciseLogfile
 fi
 
 exit 0
 
-#TODO: 1) Implement an automatic procedure to determine the sheet number.
-#      2) Create a log file mechanism in pool of exercises so that the visualization of
-#         the list of exercises can distinguish between already used exercises (use
-#         colours? Do not show already used exercises?)
-#      3) Trap CTRL-C in a nice way: cleaning files/folders. etc. -> DISCUSS
-#      4) Give the possibility to the user to create her/his own theme. Implement option
+#TODO: 1) Trap CTRL-C in a nice way: cleaning files/folders. etc. -> DISCUSS
+#      2) Give the possibility to the user to create her/his own theme. Implement option
 #         to abilitate this and pass the file. This should contain the needed commands
 #         (\Heading, etc.) and it should be input in the main tex file. Add description
 #         to README file where commands to be provided should be listed. Decide whether we
 #         expect to get the full path to the custom theme as an argument to the command line
 #         option, or we use a field in localdefs for the path and the command line option to
 #         just pass the name (useful also if we will ever have a folder with many available themes).
-#      5) Decide how to handle the production of exercise solutions that might not be there when the
+#      3) Decide how to handle the production of exercise solutions that might not be there when the
 #         script is run with the --final option for the exercise sheet production

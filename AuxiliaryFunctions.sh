@@ -29,6 +29,8 @@ function ParseCommandLineParameters(){
                 printf "    -p | --exerciseSheetPostfix      ->    Set the exercise sheet subtitle postfix. \n"
                 printf "    -N | --sheetNumber               ->    Set the sheet number to appear in the exercise sheet title. \n"
                 printf "    -f | --final                     ->    Move the produced pdf file to the corresponding final folder. \n"
+                printf "    -a | --showAllExercises          ->    Display all available exercise to let the user choose. \n"
+                printf "                                           By default, only those still not used for final sheets are listed.\n"
 
                 printf "    -t | --themeFile                 ->    default value = ClassicTheme \n"
                 printf "                                           The user can provide a custom theme file.\n"
@@ -60,6 +62,9 @@ function ParseCommandLineParameters(){
                 shift 2 ;;
             -f | --final )
                 EXHND_isFinal='TRUE'
+                shift ;;
+            -a | --showAllExercises )
+                EXHND_displayAlreadyUsedExercises='TRUE'
                 shift ;;
 
             -t | --themeFile )
@@ -196,6 +201,20 @@ function LookForExercisesAndMakeList(){
     EXHND_exerciseList=( $(ls ${EXHND_exercisePoolFolder}/*.tex 2> /dev/null | xargs -d '\n' -n 1 basename) )
     if [ ${#EXHND_exerciseList[@]} -eq 0 ]; then
         PrintError "No exercise .tex file has been found in pool folder \"${EXHND_exercisePoolFolder}\"! Aborting..."; exit -2
+    fi
+    if [ ${EXHND_displayAlreadyUsedExercises} = 'FALSE' ]; then
+        if [ -f ${EXHND_exercisesLogFilename} ]; then
+            local usedExercises exerciseOfList index
+            usedExercises=( $(awk '{print $2}' ${EXHND_exercisesLogFilename}) )
+            for exerciseOfUsed in ${usedExercises[@]}; do
+                for index in ${!EXHND_exerciseList[@]}; do
+                    if [ ${EXHND_exerciseList[$index]} = ${exerciseOfUsed} ]; then
+                        unset -v 'EXHND_exerciseList[$index]'
+                        continue 2
+                    fi
+                done
+            done
+        fi
     fi
 }
 
@@ -381,4 +400,12 @@ function MoveExerciseSheetFilesToFinalFolderOpenItAndRemoveCompilationFolder(){
     cp "${EXHND_mainFilename/.tex/.pdf}" "${destinationFolder}/${newExerciseFilename}.pdf" || exit -2
     xdg-open "${destinationFolder}/${newExerciseFilename}.pdf" >/dev/null 2>&1 &
     rm -r "${EXHND_compilationFolder}"
+}
+
+function UpdateExerciseLogfile(){
+    local exercise
+    touch ${EXHND_exercisesLogFilename}
+    for exercise in ${EXHND_choosenExercises[@]}; do
+        printf "%2d    %s\n" ${EXHND_exerciseSheetNumber} ${exercise} >> ${EXHND_exercisesLogFilename}
+    done
 }
