@@ -40,6 +40,7 @@ EXHND_exercisesFromPoolAsNumbers=''
 #Behaviour options
 EXHND_doSetup='FALSE'
 EXHND_produceNewExercise='FALSE'
+EXHND_listUsedExercises='FALSE'
 EXHND_isFinal='FALSE'
 EXHND_displayAlreadyUsedExercises='FALSE'
 
@@ -63,6 +64,9 @@ if [ ${EXHND_doSetup} = 'TRUE' ]; then
     exit 0
 elif [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
     ProduceNewEmptyExercise
+    exit 0
+elif [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
+    DisplayExerciseLogfile
     exit 0
 fi
 

@@ -22,6 +22,7 @@ function ParseCommandLineParameters(){
                 printf "\e[21;38;5;4m\n"
                 printf "    -s | --setup                     ->    Set up of the evironment creating local definitions template and folders.\n"
                 printf "    -n | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
+                printf "    -l | --listUsedExercises         ->    Get list of exercise tex files used in already produced final exercises. \n"
                 printf "\e[21;38;5;2m\n"
                 printf "    -e | --exercisesFromPool         ->    Avoid interactive selection of exercises and choose them directly. \n"
                 printf "                                           Use a comma separated list, where ranges X-Y are allowed (boundaries included).\n"
@@ -46,6 +47,10 @@ function ParseCommandLineParameters(){
             -n | --newExercise )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_produceNewExercise='TRUE'
+                shift ;;
+            -l | --listUsedExercises )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_listUsedExercises='TRUE'
                 shift ;;
             -e | --exercisesFromPool )
                 if [[ $2 =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]]; then
@@ -178,6 +183,41 @@ function ProduceNewEmptyExercise(){
     echo -e '%__END_BODY__%\n\n\n'
     #Restore standard output
     exec 1>&3
+}
+
+
+function PrintExerciseNamesOfSingleExerciseSheet(){
+    local sheetNumber givenList exercise counter
+    sheetNumber=$1; shift
+    givenList=( $@ )
+    printf "\e[38;5;48m \e[1m\e[4mExercise Sheet ${sheetNumber}\e[24m:\e[0m\n\n"
+    counter=0
+    for exercise in ${givenList[@]}; do
+        ((counter++))
+        printf "\e[38;5;38m    $counter) %s\e[0m\n" ${exercise}
+    done
+    printf "\n"
+}
+
+function DisplayExerciseLogfile(){
+    if [ ! -f ${EXHND_exercisesLogFilename} ]; then
+        if [ "$(ls -A ${EXHND_finalExerciseSheetFolder})" = '' ]; then
+            printf "\e[38;5;10m \e[1m\e[4mINFO\e[24m:\e[21m No exercise to be displayed!\e[0m\n\n"
+            return
+        else
+            PrintError "Exercise log file not found, but final exercise sheets existing! Aborting..."
+            exit -1
+        fi
+    fi
+
+    local index indexMax listOfExercises
+    indexMax=$(awk '{print $1}' ${EXHND_exercisesLogFilename} | sort | uniq | tail -n1)
+    index=1
+    while [ ${index} -le ${indexMax} ]; do
+        listOfExercises=( $(awk -v sheet="${index}" '$1==sheet{print $2}' ${EXHND_exercisesLogFilename}) )
+        PrintExerciseNamesOfSingleExerciseSheet ${index} ${listOfExercises[@]}
+        ((index++))
+    done
 }
 
 
