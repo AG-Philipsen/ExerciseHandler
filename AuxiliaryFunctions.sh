@@ -80,6 +80,28 @@ function ParseCommandLineParameters(){
     fi
 }
 
+function IsInvokingPositionWrong(){
+    local listOfFiles listOfFolders filename foldername
+    listOfFiles=( ${EXHND_texLocaldefsFilename} )
+    listOfFolders=( ${EXHND_exercisePoolFolder}
+                    ${EXHND_solutionPoolFolder}
+                    ${EXHND_finalExerciseSheetFolder}
+                    ${EXHND_finalSolutionSheetFolder}
+                    ${EXHND_figuresFolder}
+                    ${EXHND_temporaryFolder} )
+    for filename in "${listOfFiles[@]}"; do
+        if [ ! -f "${filename}" ]; then
+            return 0
+        fi
+    done
+    for foldername in "${listOfFolders[@]}"; do
+        if [ ! -d "${foldername}" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 function DetermineSheetNumber(){
     local lastSheetNumber;
     lastSheetNumber=$(ls "${EXHND_finalExerciseSheetFolder}" | tail -n1 | grep -o "[0-9]\+" | sed 's/^0*//')

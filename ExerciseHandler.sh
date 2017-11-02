@@ -49,6 +49,11 @@ source ${EXHND_repositoryDirectory}/AuxiliaryFunctions.sh || exit -2
 #Warning that the script is in developement phase!
 echo; PrintWarning "Script under developement and in a beta phase! Not everything is guaranteed to work!!"
 
+#Check that the script is invoked from a probably correct position
+if IsInvokingPositionWrong; then
+    PrintError "Invoking position of the Exercise Handler seems to be wrong! Run the setup to create missing files/folders! Aborting..."; exit -1
+fi
+
 #Parse command line parameters
 ParseCommandLineParameters "$@"
 
