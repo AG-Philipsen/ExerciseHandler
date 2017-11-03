@@ -29,7 +29,8 @@ function ParseCommandLineParameters(){
                 printf "                                           Order is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].\n"
                 printf "    -p | --exerciseSheetPostfix      ->    Set the exercise sheet subtitle postfix. \n"
                 printf "    -N | --sheetNumber               ->    Set the sheet number to appear in the exercise sheet title. \n"
-                printf "    -f | --final                     ->    Move the produced pdf file to the corresponding final folder. \n"
+                printf "    -f | --final                     ->    Move the produced pdf and auxiliary files to the corresponding final folder. \n"
+                printf "    -F | --Final                     ->    As -f | --final but it overwrites an existing final sheet. \n"
                 printf "    -a | --showAllExercises          ->    Display all available exercise to let the user choose. \n"
                 printf "                                           By default, only those still not used for final sheets are listed.\n"
 
@@ -67,6 +68,10 @@ function ParseCommandLineParameters(){
                 shift 2 ;;
             -f | --final )
                 EXHND_isFinal='TRUE'
+                shift ;;
+            -F | --Final )
+                EXHND_isFinal='TRUE'
+                EXHND_overwriteExistingFinal='TRUE'
                 shift ;;
             -a | --showAllExercises )
                 EXHND_displayAlreadyUsedExercises='TRUE'
@@ -454,11 +459,16 @@ function MoveExerciseSheetFilesToFinalFolderOpenItCreateLogfileAndRemoveCompilat
     newExerciseFilename="$(basename ${EXHND_mainFilename%.tex})_$(printf "%02d" ${EXHND_exerciseSheetNumber})"
     destinationFolder="${EXHND_finalExerciseSheetFolder}/${newExerciseFilename}"
     if [ -d "${destinationFolder}" ]; then
-        PrintError "Folder \"$(basename ${destinationFolder})\" for final sheet is already existing! Aborting..."; exit -2
+        if [ ${EXHND_overwriteExistingFinal} = 'FALSE' ]; then
+            PrintError "Folder \"$(basename ${destinationFolder})\" for final sheet is already existing! Aborting..."; exit -2
+        else
+            rm -r "${destinationFolder}" || exit -2
+            mkdir "${destinationFolder}" || exit -2
+        fi
     else
         mkdir "${destinationFolder}" || exit -2
     fi
-    CreateExerciseLogfile ${destinationFolder}
+    CreateExerciseLogfile ${destinationFolder}/${EXHND_exercisesLogFilename}
     #Rename .tex file so that then I can move to final folder all .tex files from compilation folder
     mv "${EXHND_mainFilename}"  "${EXHND_mainFilename%/*}/${newExerciseFilename}.tex" || exit -2
     for texFile in ${EXHND_compilationFolder}/*.tex; do
