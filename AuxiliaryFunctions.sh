@@ -36,7 +36,8 @@ function ParseCommandLineParameters(){
                 printf "    -p | --exerciseSheetPostfix      ->    Set the exercise sheet subtitle postfix. \n"
                 printf "    -N | --sheetNumber               ->    Set the sheet number to appear in the exercise sheet title. \n"
                 printf "    -f | --final                     ->    Move the produced pdf and auxiliary files to the corresponding final folder. \n"
-                printf "    -F | --Final                     ->    As -f | --final but it overwrites an existing final sheet. \n"
+                printf "    -F | --fixFinal                  ->    Produce again a final sheet using its exercises and overwriting it. \n"
+                printf "                                           It implies -f. Use -N to specify the exercise sheet number.\n"
 
                 printf "    -t | --themeFile                 ->    default value = ClassicTheme \n"
                 printf "                                           The user can provide a custom theme file.\n"
@@ -73,9 +74,9 @@ function ParseCommandLineParameters(){
             -f | --final )
                 EXHND_isFinal='TRUE'
                 shift ;;
-            -F | --Final )
+            -F | --fixFinal )
                 EXHND_isFinal='TRUE'
-                EXHND_overwriteExistingFinal='TRUE'
+                EXHND_fixFinal='TRUE'
                 shift ;;
             -a | --showAllExercises )
                 EXHND_displayAlreadyUsedExercises='TRUE'
@@ -202,7 +203,7 @@ function ProduceNewEmptyExercise(){
 }
 
 
-function PrintExerciseNamesOfSingleExerciseSheet(){
+function __static__PrintExerciseNamesOfSingleExerciseSheet(){
     local sheetNumber givenList exercise counter
     sheetNumber=$1; shift
     givenList=( $@ )
@@ -215,20 +216,28 @@ function PrintExerciseNamesOfSingleExerciseSheet(){
     printf "\n"
 }
 
+function __static__GetFinalExerciseSheetFolderName(){
+    if [ "$1" = '' ]; then
+        echo ${EXHND_finalExerciseSheetFolder}/$(basename ${EXHND_mainFilename%.tex})_
+    else
+        echo ${EXHND_finalExerciseSheetFolder}/$(basename ${EXHND_mainFilename%.tex})_$(printf "%02d" $1)
+    fi
+}
+
 function DisplayExerciseLogfile(){
     if [ "$(ls -A ${EXHND_finalExerciseSheetFolder})" = '' ]; then
         PrintInfo "No exercise to be displayed!"
         return
     fi
     local folder sheetNumber listOfExercises
-    for folder in ${EXHND_finalExerciseSheetFolder}/*/; do
+    for folder in $(__static__GetFinalExerciseSheetFolderName)*/; do
         if [ ! -f ${folder}${EXHND_exercisesLogFilename} ]; then
             PrintWarning "Exercise log file not found in \"${folder}\" folder, skipping it!"
             continue
         fi
         sheetNumber=$(awk 'END{print $1}' ${folder}${EXHND_exercisesLogFilename})
         listOfExercises=( $(awk -v sheet="${sheetNumber}" '$1==sheet{print $2}' ${folder}${EXHND_exercisesLogFilename}) )
-        PrintExerciseNamesOfSingleExerciseSheet ${sheetNumber} ${listOfExercises[@]}
+        __static__PrintExerciseNamesOfSingleExerciseSheet ${sheetNumber} ${listOfExercises[@]}
     done
 }
 
@@ -237,21 +246,35 @@ function DisplayExerciseLogfile(){
 
 function PickUpExercisesFromListAccordingToUserChoiceAndCheckThem(){
     __static__LookForExercisesAndMakeList
-    if [ "$EXHND_exercisesFromPoolAsNumbers" = '' ]; then
-        __static__PrintListOfExercises ${EXHND_exerciseList[@]}
-        __static__PickupExercises ${EXHND_exerciseList[@]}
-    else
-        EXHND_exercisesFromPoolAsNumbers=( $(__static__GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges ${EXHND_exercisesFromPoolAsNumbers}) )
-        if __static__IsAnyExerciseNotExisting ${#EXHND_exerciseList[@]} ${EXHND_exercisesFromPoolAsNumbers[@]}; then
-            PrintError "Some of the chosen exercises are not existing! Aborting..."; exit 0
+    if [ ${EXHND_fixFinal} = 'TRUE' ]; then
+        local finalFolder
+        finalFolder=$(__static__GetFinalExerciseSheetFolderName ${EXHND_exerciseSheetNumber})
+        if [ ! -d  ${finalFolder} ]; then
+            PrintError "Folder \"$(basename ${finalFolder})\" not found in \"${EXHND_finalExerciseSheetFolder}\". Unable to fix final sheet! Aborting..."
+            exit -1
         else
-            __static__FillChoosenExercisesArray "${EXHND_exercisesFromPoolAsNumbers[*]}" "${EXHND_exerciseList[*]}" #https://stackoverflow.com/a/16628100
+            if [ ! -f ${finalFolder}/${EXHND_exercisesLogFilename} ]; then
+                PrintError "Exercise log file not found in \"${finalFolder}\" folder. Unable to fix final sheet! Aborting..."
+                exit -1
+            else
+                EXHND_choosenExercises=( $(awk '{print $2}' ${finalFolder}/${EXHND_exercisesLogFilename}) )
+            fi
+        fi
+    else
+        if [ "$EXHND_exercisesFromPoolAsNumbers" = '' ]; then
+            __static__PrintListOfExercises ${EXHND_exerciseList[@]}
+            __static__PickupExercises ${EXHND_exerciseList[@]}
+        else
+            EXHND_exercisesFromPoolAsNumbers=( $(__static__GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges ${EXHND_exercisesFromPoolAsNumbers}) )
+            if __static__IsAnyExerciseNotExisting ${#EXHND_exerciseList[@]} ${EXHND_exercisesFromPoolAsNumbers[@]}; then
+                PrintError "Some of the chosen exercises are not existing! Aborting..."; exit 0
+            else
+                __static__FillChoosenExercisesArray "${EXHND_exercisesFromPoolAsNumbers[*]}" "${EXHND_exerciseList[*]}" #https://stackoverflow.com/a/16628100
+            fi
         fi
     fi
     __static__CheckChoosenExercises
 }
-
-
 
 
 function __static__LookForExercisesAndMakeList(){
@@ -264,7 +287,7 @@ function __static__LookForExercisesAndMakeList(){
     fi
     if [ ${EXHND_displayAlreadyUsedExercises} = 'FALSE' ]; then
         local usedExercises exerciseOfList index
-        usedExercises=( $(awk '{print $2}' ${EXHND_finalExerciseSheetFolder}/$(basename ${EXHND_mainFilename%.tex})_*/${EXHND_exercisesLogFilename}) )
+        usedExercises=( $(awk '{print $2}' $(__static__GetFinalExerciseSheetFolderName)*/${EXHND_exercisesLogFilename}) )
         for exerciseOfUsed in ${usedExercises[@]}; do
             for index in ${!EXHND_exerciseList[@]}; do
                 if [ ${EXHND_exerciseList[$index]} = ${exerciseOfUsed} ]; then
@@ -486,11 +509,11 @@ function CreateExerciseLogfile(){
 }
 
 function MoveExerciseSheetFilesToFinalFolderOpenItCreateLogfileAndRemoveCompilationFolder(){
-    local newExerciseFilename destinationFolder texFile
-    newExerciseFilename="$(basename ${EXHND_mainFilename%.tex})_$(printf "%02d" ${EXHND_exerciseSheetNumber})"
-    destinationFolder="${EXHND_finalExerciseSheetFolder}/${newExerciseFilename}"
+    local newExerciseFilenameWithoutExtension destinationFolder texFile
+    destinationFolder=$(__static__GetFinalExerciseSheetFolderName ${EXHND_exerciseSheetNumber})
+    newExerciseFilenameWithoutExtension=$(basename ${destinationFolder})
     if [ -d "${destinationFolder}" ]; then
-        if [ ${EXHND_overwriteExistingFinal} = 'FALSE' ]; then
+        if [ ${EXHND_fixFinal} = 'FALSE' ]; then
             PrintError "Folder \"$(basename ${destinationFolder})\" for final sheet is already existing! Aborting..."; exit -2
         else
             rm -r "${destinationFolder}" || exit -2
@@ -501,11 +524,11 @@ function MoveExerciseSheetFilesToFinalFolderOpenItCreateLogfileAndRemoveCompilat
     fi
     CreateExerciseLogfile ${destinationFolder}/${EXHND_exercisesLogFilename}
     #Rename .tex file so that then I can move to final folder all .tex files from compilation folder
-    mv "${EXHND_mainFilename}"  "${EXHND_mainFilename%/*}/${newExerciseFilename}.tex" || exit -2
+    mv "${EXHND_mainFilename}"  "${EXHND_mainFilename%/*}/${newExerciseFilenameWithoutExtension}.tex" || exit -2
     for texFile in ${EXHND_compilationFolder}/*.tex; do
         mv "${texFile}" "${destinationFolder}"
     done
-    cp "${EXHND_mainFilename/.tex/.pdf}" "${destinationFolder}/${newExerciseFilename}.pdf" || exit -2
-    xdg-open "${destinationFolder}/${newExerciseFilename}.pdf" >/dev/null 2>&1 &
+    cp "${EXHND_mainFilename/.tex/.pdf}" "${destinationFolder}/${newExerciseFilenameWithoutExtension}.pdf" || exit -2
+    xdg-open "${destinationFolder}/${newExerciseFilenameWithoutExtension}.pdf" >/dev/null 2>&1 &
     rm -r "${EXHND_compilationFolder}"
 }

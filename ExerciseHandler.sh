@@ -42,7 +42,7 @@ EXHND_doSetup='FALSE'
 EXHND_produceNewExercise='FALSE'
 EXHND_listUsedExercises='FALSE'
 EXHND_isFinal='FALSE'
-EXHND_overwriteExistingFinal='FALSE'
+EXHND_fixFinal='FALSE'
 EXHND_displayAlreadyUsedExercises='FALSE'
 
 #Sourcing auxiliary file(s)
