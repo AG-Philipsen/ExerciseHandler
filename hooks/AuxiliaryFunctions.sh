@@ -128,6 +128,6 @@ function GiveAdviceAboutBranch() {
 
 function GiveAdviceAboutWhitespaceError() {
     errecho 'Use the command\n' 202
-    errecho '   git diff-index --check --cached\n' 11
+    errecho "   git diff-index --check --cached $againstSHAToCompareWidth \n" 11
     errecho 'to have a look to the whitespace violation on staged files.\n\n' 202
 }
