@@ -21,7 +21,7 @@ EXHND_texLocaldefsFilename="${EXHND_invokingDirectory}/TexLocaldefs.tex"
 EXHND_exercisePoolFolder="${EXHND_invokingDirectory}/Exercises"
 EXHND_solutionPoolFolder="${EXHND_invokingDirectory}/Solutions"
 EXHND_finalExerciseSheetFolder="${EXHND_invokingDirectory}/FinalExerciseSheets"
-EXHND_exercisesLogFilename="${EXHND_invokingDirectory}/.exercises.log"
+EXHND_exercisesLogFilename=".exercises.log" #One in each final exSheet folder
 EXHND_finalSolutionSheetFolder="${EXHND_invokingDirectory}/FinalSolutionSheets"
 EXHND_figuresFolder="${EXHND_invokingDirectory}/Figures"
 EXHND_temporaryFolder="${EXHND_invokingDirectory}/tmp"
@@ -111,8 +111,7 @@ MakeCompilationInTemporaryFolder
 if [ $EXHND_isFinal = 'FALSE' ]; then
     MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder
 else
-    MoveExerciseSheetFilesToFinalFolderOpenItAndRemoveCompilationFolder
-    UpdateExerciseLogfile
+    MoveExerciseSheetFilesToFinalFolderOpenItCreateLogfileAndRemoveCompilationFolder
 fi
 
 exit 0

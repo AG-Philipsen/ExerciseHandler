@@ -200,23 +200,19 @@ function PrintExerciseNamesOfSingleExerciseSheet(){
 }
 
 function DisplayExerciseLogfile(){
-    if [ ! -f ${EXHND_exercisesLogFilename} ]; then
-        if [ "$(ls -A ${EXHND_finalExerciseSheetFolder})" = '' ]; then
-            printf "\e[38;5;10m \e[1m\e[4mINFO\e[24m:\e[21m No exercise to be displayed!\e[0m\n\n"
-            return
-        else
-            PrintError "Exercise log file not found, but final exercise sheets existing! Aborting..."
-            exit -1
-        fi
+    if [ "$(ls -A ${EXHND_finalExerciseSheetFolder})" = '' ]; then
+        printf "\e[38;5;10m \e[1m\e[4mINFO\e[24m:\e[21m No exercise to be displayed!\e[0m\n\n"
+        return
     fi
-
-    local index indexMax listOfExercises
-    indexMax=$(awk '{print $1}' ${EXHND_exercisesLogFilename} | sort | uniq | tail -n1)
-    index=1
-    while [ ${index} -le ${indexMax} ]; do
-        listOfExercises=( $(awk -v sheet="${index}" '$1==sheet{print $2}' ${EXHND_exercisesLogFilename}) )
-        PrintExerciseNamesOfSingleExerciseSheet ${index} ${listOfExercises[@]}
-        ((index++))
+    local folder sheetNumber listOfExercises
+    for folder in ${EXHND_finalExerciseSheetFolder}/*/; do
+        if [ ! -f ${folder}${EXHND_exercisesLogFilename} ]; then
+            PrintWarning "Exercise log file not found in \"${folder}\" folder, skipping it!"
+            continue
+        fi
+        sheetNumber=$(awk 'END{print $1}' ${folder}${EXHND_exercisesLogFilename})
+        listOfExercises=( $(awk -v sheet="${sheetNumber}" '$1==sheet{print $2}' ${folder}${EXHND_exercisesLogFilename}) )
+        PrintExerciseNamesOfSingleExerciseSheet ${sheetNumber} ${listOfExercises[@]}
     done
 }
 
@@ -265,18 +261,16 @@ function LookForExercisesAndMakeList(){
         PrintError "No exercise .tex file has been found in pool folder \"${EXHND_exercisePoolFolder}\"! Aborting..."; exit -2
     fi
     if [ ${EXHND_displayAlreadyUsedExercises} = 'FALSE' ]; then
-        if [ -f ${EXHND_exercisesLogFilename} ]; then
-            local usedExercises exerciseOfList index
-            usedExercises=( $(awk '{print $2}' ${EXHND_exercisesLogFilename}) )
-            for exerciseOfUsed in ${usedExercises[@]}; do
-                for index in ${!EXHND_exerciseList[@]}; do
-                    if [ ${EXHND_exerciseList[$index]} = ${exerciseOfUsed} ]; then
-                        unset -v 'EXHND_exerciseList[$index]'
-                        continue 2
-                    fi
-                done
+        local usedExercises exerciseOfList index
+        usedExercises=( $(awk '{print $2}' ${EXHND_finalExerciseSheetFolder}/$(basename ${EXHND_mainFilename%.tex})_*/${EXHND_exercisesLogFilename}) )
+        for exerciseOfUsed in ${usedExercises[@]}; do
+            for index in ${!EXHND_exerciseList[@]}; do
+                if [ ${EXHND_exerciseList[$index]} = ${exerciseOfUsed} ]; then
+                    unset -v 'EXHND_exerciseList[$index]'
+                    continue 2
+                fi
             done
-        fi
+        done
     fi
 }
 
@@ -445,7 +439,17 @@ function MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder(){
     rm -r "${EXHND_compilationFolder}"
 }
 
-function MoveExerciseSheetFilesToFinalFolderOpenItAndRemoveCompilationFolder(){
+
+function CreateExerciseLogfile(){
+    local fileGlobalpath exercise
+    fileGlobalpath=$1
+    touch ${fileGlobalpath}
+    for exercise in ${EXHND_choosenExercises[@]}; do
+        printf "%2d    %s\n" ${EXHND_exerciseSheetNumber} ${exercise} >> ${fileGlobalpath}
+    done
+}
+
+function MoveExerciseSheetFilesToFinalFolderOpenItCreateLogfileAndRemoveCompilationFolder(){
     local newExerciseFilename destinationFolder texFile
     newExerciseFilename="$(basename ${EXHND_mainFilename%.tex})_$(printf "%02d" ${EXHND_exerciseSheetNumber})"
     destinationFolder="${EXHND_finalExerciseSheetFolder}/${newExerciseFilename}"
@@ -454,6 +458,7 @@ function MoveExerciseSheetFilesToFinalFolderOpenItAndRemoveCompilationFolder(){
     else
         mkdir "${destinationFolder}" || exit -2
     fi
+    CreateExerciseLogfile ${destinationFolder}
     #Rename .tex file so that then I can move to final folder all .tex files from compilation folder
     mv "${EXHND_mainFilename}"  "${EXHND_mainFilename%/*}/${newExerciseFilename}.tex" || exit -2
     for texFile in ${EXHND_compilationFolder}/*.tex; do
@@ -462,12 +467,4 @@ function MoveExerciseSheetFilesToFinalFolderOpenItAndRemoveCompilationFolder(){
     cp "${EXHND_mainFilename/.tex/.pdf}" "${destinationFolder}/${newExerciseFilename}.pdf" || exit -2
     xdg-open "${destinationFolder}/${newExerciseFilename}.pdf" >/dev/null 2>&1 &
     rm -r "${EXHND_compilationFolder}"
-}
-
-function UpdateExerciseLogfile(){
-    local exercise
-    touch ${EXHND_exercisesLogFilename}
-    for exercise in ${EXHND_choosenExercises[@]}; do
-        printf "%2d    %s\n" ${EXHND_exerciseSheetNumber} ${exercise} >> ${EXHND_exercisesLogFilename}
-    done
 }
