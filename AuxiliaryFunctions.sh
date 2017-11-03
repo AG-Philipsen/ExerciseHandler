@@ -1,3 +1,7 @@
+function PrintInfo(){
+    printf "\e[38;5;10m \e[1m\e[4mINFO\e[24m:\e[21m %s\e[0m\n\n" "$1"
+}
+
 function PrintWarning(){
     printf "\e[38;5;11m \e[1m\e[4mWARNING\e[24m:\e[21m %s\e[0m\n\n" "$1"
 }
@@ -24,6 +28,8 @@ function ParseCommandLineParameters(){
                 printf "    -n | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
                 printf "    -l | --listUsedExercises         ->    Get list of exercise tex files used in already produced final exercises. \n"
                 printf "\e[21;38;5;2m\n"
+                printf "    -a | --showAllExercises          ->    Display all available exercise to let the user choose. \n"
+                printf "                                           By default, only those still not used for final sheets are listed.\n"
                 printf "    -e | --exercisesFromPool         ->    Avoid interactive selection of exercises and choose them directly. \n"
                 printf "                                           Use a comma separated list, where ranges X-Y are allowed (boundaries included).\n"
                 printf "                                           Order is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].\n"
@@ -31,8 +37,6 @@ function ParseCommandLineParameters(){
                 printf "    -N | --sheetNumber               ->    Set the sheet number to appear in the exercise sheet title. \n"
                 printf "    -f | --final                     ->    Move the produced pdf and auxiliary files to the corresponding final folder. \n"
                 printf "    -F | --Final                     ->    As -f | --final but it overwrites an existing final sheet. \n"
-                printf "    -a | --showAllExercises          ->    Display all available exercise to let the user choose. \n"
-                printf "                                           By default, only those still not used for final sheets are listed.\n"
 
                 printf "    -t | --themeFile                 ->    default value = ClassicTheme \n"
                 printf "                                           The user can provide a custom theme file.\n"
@@ -112,13 +116,19 @@ function IsInvokingPositionWrong(){
     return 1
 }
 
-function DetermineSheetNumber(){
+function __static__DetermineSheetNumber(){
     local lastSheetNumber;
     lastSheetNumber=$(ls "${EXHND_finalExerciseSheetFolder}" | tail -n1 | grep -o "[0-9]\+" | sed 's/^0*//')
     if [[ $lastSheetNumber =~ ^[0-9]*$ ]]; then
         echo $((lastSheetNumber+1))
     else
         echo '1'
+    fi
+}
+
+function SetExerciseSheetNumber(){
+    if [ "$EXHND_exerciseSheetNumber" = '' ]; then
+        EXHND_exerciseSheetNumber=$(__static__DetermineSheetNumber)
     fi
 }
 
@@ -160,6 +170,7 @@ function MakeSetup(){
           ${EXHND_temporaryFolder}
     if [ ! -f ${EXHND_texLocaldefsFilename} ]; then
         CreateTexLocaldefsTemplate
+        PrintInfo "An empty template for the local definitions file \"$(basename ${EXHND_texLocaldefsFilename})\" to be filled out has been created."
     fi
 }
 
@@ -206,7 +217,7 @@ function PrintExerciseNamesOfSingleExerciseSheet(){
 
 function DisplayExerciseLogfile(){
     if [ "$(ls -A ${EXHND_finalExerciseSheetFolder})" = '' ]; then
-        printf "\e[38;5;10m \e[1m\e[4mINFO\e[24m:\e[21m No exercise to be displayed!\e[0m\n\n"
+        PrintInfo "No exercise to be displayed!"
         return
     fi
     local folder sheetNumber listOfExercises
@@ -222,7 +233,116 @@ function DisplayExerciseLogfile(){
 }
 
 
-function CheckBlocksInFile(){
+#=========================================================================================================================================================#
+
+function PickUpExercisesFromListAccordingToUserChoiceAndCheckThem(){
+    __static__LookForExercisesAndMakeList
+    if [ "$EXHND_exercisesFromPoolAsNumbers" = '' ]; then
+        __static__PrintListOfExercises ${EXHND_exerciseList[@]}
+        __static__PickupExercises ${EXHND_exerciseList[@]}
+    else
+        EXHND_exercisesFromPoolAsNumbers=( $(__static__GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges ${EXHND_exercisesFromPoolAsNumbers}) )
+        if __static__IsAnyExerciseNotExisting ${#EXHND_exerciseList[@]} ${EXHND_exercisesFromPoolAsNumbers[@]}; then
+            PrintError "Some of the chosen exercises are not existing! Aborting..."; exit 0
+        else
+            __static__FillChoosenExercisesArray "${EXHND_exercisesFromPoolAsNumbers[*]}" "${EXHND_exerciseList[*]}" #https://stackoverflow.com/a/16628100
+        fi
+    fi
+    __static__CheckChoosenExercises
+}
+
+
+
+
+function __static__LookForExercisesAndMakeList(){
+    if [ ! -d ${EXHND_exercisePoolFolder} ]; then
+        PrintError "No exercise pool folder \"${EXHND_exercisePoolFolder}\" has been found! Aborting..."; exit -2
+    fi
+    EXHND_exerciseList=( $(ls ${EXHND_exercisePoolFolder}/*.tex 2> /dev/null | xargs -d '\n' -n 1 basename) )
+    if [ ${#EXHND_exerciseList[@]} -eq 0 ]; then
+        PrintError "No exercise .tex file has been found in pool folder \"${EXHND_exercisePoolFolder}\"! Aborting..."; exit -2
+    fi
+    if [ ${EXHND_displayAlreadyUsedExercises} = 'FALSE' ]; then
+        local usedExercises exerciseOfList index
+        usedExercises=( $(awk '{print $2}' ${EXHND_finalExerciseSheetFolder}/$(basename ${EXHND_mainFilename%.tex})_*/${EXHND_exercisesLogFilename}) )
+        for exerciseOfUsed in ${usedExercises[@]}; do
+            for index in ${!EXHND_exerciseList[@]}; do
+                if [ ${EXHND_exerciseList[$index]} = ${exerciseOfUsed} ]; then
+                    unset -v 'EXHND_exerciseList[$index]'
+                    continue 2
+                fi
+            done
+        done
+    fi
+}
+
+function __static__PrintListOfExercises(){
+    local givenList index numberOfTerminalColumns longestFilenameLength\
+          tableColumnsWidth maxNumberOfColumnsInTable stringFormat
+    printf "\e[1;38;5;207m\n List of exercises found in the pool\e[21m:\n\n\e[0m"
+    givenList=( $@ )
+    index=0
+    for index in "${!givenList[@]}" ; do
+        givenList[${index}]="$(printf "%3d" $((index+1)))) ${givenList[${index}]}"
+    done
+    numberOfTerminalColumns=$(tput cols)
+    longestFilenameLength=$(printf "%s\n" "${givenList[@]}" | awk '{print length}' | sort -n | tail -n1)
+    tableColumnsWidth=$((longestFilenameLength+10))
+    maxNumberOfColumnsInTable=$((numberOfTerminalColumns/tableColumnsWidth))
+    stringFormat=""; for((index=0; index<maxNumberOfColumnsInTable; index++)); do stringFormat+="%-${tableColumnsWidth}s"; done
+    printf "${stringFormat}\n" "${givenList[@]}"
+
+    #TODO: Print list going vertically and not horizontally!
+}
+
+function __static__GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges(){
+    local string
+    string="$1"
+    awk 'BEGIN{RS=","}/\-/{split($0, res, "-"); if(res[1]<=res[2]){for(i=res[1]; i<=res[2]; i++){printf "%d\n", i}}else{for(i=res[1]; i>=res[2]; i--){printf "%d\n", i}}; next}{printf "%d\n", $0}' <<< "${string}"
+}
+
+function __static__FillChoosenExercisesArray(){
+    local index pool numbersOfChosenExercises
+    numbersOfChosenExercises=( $1 )
+    pool=( $2 )
+    for index in ${numbersOfChosenExercises[@]}; do
+        EXHND_choosenExercises+=( ${pool[$((index-1))]} )
+    done
+}
+
+function __static__IsAnyExerciseNotExisting(){
+    local index maximum numbersOfChosenExercises
+    maximum=$1; shift; numbersOfChosenExercises=( $@ )
+    for index in ${numbersOfChosenExercises[@]}; do
+        if [ ${index} -gt ${maximum} ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+function __static__PickupExercises(){
+    printf "\e[38;5;14m\n Please, insert the exercise numbers that you wish to include in the exercise sheet.\n"
+    printf " Use a comma separated list WITHOUT SPACES; ranges X-Y are allowed (boundaries included)\n"
+    printf " and order is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9]: \e[0m\e[s"
+    local selectedExercises index givenList oldIFS
+    givenList=( $@ )
+    while read selectedExercises; do #Here selectedExercises is a variable
+        [ "${selectedExercises}" = '' ] && printf "\e[u\e[1A" && continue
+        if [[ ! ${selectedExercises} =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]]; then
+            printf "\n\e[1;38;5;208m Invalid input!\e[21m\e[38;5;14m Please, insert the exercise numbers: \e[0m\e[s"; continue
+        fi
+        selectedExercises=( $(__static__GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges ${selectedExercises}) ) #Here selectedExercises becomes an array!
+        if __static__IsAnyExerciseNotExisting ${#givenList[@]} ${selectedExercises[@]}; then
+            printf "\n\e[1;38;5;208m Not existent exercise inserted!\e[21m\e[38;5;14m Please, insert the exercise numbers: \e[0m\e[s"; continue 2
+        fi
+        break
+    done
+    __static__FillChoosenExercisesArray "${selectedExercises[*]}" "${givenList[*]}" #https://stackoverflow.com/a/16628100
+    echo
+}
+
+function __static__CheckBlocksInFile(){
     local filename blocksName block
     filename="$1"; shift
     blocksName=( $@ )
@@ -230,6 +350,13 @@ function CheckBlocksInFile(){
         if [ $(grep -c "^[[:blank:]]*%__BEGIN_${block}__%[[:blank:]]*$" ${filename}) -ne 1 ] || [ $(grep -c "^[[:blank:]]*%__END_${block}__%[[:blank:]]*$" ${filename}) -ne 1 ]; then
             PrintError "Block %__BEGIN_${block}__%  ->  %__END_${block}__% not correctly found in \"${filename}\" file! Aborting..."; exit -2
         fi
+    done
+}
+
+function __static__CheckChoosenExercises(){
+    local exercise
+    for exercise in ${EXHND_choosenExercises[@]}; do
+        __static__CheckBlocksInFile ${EXHND_exercisePoolFolder}/${exercise}  "PACKAGES" "DEFINITIONS" "BODY"
     done
 }
 
@@ -254,104 +381,8 @@ function CheckTexLocaldefsTemplate(){
         IFS=${oldIFS}
     done < "${EXHND_texLocaldefsFilename}"
     #General checks on blocks
-    CheckBlocksInFile "${EXHND_texLocaldefsFilename}" "PACKAGES" "DEFINITIONS" "BODY"
+    __static__CheckBlocksInFile "${EXHND_texLocaldefsFilename}" "PACKAGES" "DEFINITIONS" "BODY"
 }
-
-function LookForExercisesAndMakeList(){
-    if [ ! -d ${EXHND_exercisePoolFolder} ]; then
-        PrintError "No exercise pool folder \"${EXHND_exercisePoolFolder}\" has been found! Aborting..."; exit -2
-    fi
-    EXHND_exerciseList=( $(ls ${EXHND_exercisePoolFolder}/*.tex 2> /dev/null | xargs -d '\n' -n 1 basename) )
-    if [ ${#EXHND_exerciseList[@]} -eq 0 ]; then
-        PrintError "No exercise .tex file has been found in pool folder \"${EXHND_exercisePoolFolder}\"! Aborting..."; exit -2
-    fi
-    if [ ${EXHND_displayAlreadyUsedExercises} = 'FALSE' ]; then
-        local usedExercises exerciseOfList index
-        usedExercises=( $(awk '{print $2}' ${EXHND_finalExerciseSheetFolder}/$(basename ${EXHND_mainFilename%.tex})_*/${EXHND_exercisesLogFilename}) )
-        for exerciseOfUsed in ${usedExercises[@]}; do
-            for index in ${!EXHND_exerciseList[@]}; do
-                if [ ${EXHND_exerciseList[$index]} = ${exerciseOfUsed} ]; then
-                    unset -v 'EXHND_exerciseList[$index]'
-                    continue 2
-                fi
-            done
-        done
-    fi
-}
-
-function PrintListOfExercises(){
-    local givenList index numberOfTerminalColumns longestFilenameLength\
-          tableColumnsWidth maxNumberOfColumnsInTable stringFormat
-    printf "\e[1;38;5;207m\n List of exercises found in the pool\e[21m:\n\n\e[0m"
-    givenList=( $@ )
-    index=0
-    for index in "${!givenList[@]}" ; do
-        givenList[${index}]="$(printf "%3d" $((index+1)))) ${givenList[${index}]}"
-    done
-    numberOfTerminalColumns=$(tput cols)
-    longestFilenameLength=$(printf "%s\n" "${givenList[@]}" | awk '{print length}' | sort -n | tail -n1)
-    tableColumnsWidth=$((longestFilenameLength+10))
-    maxNumberOfColumnsInTable=$((numberOfTerminalColumns/tableColumnsWidth))
-    stringFormat=""; for((index=0; index<maxNumberOfColumnsInTable; index++)); do stringFormat+="%-${tableColumnsWidth}s"; done
-    printf "${stringFormat}\n" "${givenList[@]}"
-
-    #TODO: Print list going vertically and not horizontally!
-}
-
-function GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges(){
-    local string
-    string="$1"
-    awk 'BEGIN{RS=","}/\-/{split($0, res, "-"); if(res[1]<=res[2]){for(i=res[1]; i<=res[2]; i++){printf "%d\n", i}}else{for(i=res[1]; i>=res[2]; i--){printf "%d\n", i}}; next}{printf "%d\n", $0}' <<< "${string}"
-}
-
-function FillChoosenExercisesArray(){
-    local index pool numbersOfChosenExercises
-    numbersOfChosenExercises=( $1 )
-    pool=( $2 )
-    for index in ${numbersOfChosenExercises[@]}; do
-        EXHND_choosenExercises+=( ${pool[$((index-1))]} )
-    done
-}
-
-function IsAnyExerciseNotExisting(){
-    local index maximum numbersOfChosenExercises
-    maximum=$1; shift; numbersOfChosenExercises=( $@ )
-    for index in ${numbersOfChosenExercises[@]}; do
-        if [ ${index} -gt ${maximum} ]; then
-            return 0
-        fi
-    done
-    return 1
-}
-
-function PickupExercises(){
-    printf "\e[38;5;14m\n Please, insert the exercise numbers that you wish to include in the exercise sheet.\n"
-    printf " Use a comma separated list WITHOUT SPACES; ranges X-Y are allowed (boundaries included)\n"
-    printf " and order is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9]: \e[0m\e[s"
-    local selectedExercises index givenList oldIFS
-    givenList=( $@ )
-    while read selectedExercises; do #Here selectedExercises is a variable
-        [ "${selectedExercises}" = '' ] && printf "\e[u\e[1A" && continue
-        if [[ ! ${selectedExercises} =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]]; then
-            printf "\n\e[1;38;5;208m Invalid input!\e[21m\e[38;5;14m Please, insert the exercise numbers: \e[0m\e[s"; continue
-        fi
-        selectedExercises=( $(GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges ${selectedExercises}) ) #Here selectedExercises becomes an array!
-        if IsAnyExerciseNotExisting ${#givenList[@]} ${selectedExercises[@]}; then
-            printf "\n\e[1;38;5;208m Not existent exercise inserted!\e[21m\e[38;5;14m Please, insert the exercise numbers: \e[0m\e[s"; continue 2
-        fi
-        break
-    done
-    FillChoosenExercisesArray "${selectedExercises[*]}" "${givenList[*]}" #https://stackoverflow.com/a/16628100
-    echo
-}
-
-function CheckChoosenExercises(){
-    local exercise
-    for exercise in ${EXHND_choosenExercises[@]}; do
-        CheckBlocksInFile ${EXHND_exercisePoolFolder}/${exercise}  "PACKAGES" "DEFINITIONS" "BODY"
-    done
-}
-
 
 #=========================================================================================================================================================#
 

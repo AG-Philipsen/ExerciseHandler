@@ -51,15 +51,14 @@ source ${EXHND_repositoryDirectory}/AuxiliaryFunctions.sh || exit -2
 #Warning that the script is in developement phase!
 echo; PrintWarning "Script under developement and in a beta phase! Not everything is guaranteed to work!!"
 
-#Check that the script is invoked from a probably correct position
+#------------------------------------------------------------------------------------------------------------------#
+
 if IsInvokingPositionWrong; then
     PrintError "Invoking position of the Exercise Handler seems to be wrong! Run the setup to create missing files/folders! Aborting..."; exit -1
 fi
 
-#Parse command line parameters
 ParseCommandLineParameters "$@"
 
-#If user needs exercise template just produce it and exit
 if [ ${EXHND_doSetup} = 'TRUE' ]; then
     MakeSetup
     exit 0
@@ -69,50 +68,24 @@ elif [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
 elif [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
     DisplayExerciseLogfile
     exit 0
-fi
-
-#If user did not give number for the sheet, set it
-if [ "$EXHND_exerciseSheetNumber" = '' ]; then
-    EXHND_exerciseSheetNumber=$(DetermineSheetNumber)
-fi
-
-#Check if template for latex is present, if not or not complete, terminate and warn user
-if [ ! -f ${EXHND_texLocaldefsFilename} ]; then
-    CreateTexLocaldefsTemplate
-    printf "\n\e[38;5;39m \e[1m\e[4mNOTE\e[24m:\e[21m The local definitions file \"${EXHND_texLocaldefsFilename}\""
-    printf "has not been found and an empty template to be filled out has been created.\n"
-    printf "       Please, provide required information in it and run again this script.\e[0m\n\n"
-    exit 0
 else
+    SetExerciseSheetNumber
     CheckTexLocaldefsTemplate
-fi
 
-#Present list of exercises and ask user which ones she/he wants
-LookForExercisesAndMakeList
-if [ "$EXHND_exercisesFromPoolAsNumbers" = '' ]; then
-    PrintListOfExercises ${EXHND_exerciseList[@]}
-    PickupExercises ${EXHND_exerciseList[@]}
-else
-    EXHND_exercisesFromPoolAsNumbers=( $(GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges ${EXHND_exercisesFromPoolAsNumbers}) )
-    if IsAnyExerciseNotExisting ${#EXHND_exerciseList[@]} ${EXHND_exercisesFromPoolAsNumbers[@]}; then
-        PrintError "Some of the chosen exercises are not existing! Aborting..."; exit 0
+    PickUpExercisesFromListAccordingToUserChoiceAndCheckThem
+
+    #TeX part: set up main and sub-files before compilation
+    CreateTemporaryCompilationFolder
+    ProduceTexAuxiliaryFiles
+    CheckTexPackagesFile
+    CheckTexDefinitionsFile
+    ProduceTexMainFile
+    MakeCompilationInTemporaryFolder
+    if [ $EXHND_isFinal = 'FALSE' ]; then
+        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder
     else
-        FillChoosenExercisesArray "${EXHND_exercisesFromPoolAsNumbers[*]}" "${EXHND_exerciseList[*]}" #https://stackoverflow.com/a/16628100
+        MoveExerciseSheetFilesToFinalFolderOpenItCreateLogfileAndRemoveCompilationFolder
     fi
-fi
-CheckChoosenExercises
-
-#TeX part: set up main and sub-files before compilation
-CreateTemporaryCompilationFolder
-ProduceTexAuxiliaryFiles
-CheckTexPackagesFile
-CheckTexDefinitionsFile
-ProduceTexMainFile
-MakeCompilationInTemporaryFolder
-if [ $EXHND_isFinal = 'FALSE' ]; then
-    MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder
-else
-    MoveExerciseSheetFilesToFinalFolderOpenItCreateLogfileAndRemoveCompilationFolder
 fi
 
 exit 0
