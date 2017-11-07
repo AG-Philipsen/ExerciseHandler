@@ -286,8 +286,15 @@ function __static__LookForExercisesAndMakeList(){
         PrintError "No exercise .tex file has been found in pool folder \"${EXHND_exercisePoolFolder}\"! Aborting..."; exit -2
     fi
     if [ ${EXHND_displayAlreadyUsedExercises} = 'FALSE' ]; then
-        local usedExercises exerciseOfList index
-        usedExercises=( $(awk '{print $2}' $(__static__GetFinalExerciseSheetFolderName)*/${EXHND_exercisesLogFilename}) )
+        local folder usedExercises exerciseOfList index
+        usedExercises=()
+        for folder in $(__static__GetFinalExerciseSheetFolderName)*/; do
+            if [ ! -f ${folder}${EXHND_exercisesLogFilename} ]; then
+                PrintWarning "Exercise log file not found in \"${folder}\" folder, not able to exclude from list some used exercises!"
+                continue
+            fi
+            usedExercises+=( $(awk '{print $2}' ${folder}${EXHND_exercisesLogFilename}) )
+        done
         for exerciseOfUsed in ${usedExercises[@]}; do
             for index in ${!EXHND_exerciseList[@]}; do
                 if [ ${EXHND_exerciseList[$index]} = ${exerciseOfUsed} ]; then
