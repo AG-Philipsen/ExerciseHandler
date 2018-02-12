@@ -1,6 +1,35 @@
+#NOTE: The following function will be used with readarray and therefore
+#      the printf in the end uses '\n' as separator (this preserves spaces
+#      in options)
+function __static__SplitCombinedShortOptionsInSingleOptions(){
+    local newOptions value option splittedOptions
+    newOptions=()
+    for value in "$@"; do
+        if [[ $value =~ ^-[[:alpha:]]+$ ]]; then
+            splittedOptions=( $(grep -o "." <<< "${value:1}") )
+            for option in "${splittedOptions[@]}"; do
+                newOptions+=( "-$option" )
+            done
+        else
+            newOptions+=( "$value" )
+        fi
+    done
+    printf "%s\n" "${newOptions[@]}"
+}
+
+
 function ParseCommandLineParameters(){
-    local mutuallyExclusiveOptionsPassed
-    mutuallyExclusiveOptionsPassed=()
+    local mutuallyExclusiveOptionsPassed; mutuallyExclusiveOptionsPassed=()
+    #The following if is important because, if there are no command line options,
+    #the readarray would still return an array with one empty option which would
+    #then trigger an error in the parser (it would enter the while instead of skipping it)
+    if [ $# -gt 0 ]; then
+        local commandLineOptions
+        readarray -t commandLineOptions <<< "$(__static__SplitCombinedShortOptionsInSingleOptions "$@")"
+        #Reset function arguments
+        set -- "${commandLineOptions[@]}"
+    fi
+    #Parse them
     while [ $# -gt 0 ]; do
         case $1 in
             -h | --help )
@@ -33,8 +62,9 @@ function ParseCommandLineParameters(){
 
                 printf "    -t | --themeFile                 ->    default value = ClassicTheme \n"
                 printf "                                           The user can provide a custom theme file.\n"
-                printf "\n\n\e[38;5;14m  \e[1m\e[4mNOTE\e[24m:\e[21m"
-                printf " The \e[1;38;5;4mblue\e[21;38;5;14m options are mutually exclusive!"
+                printf "\n\n\e[38;5;14m  \e[1m\e[4mNOTES\e[24m:\e[21m"
+                printf " 1) The \e[1;38;5;4mblue\e[21;38;5;14m options are mutually exclusive!\n"
+                printf "         2) Short options can be combined, e.g. \e[38;5;177m-Efn 3\e[38;5;14m is equivalent to \e[38;5;177m-E -f -n 3\e[38;5;14m."
                 printf "\e[0m\n\n\n"
                 exit 0
                 shift ;;
