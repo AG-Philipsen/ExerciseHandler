@@ -8,7 +8,7 @@
 #                                                                                                 #
 #-------------------------------------------------------------------------------------------------#
 #                                                                                                 #
-#         Copyright (c) 2016-2017 Alessandro Sciarra: sciarra@th.physik.uni-frankfurt.de          #
+#         Copyright (c) 2016-2018 Alessandro Sciarra: sciarra@th.physik.uni-frankfurt.de          #
 #         Copyright (c) 2016        Francesca Cuteri:  cuteri@th.physik.uni-frankfurt.de          #
 #                                                                                                 #
 #-------------------------------------------------------------------------------------------------#
@@ -89,14 +89,3 @@ else
 fi
 
 exit 0
-
-#TODO: 1) Trap CTRL-C in a nice way: cleaning files/folders. etc. -> DISCUSS
-#      2) Give the possibility to the user to create her/his own theme. Implement option
-#         to abilitate this and pass the file. This should contain the needed commands
-#         (\Heading, etc.) and it should be input in the main tex file. Add description
-#         to README file where commands to be provided should be listed. Decide whether we
-#         expect to get the full path to the custom theme as an argument to the command line
-#         option, or we use a field in localdefs for the path and the command line option to
-#         just pass the name (useful also if we will ever have a folder with many available themes).
-#      3) Decide how to handle the production of exercise solutions that might not be there when the
-#         script is run with the --final option for the exercise sheet production
