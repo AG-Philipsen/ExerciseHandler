@@ -10,6 +10,9 @@ HIGH PRIORITY:
    options to add remark column or to hide exercise columns. This sheet could be used
    to gather signatures in tutorials (without exercise columns) or to make student
    auto-evaluate (without signature column) or to do both.
+ - Refactor command line helper in order to print secondary options after the mutually
+   exclusive ones. Implement some logic to forbid using strange combinations of options.
+   Write a short preface to the list of option in the helper.
 
 NORMAL PRIORITY:
 

@@ -15,6 +15,9 @@ function ParseCommandLineParameters(){
                 printf "    -U | --setup                     ->    Set up of the evironment creating local definitions template and folders.\n"
                 printf "    -N | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
                 printf "    -E | --makeExerciseSheet         ->    Create a new exercise sheet or fix a previous one. \n"
+                printf "    -S | --makeSolutionSheet         ->    Create a new solution sheet or fix a previous one. \n"
+                printf "    -P | --makePresenceSheet         ->    Create a new presence sheet. \n"
+                printf "    -X | --makeExam                  ->    Create a new exam or fix a previous one. \n"
                 printf "    -L | --listUsedExercises         ->    Get list of exercise tex files used in already produced final exercises. \n"
                 printf "\e[21;38;5;2m\n"
                 printf "    -a | --showAllExercises          ->    Display all available exercise to let the user choose. \n"
@@ -46,6 +49,18 @@ function ParseCommandLineParameters(){
             -E | --makeExerciseSheet )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_makeExerciseSheet='TRUE'
+                shift ;;
+            -S | --makeSolutionSheet )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_makeSolutionSheet='TRUE'
+                shift ;;
+            -P | --makePresenceSheet )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_makePresenceSheet='TRUE'
+                shift ;;
+            -X | --makeExam )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_makeExam='TRUE'
                 shift ;;
             -L | --listUsedExercises )
                 mutuallyExclusiveOptionsPassed+=( $1 )

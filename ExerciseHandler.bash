@@ -57,6 +57,10 @@ elif [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
     else
         MoveExerciseSheetFilesToFinalFolderOpenItCreateLogfileAndRemoveCompilationFolder
     fi
+elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
+    PrintError "\"-S\" option not implemented yet!"; exit -1
+elif [ ${EXHND_makeExam} = 'TRUE' ]; then
+    PrintError "\"-X\" option not implemented yet!"; exit -1
 else
     PrintWarning "No mutually exclusive option was specified!" "Use the \"--help\" option to get more information!"
 fi
