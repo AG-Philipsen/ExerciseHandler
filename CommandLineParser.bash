@@ -12,9 +12,10 @@ function ParseCommandLineParameters(){
                 printf "                                                                                                         \n"
                 printf "\n"
                 printf "\e[21;38;5;4m\n"
-                printf "    -s | --setup                     ->    Set up of the evironment creating local definitions template and folders.\n"
-                printf "    -n | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
-                printf "    -l | --listUsedExercises         ->    Get list of exercise tex files used in already produced final exercises. \n"
+                printf "    -U | --setup                     ->    Set up of the evironment creating local definitions template and folders.\n"
+                printf "    -N | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
+                printf "    -E | --makeExerciseSheet         ->    Create a new exercise sheet or fix a previous one. \n"
+                printf "    -L | --listUsedExercises         ->    Get list of exercise tex files used in already produced final exercises. \n"
                 printf "\e[21;38;5;2m\n"
                 printf "    -a | --showAllExercises          ->    Display all available exercise to let the user choose. \n"
                 printf "                                           By default, only those still not used for final sheets are listed.\n"
@@ -22,9 +23,9 @@ function ParseCommandLineParameters(){
                 printf "                                           Use a comma separated list, where ranges X-Y are allowed (boundaries included).\n"
                 printf "                                           Order is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].\n"
                 printf "    -p | --exerciseSheetPostfix      ->    Set the exercise sheet subtitle postfix. \n"
-                printf "    -N | --sheetNumber               ->    Set the sheet number to appear in the exercise sheet title. \n"
+                printf "    -n | --sheetNumber               ->    Set the sheet number to appear in the exercise sheet title. \n"
                 printf "    -f | --final                     ->    Move the produced pdf and auxiliary files to the corresponding final folder. \n"
-                printf "    -F | --fixFinal                  ->    Produce again a final sheet using its exercises and overwriting it. \n"
+                printf "    -x | --fix                       ->    Produce again a final sheet using its exercises and overwriting it. \n"
                 printf "                                           It implies -f. Use -N to specify the exercise sheet number.\n"
 
                 printf "    -t | --themeFile                 ->    default value = ClassicTheme \n"
@@ -34,15 +35,19 @@ function ParseCommandLineParameters(){
                 printf "\e[0m\n\n\n"
                 exit 0
                 shift ;;
-            -s | --setup )
+            -U | --setup )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_doSetup="TRUE"
                 shift;;
-            -n | --newExercise )
+            -N | --newExercise )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_produceNewExercise='TRUE'
                 shift ;;
-            -l | --listUsedExercises )
+            -E | --makeExerciseSheet )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_makeExerciseSheet='TRUE'
+                shift ;;
+            -L | --listUsedExercises )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_listUsedExercises='TRUE'
                 shift ;;
@@ -56,13 +61,13 @@ function ParseCommandLineParameters(){
             -p | --exerciseSheetPostfix )
                 EXHND_exerciseSheetSubtitlePostfix="$2"
                 shift 2 ;;
-            -N | --sheetNumber )
+            -n | --sheetNumber )
                 EXHND_exerciseSheetNumber="$2"
                 shift 2 ;;
             -f | --final )
                 EXHND_isFinal='TRUE'
                 shift ;;
-            -F | --fixFinal )
+            -x | --fix )
                 EXHND_isFinal='TRUE'
                 EXHND_fixFinal='TRUE'
                 shift ;;

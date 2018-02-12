@@ -23,10 +23,13 @@ function DefineGlobalVariables(){
     EXHND_exerciseSheetNumber=''
     EXHND_exercisesFromPoolAsNumbers=''
 
-    #Behaviour options
+    #Mutually exclusive options
     EXHND_doSetup='FALSE'
     EXHND_produceNewExercise='FALSE'
+    EXHND_makeExerciseSheet='FALSE'
     EXHND_listUsedExercises='FALSE'
+
+    #Behaviour options
     EXHND_isFinal='FALSE'
     EXHND_fixFinal='FALSE'
     EXHND_displayAlreadyUsedExercises='FALSE'

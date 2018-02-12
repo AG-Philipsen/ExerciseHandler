@@ -27,7 +27,7 @@ source ${EXHND_repositoryDirectory}/ListUsedExercises.bash       || exit -2
 source ${EXHND_repositoryDirectory}/ExerciseSheet.bash           || exit -2
 
 #Warning that the script is in developement phase!
-PrintWarning "Script under developement and in a beta phase! Not everything is guaranteed to work!!"
+PrintWarning "Script under developement and in a beta phase!" "Not everything is guaranteed to work!!"
 
 #------------------------------------------------------------------------------------------------------------------#
 
@@ -41,7 +41,7 @@ elif [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
     ProduceNewEmptyExercise
 elif [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
     DisplayExerciseLogfile
-else
+elif [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
     SetExerciseSheetNumber
     CheckTexLocaldefsTemplate
     PickUpExercisesFromListAccordingToUserChoiceAndCheckThem
@@ -57,6 +57,8 @@ else
     else
         MoveExerciseSheetFilesToFinalFolderOpenItCreateLogfileAndRemoveCompilationFolder
     fi
+else
+    PrintWarning "No mutually exclusive option was specified!" "Use the \"--help\" option to get more information!"
 fi
 
 exit 0
