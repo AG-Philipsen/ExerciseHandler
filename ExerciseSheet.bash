@@ -160,7 +160,7 @@ function ProduceExerciseTexMainFile(){
     echo ''
     echo '\begin{document}'
     echo '  \Heading'
-    echo "  \Sheet[${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
+    echo "  \Sheet[][${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
     echo '  %Exercises'
     echo '  \input{Document}'
     echo '\end{document}'

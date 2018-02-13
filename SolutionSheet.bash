@@ -60,7 +60,7 @@ function ProduceSolutionTexMainFile(){
     echo ''
     echo '\begin{document}'
     echo '  \Heading'
-    echo "  \Sheet[${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
+    echo "  \Sheet[Solution of exercise][${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]" #subtitle passed to give freedom in customized theme!
     echo '  %Exercises'
     echo '  \input{Document}'
     echo '\end{document}'

@@ -35,26 +35,29 @@
     \vspace{\myskip}
 }
 
-\newcommandx{\Sheet}[2][1=, 2=]{
-    \ifthenelse{\isempty{#1}}{
-        \centerline{\Large\textbf{Exercise sheet}}
+\newcommandx{\Sheet}[3][1=Exercise, 2=, 3=, usedefault]{
+    \ifthenelse{\isempty{#2}}{
+        \centerline{\Large\textbf{#1 sheet}}
     }{
-        \centerline{\Large\textbf{Exercise sheet #1}}
+        \centerline{\Large\textbf{#1 sheet #2}}
     }
-    % Here we have to print as subtitle a string which is the concatenation
-    % of \exerciseSheetSubtitlePrefix and #2, which could be empty or not in
-    % all the possible combinations. So test them.
-    \ifthenelse{\isempty{\exerciseSheetSubtitlePrefix}}{
-        \ifthenelse{\isempty{#2}}{}{
-            \centerline{\textit{#2}}
-        }
-    }{
-        \ifthenelse{\isempty{#2}}{
-            \centerline{\textit{\exerciseSheetSubtitlePrefix}}
+    % Print subtitle only for exercises, not for solutions
+    \ifthenelse{\equal{#1}{Exercise}}{
+        % Here we have to print as subtitle a string which is the concatenation
+        % of \exerciseSheetSubtitlePrefix and #2, which could be empty or not in
+        % all the possible combinations. So test them.
+        \ifthenelse{\isempty{\exerciseSheetSubtitlePrefix}}{
+            \ifthenelse{\isempty{#3}}{}{
+                \centerline{\textit{#3}}
+            }
         }{
-            \centerline{\textit{\exerciseSheetSubtitlePrefix{} #2}}
+            \ifthenelse{\isempty{#3}}{
+                \centerline{\textit{\exerciseSheetSubtitlePrefix}}
+            }{
+                \centerline{\textit{\exerciseSheetSubtitlePrefix{} #3}}
+            }
         }
-    }
+    }{}
     \vspace{2\myskip}
 }
 
@@ -66,6 +69,18 @@
         \noindent{\large\textbf{Exercise \theExercise}}\\[0.75ex]
     }{
         \noindent{\large\textbf{Exercise \theExercise}} $\;$[\textit{#1}]\\[0.75ex]
+    }
+}
+{\par\vspace{\myskip}}
+
+\newcounter{Solution}
+\newenvironment{solution}[1][optional]
+{
+    \refstepcounter{Solution}
+    \ifthenelse{\isempty{#1}}{
+        \noindent{\large\textbf{Exercise \theSolution}}\\[0.75ex]
+    }{
+        \noindent{\large\textbf{Exercise \theSolution}} $\;$[\textit{#1}]\\[0.75ex]
     }
 }
 {\par\vspace{\myskip}}
