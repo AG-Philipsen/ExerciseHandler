@@ -2,7 +2,7 @@ function ProduceExerciseSheet(){
     SetSheetNumber
     CheckTexLocaldefsTemplate
     PickUpExercisesFromListAccordingToUserChoice
-    CheckChoosenExercises
+    CheckChosenExercises
     #TeX part: set up main and sub-files before compilation
     CreateTemporaryCompilationFolder
     ProduceTexAuxiliaryFiles 'EXERCISE'
