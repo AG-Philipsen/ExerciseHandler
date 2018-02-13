@@ -2,8 +2,8 @@ function __static__PrintMessageToScreen()
 {
     local initialEndline typeOfMessage messageColor fullMessage
     typeOfMessage="$1"; shift
-    initialEndline="\n"
-    [ "$1" = '-n' ] && initialEndline='' && shift
+    initialEndline=""
+    [ "$1" = '-n' ] && initialEndline='\n' && shift
     case "$typeOfMessage" in
         INFO )
             messageColor='\033[92m' ;;
@@ -17,7 +17,7 @@ function __static__PrintMessageToScreen()
     #Prepare full message on several lines leaving the exact amount of space at the beginning of
     #each line except the first one (i.e. as many spaces as the chars in typeOfMessage).
     fullMessage="$(printf "$messageColor%s\n   ${typeOfMessage//?/ }" "$@")"
-    printf "$initialEndline \e[1m\e[4m${messageColor}${typeOfMessage}\033[24m:\033[21m ${fullMessage}\n\033[0m"
+    printf "$initialEndline \e[1m\e[4m${messageColor}${typeOfMessage}\033[24m:\033[21m ${fullMessage//%/%%}\n\033[0m"
 }
 
 function PrintInfo(){
@@ -30,4 +30,8 @@ function PrintWarning(){
 
 function PrintError(){
     __static__PrintMessageToScreen "ERROR" "$@"
+}
+
+function PrintInternal(){
+    __static__PrintMessageToScreen "INTERNAL" "$@"
 }

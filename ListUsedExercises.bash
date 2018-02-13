@@ -18,7 +18,7 @@ function DisplayExerciseLogfile(){
         return
     fi
     local folder sheetNumber listOfExercises
-    for folder in $(GetFinalExerciseSheetFolderName)*/; do
+    for folder in $(GetFinalSheetFolderName 'EXERCISE')*/; do
         if [ ! -f ${folder}${EXHND_exercisesLogFilename} ]; then
             PrintWarning "Exercise log file not found in \"${folder}\" folder, skipping it!"
             continue

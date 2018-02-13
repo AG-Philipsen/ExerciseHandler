@@ -55,7 +55,7 @@ function ParseCommandLineParameters(){
                 printf "                                           Use a comma separated list, where ranges X-Y are allowed (boundaries included).\n"
                 printf "                                           Order is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].\n"
                 printf "    -p | --exerciseSheetPostfix      ->    Set the exercise sheet subtitle postfix. \n"
-                printf "    -n | --sheetNumber               ->    Set the sheet number to appear in the exercise sheet title. \n"
+                printf "    -n | --sheetNumber               ->    Set the sheet number to be produced (either exercise or solution sheet). \n"
                 printf "    -f | --final                     ->    Move the produced pdf and auxiliary files to the corresponding final folder. \n"
                 printf "    -x | --fix                       ->    Produce again a final sheet using its exercises and overwriting it. \n"
                 printf "                                           It implies -f. Use -N to specify the exercise sheet number.\n"
@@ -107,7 +107,7 @@ function ParseCommandLineParameters(){
                 EXHND_exerciseSheetSubtitlePostfix="$2"
                 shift 2 ;;
             -n | --sheetNumber )
-                EXHND_exerciseSheetNumber="$2"
+                EXHND_sheetNumber="$2"
                 shift 2 ;;
             -f | --final )
                 EXHND_isFinal='TRUE'

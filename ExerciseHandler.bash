@@ -25,9 +25,10 @@ source ${EXHND_repositoryDirectory}/NewExercise.bash             || exit -2
 source ${EXHND_repositoryDirectory}/AuxiliaryFunctions.bash      || exit -2
 source ${EXHND_repositoryDirectory}/ListUsedExercises.bash       || exit -2
 source ${EXHND_repositoryDirectory}/ExerciseSheet.bash           || exit -2
+source ${EXHND_repositoryDirectory}/SolutionSheet.bash           || exit -2
 
 #Warning that the script is in developement phase!
-PrintWarning "Script under developement and in a beta phase!" "Not everything is guaranteed to work!!"
+PrintWarning -n "Script under developement and in a beta phase!" "Not everything is guaranteed to work!!"
 
 #------------------------------------------------------------------------------------------------------------------#
 
@@ -42,23 +43,41 @@ elif [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
 elif [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
     DisplayExerciseLogfile
 elif [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
-    SetExerciseSheetNumber
+    SetSheetNumber
     CheckTexLocaldefsTemplate
-    PickUpExercisesFromListAccordingToUserChoiceAndCheckThem
+    PickUpExercisesFromListAccordingToUserChoice
+    CheckChoosenExercises
     #TeX part: set up main and sub-files before compilation
     CreateTemporaryCompilationFolder
-    ProduceTexAuxiliaryFiles
+    ProduceTexAuxiliaryFiles 'EXERCISE'
     CheckTexPackagesFile
     CheckTexDefinitionsFile
-    ProduceTexMainFile
+    ProduceExerciseTexMainFile
     MakeCompilationInTemporaryFolder
     if [ $EXHND_isFinal = 'FALSE' ]; then
-        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder
+        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder 'EXERCISE'
     else
-        MoveExerciseSheetFilesToFinalFolderOpenItCreateLogfileAndRemoveCompilationFolder
+        MoveSheetFilesToFinalFolderOpenItCompilationFolder 'EXERCISE'
     fi
 elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
-    PrintError "\"-S\" option not implemented yet!"; exit -1
+    #PrintError "\"-S\" option not implemented yet!"; exit -1
+    SetSheetNumber
+    CheckTexLocaldefsTemplate
+    ReadOutExercisesFromFinalExerciseSheetLogFile
+    CheckSolutionsFiles
+    #TeX part: set up main and sub-files before compilation
+    CreateTemporaryCompilationFolder
+    ProduceTexAuxiliaryFiles 'SOLUTION'
+    CheckTexPackagesFile
+    CheckTexDefinitionsFile
+    ProduceSolutionTexMainFile
+    MakeCompilationInTemporaryFolder
+    if [ $EXHND_isFinal = 'FALSE' ]; then
+        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder 'SOLUTION'
+    else
+        MoveSheetFilesToFinalFolderOpenItCompilationFolder 'SOLUTION'
+    fi
+
 elif [ ${EXHND_makeExam} = 'TRUE' ]; then
     PrintError "\"-X\" option not implemented yet!"; exit -1
 else
