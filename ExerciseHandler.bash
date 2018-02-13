@@ -43,41 +43,9 @@ elif [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
 elif [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
     DisplayExerciseLogfile
 elif [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
-    SetSheetNumber
-    CheckTexLocaldefsTemplate
-    PickUpExercisesFromListAccordingToUserChoice
-    CheckChoosenExercises
-    #TeX part: set up main and sub-files before compilation
-    CreateTemporaryCompilationFolder
-    ProduceTexAuxiliaryFiles 'EXERCISE'
-    CheckTexPackagesFile
-    CheckTexDefinitionsFile
-    ProduceExerciseTexMainFile
-    MakeCompilationInTemporaryFolder
-    if [ $EXHND_isFinal = 'FALSE' ]; then
-        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder 'EXERCISE'
-    else
-        MoveSheetFilesToFinalFolderOpenItCompilationFolder 'EXERCISE'
-    fi
+    ProduceExerciseSheet
 elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
-    #PrintError "\"-S\" option not implemented yet!"; exit -1
-    SetSheetNumber
-    CheckTexLocaldefsTemplate
-    ReadOutExercisesFromFinalExerciseSheetLogFile
-    CheckSolutionsFiles
-    #TeX part: set up main and sub-files before compilation
-    CreateTemporaryCompilationFolder
-    ProduceTexAuxiliaryFiles 'SOLUTION'
-    CheckTexPackagesFile
-    CheckTexDefinitionsFile
-    ProduceSolutionTexMainFile
-    MakeCompilationInTemporaryFolder
-    if [ $EXHND_isFinal = 'FALSE' ]; then
-        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder 'SOLUTION'
-    else
-        MoveSheetFilesToFinalFolderOpenItCompilationFolder 'SOLUTION'
-    fi
-
+    ProduceSolutionSheet
 elif [ ${EXHND_makeExam} = 'TRUE' ]; then
     PrintError "\"-X\" option not implemented yet!"; exit -1
 else

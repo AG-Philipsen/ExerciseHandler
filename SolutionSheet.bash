@@ -1,3 +1,24 @@
+function ProduceSolutionSheet(){
+    SetSheetNumber
+    CheckTexLocaldefsTemplate
+    ReadOutExercisesFromFinalExerciseSheetLogFile
+    CheckSolutionsFiles
+    #TeX part: set up main and sub-files before compilation
+    CreateTemporaryCompilationFolder
+    ProduceTexAuxiliaryFiles 'SOLUTION'
+    CheckTexPackagesFile
+    CheckTexDefinitionsFile
+    ProduceSolutionTexMainFile
+    MakeCompilationInTemporaryFolder
+    if [ $EXHND_isFinal = 'FALSE' ]; then
+        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder 'SOLUTION'
+    else
+        MoveSheetFilesToFinalFolderOpenItCompilationFolder 'SOLUTION'
+    fi
+}
+
+#=============================================================================================================================================================#
+
 function CheckSolutionsFiles(){
     local index exercise string
     for index in ${!EXHND_choosenExercises[@]}; do

@@ -1,3 +1,24 @@
+function ProduceExerciseSheet(){
+    SetSheetNumber
+    CheckTexLocaldefsTemplate
+    PickUpExercisesFromListAccordingToUserChoice
+    CheckChoosenExercises
+    #TeX part: set up main and sub-files before compilation
+    CreateTemporaryCompilationFolder
+    ProduceTexAuxiliaryFiles 'EXERCISE'
+    CheckTexPackagesFile
+    CheckTexDefinitionsFile
+    ProduceExerciseTexMainFile
+    MakeCompilationInTemporaryFolder
+    if [ $EXHND_isFinal = 'FALSE' ]; then
+        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder 'EXERCISE'
+    else
+        MoveSheetFilesToFinalFolderOpenItCompilationFolder 'EXERCISE'
+    fi
+}
+
+#=============================================================================================================================================================#
+
 function __static__LookForExercisesAndMakeList(){
     if [ ! -d ${EXHND_exercisePoolFolder} ]; then
         PrintError "No exercise pool folder \"${EXHND_exercisePoolFolder}\" has been found! Aborting..."; exit -2
