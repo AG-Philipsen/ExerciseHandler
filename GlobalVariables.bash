@@ -8,7 +8,7 @@ function DefineGlobalVariables(){
     readonly EXHND_solutionPoolFolder="${EXHND_invokingDirectory}/Solutions"
     readonly EXHND_finalExerciseSheetFolder="${EXHND_invokingDirectory}/FinalExerciseSheets"
     readonly EXHND_finalExerciseSheetPrefix="ExerciseSheet_"
-    readonly EXHND_exercisesLogFilename=".exercises.log" #One in each final exSheet folder
+    readonly EXHND_exercisesLogFilename=".exercises.log" #One in each final exercise sheet folder
     readonly EXHND_finalSolutionSheetFolder="${EXHND_invokingDirectory}/FinalSolutionSheets"
     readonly EXHND_finalSolutionSheetPrefix="SolutionSheet_"
     readonly EXHND_figuresFolder="${EXHND_invokingDirectory}/Figures"
@@ -19,6 +19,7 @@ function DefineGlobalVariables(){
     readonly EXHND_bodyFilename="${EXHND_compilationFolder}/Document.tex"
     readonly EXHND_mainFilename="${EXHND_compilationFolder}/MainFile.tex"
     EXHND_exerciseList=(); EXHND_choosenExercises=() #These arrays contain the basenames of the files
+    EXHND_filesToBeUsedGlobalPath=() #This array contains the files for the final sheet
 
     #Variables with input from user
     EXHND_exerciseSheetSubtitlePostfix=''
@@ -38,6 +39,5 @@ function DefineGlobalVariables(){
     EXHND_isFinal='FALSE'
     EXHND_fixFinal='FALSE'
     EXHND_displayAlreadyUsedExercises='FALSE'
-    EXHND_skipMissingSolutions='TRUE'
 
 }

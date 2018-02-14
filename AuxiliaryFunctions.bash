@@ -52,24 +52,6 @@ function SetSheetNumber(){
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
-function ReadOutExercisesFromFinalExerciseSheetLogFile(){
-    local finalFolder
-    finalFolder="$(GetFinalSheetFolderName 'EXERCISE' ${EXHND_sheetNumber})"
-    if [ ! -d  "${finalFolder}" ]; then
-        PrintError "Folder \"$(basename ${finalFolder})\" not found in \"${EXHND_finalExerciseSheetFolder}\"! Aborting..."
-        exit -1
-    else
-        if [ ! -f "${finalFolder}/${EXHND_exercisesLogFilename}" ]; then
-            PrintError "Exercise log file not found in \"${finalFolder}\" folder! Aborting..."
-            exit -1
-        else
-            EXHND_choosenExercises=( $(awk '{print $2}' "${finalFolder}/${EXHND_exercisesLogFilename}") )
-        fi
-    fi
-}
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------#
-
 function CheckBlocksInFile(){
     local filename blocksName block
     filename="$1"; shift
@@ -105,6 +87,30 @@ function CheckTexLocaldefsTemplate(){
     done < "${EXHND_texLocaldefsFilename}"
     #General checks on blocks
     CheckBlocksInFile "${EXHND_texLocaldefsFilename}" "PACKAGES" "DEFINITIONS" "BODY"
+}
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+function __static__CheckSelectedFilesToBeUsed(){
+    local file
+    for file in ${EXHND_filesToBeUsedGlobalPath[@]}; do
+        if [ ! -f ${file} ]; then
+            PrintError "File \"$(basename ${file})\" not found in \"$(dirname ${EXHND_solutionPoolFolder})\" folder."; exit -1
+        fi
+        CheckBlocksInFile ${file} "PACKAGES" "DEFINITIONS" "BODY"
+    done
+}
+
+function SetListOfFilesToBeUsedAndCheckThem(){
+    local typeOfSheet; typeOfSheet="$1"
+    if [ "${typeOfSheet}" = 'EXERCISE' ]; then
+        EXHND_filesToBeUsedGlobalPath=( "${EXHND_choosenExercises[@]/#/${EXHND_exercisePoolFolder}/}" ) #Prepend to each array element (last / is a real / in path)
+    elif [ "${typeOfSheet}" = 'SOLUTION' ]; then
+        EXHND_filesToBeUsedGlobalPath=( "${EXHND_choosenExercises[@]/#/${EXHND_solutionPoolFolder}/}" ) #Prepend to each array element (last / is a real / in path)
+    else
+        PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=\"${typeOfSheet}\")"; exit -1
+    fi
+    __static__CheckSelectedFilesToBeUsed
 }
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -146,17 +152,9 @@ function __static__ProduceTexAuxiliaryFile(){
 }
 
 function ProduceTexAuxiliaryFiles(){
-    local listOfFiles typeOfSheet; typeOfSheet="$1"
-    if [ "${typeOfSheet}" = 'EXERCISE' ]; then
-        listOfFiles=( "${EXHND_choosenExercises[@]/#/${EXHND_exercisePoolFolder}/}" ) #Prepend to each array element (last / is a real / in path)
-    elif [ "${typeOfSheet}" = 'SOLUTION' ]; then
-        listOfFiles=( "${EXHND_choosenExercises[@]/#/${EXHND_solutionPoolFolder}/}" ) #Prepend to each array element (last / is a real / in path)
-    else
-        PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=\"${typeOfSheet}\")"; exit -1
-    fi
-    __static__ProduceTexAuxiliaryFile ${EXHND_packagesFilename}    "PACKAGES"    "${listOfFiles[@]}"
-    __static__ProduceTexAuxiliaryFile ${EXHND_definitionsFilename} "DEFINITIONS" "${listOfFiles[@]}"
-    __static__ProduceTexAuxiliaryFile ${EXHND_bodyFilename}        "BODY"        "${listOfFiles[@]}"
+    __static__ProduceTexAuxiliaryFile ${EXHND_packagesFilename}    "PACKAGES"    "${EXHND_filesToBeUsedGlobalPath[@]}"
+    __static__ProduceTexAuxiliaryFile ${EXHND_definitionsFilename} "DEFINITIONS" "${EXHND_filesToBeUsedGlobalPath[@]}"
+    __static__ProduceTexAuxiliaryFile ${EXHND_bodyFilename}        "BODY"        "${EXHND_filesToBeUsedGlobalPath[@]}"
 }
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#

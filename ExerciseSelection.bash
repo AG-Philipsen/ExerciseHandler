@@ -1,24 +1,3 @@
-function ProduceExerciseSheet(){
-    SetSheetNumber
-    CheckTexLocaldefsTemplate
-    PickUpExercisesFromListAccordingToUserChoice
-    CheckChosenExercises
-    #TeX part: set up main and sub-files before compilation
-    CreateTemporaryCompilationFolder
-    ProduceTexAuxiliaryFiles 'EXERCISE'
-    CheckTexPackagesFile
-    CheckTexDefinitionsFile
-    ProduceExerciseTexMainFile
-    MakeCompilationInTemporaryFolder
-    if [ $EXHND_isFinal = 'FALSE' ]; then
-        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder 'EXERCISE'
-    else
-        MoveSheetFilesToFinalFolderOpenItCompilationFolder 'EXERCISE'
-    fi
-}
-
-#=============================================================================================================================================================#
-
 function __static__LookForExercisesAndMakeList(){
     if [ ! -d ${EXHND_exercisePoolFolder} ]; then
         PrintError "No exercise pool folder \"${EXHND_exercisePoolFolder}\" has been found! Aborting..."; exit -2
@@ -135,35 +114,20 @@ function PickUpExercisesFromListAccordingToUserChoice(){
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
-function CheckChosenExercises(){
-    local exercise
-    for exercise in ${EXHND_choosenExercises[@]}; do
-        CheckBlocksInFile ${EXHND_exercisePoolFolder}/${exercise}  "PACKAGES" "DEFINITIONS" "BODY"
-    done
-}
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------#
-
-function ProduceExerciseTexMainFile(){
-    rm -f ${EXHND_mainFilename}
-    #Redirect standard output to file
-    exec 3>&1 1>${EXHND_mainFilename}
-    #Template production, overwriting the file
-    echo '\documentclass[a4paper]{article}'
-    echo ''
-    echo '\input{Packages}'
-    echo ''
-    echo '\input{Definitions}'
-    echo '\graphicspath{{'"${EXHND_figuresFolder}/"'}}'
-    echo ''
-    echo '\begin{document}'
-    echo '  \Heading'
-    echo "  \Sheet[][${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
-    echo '  %Exercises'
-    echo '  \input{Document}'
-    echo '\end{document}'
-    #Restore standard output
-    exec 1>&3
+function ReadOutExercisesFromFinalExerciseSheetLogFile(){
+    local finalFolder
+    finalFolder="$(GetFinalSheetFolderName 'EXERCISE' ${EXHND_sheetNumber})"
+    if [ ! -d  "${finalFolder}" ]; then
+        PrintError "Folder \"$(basename ${finalFolder})\" not found in \"${EXHND_finalExerciseSheetFolder}\"! Aborting..."
+        exit -1
+    else
+        if [ ! -f "${finalFolder}/${EXHND_exercisesLogFilename}" ]; then
+            PrintError "Exercise log file not found in \"${finalFolder}\" folder! Aborting..."
+            exit -1
+        else
+            EXHND_choosenExercises=( $(awk '{print $2}' "${finalFolder}/${EXHND_exercisesLogFilename}") )
+        fi
+    fi
 }
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
