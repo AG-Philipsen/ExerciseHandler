@@ -48,3 +48,5 @@ LOW PRIORITY:
 
  - Trap CTRL-C in a nice way: cleaning files/folders. etc. -> DESIGN
  - Use consistent exit error codes (now they are hard coded and without a meaning)
+ - Is it worth to make the handler fill the optional latex argument of the solution
+   environment if empty, reading it from the corresponding exercise?
