@@ -25,12 +25,6 @@ HIGH PRIORITY:
  - Refactor command line helper in order to print secondary options after the mutually
    exclusive ones. Implement some logic to forbid using strange combinations of options.
    Write a short preface to the list of option in the helper.
- - Implement creation of solution files in parallel with exercise through -N option.
-   Said differently, when the script is run with -N, it has to create an empty exercise and
-   its empty solution, which contains by default the sentence "Solution not given."
-   This has the advantage of having always a consistent numbering of solutions with respect
-   to exercises. If the exercise and/or the solution is there, do nothing, otherwise create it.
-   This allows to use the -N option to create solutions giving the name of already existing exercises.
  - Implement -X option.
 
 NORMAL PRIORITY:

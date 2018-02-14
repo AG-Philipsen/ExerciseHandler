@@ -42,7 +42,7 @@ function ParseCommandLineParameters(){
                 printf "\n"
                 printf "\e[21;38;5;4m\n"
                 printf "    -U | --setup                     ->    Set up of the evironment creating local definitions template and folders.\n"
-                printf "    -N | --newExercise               ->    Create a new empty exercise, which is added to the pool of exercises. \n"
+                printf "    -N | --newSheet                  ->    Create a new empty exercise and a new empty solution, which are added to the pools.\n"
                 printf "    -E | --makeExerciseSheet         ->    Create a new exercise sheet or fix a previous one. \n"
                 printf "    -S | --makeSolutionSheet         ->    Create a new solution sheet or fix a previous one. \n"
                 printf "    -P | --makePresenceSheet         ->    Create a new presence sheet. \n"
@@ -72,7 +72,7 @@ function ParseCommandLineParameters(){
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_doSetup="TRUE"
                 shift;;
-            -N | --newExercise )
+            -N | --newSheet )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_produceNewExercise='TRUE'
                 shift ;;

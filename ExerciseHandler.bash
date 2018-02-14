@@ -39,7 +39,7 @@ ParseCommandLineParameters "$@"
 if [ ${EXHND_doSetup} = 'TRUE' ]; then
     MakeSetup
 elif [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
-    ProduceNewEmptyExercise
+    ProduceNewEmptyExerciseAndSolution
 elif [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
     DisplayExerciseLogfile
 elif [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
