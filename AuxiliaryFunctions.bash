@@ -6,7 +6,7 @@ function GetFinalSheetFolderName(){
     elif [ "${typeOfSheet}" = 'SOLUTION' ]; then
         string="${EXHND_finalSolutionSheetFolder}/${EXHND_finalSolutionSheetPrefix}"
     else
-        PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=${typeOfSheet})"; exit -1
+        PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=\"${typeOfSheet}\")"; exit -1
     fi
     if [ "${number}" = '' ]; then
         echo ${string}
@@ -20,8 +20,8 @@ function GetFinalSheetFolderName(){
 function __static__DetermineSheetNumber(){
     local typeOfSheet lastSheetNumber;
     typeOfSheet="$1"
-    if [ "${typeOfSheet}" != 'EXERCISE' ] && [ "${typeOfSheet}" != 'SOLUTION' ]; then
-        PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=${typeOfSheet})"; exit -1
+    if [[ ! ${typeOfSheet} =~ ^(EXERCISE|SOLUTION)$ ]]; then
+        PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=\"${typeOfSheet}\")"; exit -1
     fi
     lastSheetNumber=$(ls "${EXHND_finalExerciseSheetFolder}" | tail -n1 | grep -o "[0-9]\+" | sed 's/^0*//')
     if [[ $lastSheetNumber =~ ^[0-9]*$ ]]; then
@@ -43,6 +43,9 @@ function SetSheetNumber(){
             EXHND_sheetNumber=$(__static__DetermineSheetNumber 'SOLUTION')
         else
             PrintInternal "Error in ${FUNCNAME[0]}, entered unexpected branch!"; exit -1
+        fi
+        if [[ ! $EXHND_sheetNumber =~ ^[1-9][0-9]*$ ]]; then
+            PrintError "Unable to determine sheet number!"; exit -1
         fi
     fi
 }
@@ -145,7 +148,7 @@ function ProduceTexAuxiliaryFiles(){
     elif [ "${typeOfSheet}" = 'SOLUTION' ]; then
         listOfFiles=( "${EXHND_choosenExercises[@]/#/${EXHND_solutionPoolFolder}/}" ) #Prepend to each array element (last / is a real / in path)
     else
-        PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=${typeOfSheet})"; exit -1
+        PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=\"${typeOfSheet}\")"; exit -1
     fi
     __static__ProduceTexAuxiliaryFile ${EXHND_packagesFilename}    "PACKAGES"    "${listOfFiles[@]}"
     __static__ProduceTexAuxiliaryFile ${EXHND_definitionsFilename} "DEFINITIONS" "${listOfFiles[@]}"

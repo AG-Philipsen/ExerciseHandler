@@ -29,9 +29,9 @@ function PrintWarning(){
 }
 
 function PrintError(){
-    __static__PrintMessageToScreen "ERROR" "$@"
+    __static__PrintMessageToScreen "ERROR" "$@"  >&2
 }
 
 function PrintInternal(){
-    __static__PrintMessageToScreen "INTERNAL" "$@"
+    __static__PrintMessageToScreen "INTERNAL" "$@"  >&2
 }
