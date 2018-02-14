@@ -156,8 +156,6 @@ function ProduceExerciseTexMainFile(){
     echo '\input{Definitions}'
     echo '\graphicspath{{'"${EXHND_figuresFolder}/"'}}'
     echo ''
-    echo "\input{${EXHND_themeFilename%.tex}}"
-    echo ''
     echo '\begin{document}'
     echo '  \Heading'
     echo "  \Sheet[][${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"

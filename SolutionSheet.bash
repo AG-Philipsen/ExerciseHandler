@@ -56,8 +56,6 @@ function ProduceSolutionTexMainFile(){
     echo '\input{Definitions}'
     echo '\graphicspath{{'"${EXHND_figuresFolder}/"'}}'
     echo ''
-    echo "\input{${EXHND_themeFilename%.tex}}"
-    echo ''
     echo '\begin{document}'
     echo '  \Heading'
     echo "  \Sheet[Solution of exercise][${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]" #subtitle passed to give freedom in customized theme!

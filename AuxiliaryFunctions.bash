@@ -128,17 +128,21 @@ function __static__ProduceTexAuxiliaryFile(){
     local outputFilename partOfDocument listOfFiles file
     outputFilename="$1"; partOfDocument="$2"; shift 2
     listOfFiles=( "$@" )
-    if [ ${partOfDocument} = 'PACKAGES' ]; then
-        __static__ExtractBlockFromFileAndAppendToAnotherFile  ${EXHND_themeFilename}  ${outputFilename}  ${partOfDocument}
+    if [[ ! ${partOfDocument} =~ ^(PACKAGES|DEFINITIONS|BODY)$  ]]; then
+        PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong partOfDocument passed! (partOfDocument=\"${partOfDocument}\")"; exit -1
+    else
+        if [ ${partOfDocument} = 'PACKAGES' ] || [ ${partOfDocument} = 'DEFINITIONS' ]; then
+            __static__ExtractBlockFromFileAndAppendToAnotherFile  ${EXHND_themeFilename}  ${outputFilename}  ${partOfDocument}
+        fi
+        __static__ExtractBlockFromFileAndAppendToAnotherFile  ${EXHND_texLocaldefsFilename}  ${outputFilename}  ${partOfDocument}
+        for file in "${listOfFiles[@]}"; do
+            __static__ExtractBlockFromFileAndAppendToAnotherFile  ${file}  ${outputFilename}  ${partOfDocument}
+        done
+        #NOTE: We decided to use guards to divide the parts of the exercises file, because the parsing is then easier.
+        #      For example, to extract packages one could do something like,
+        #         awk '{split($0, res, "%"); if(res[1] !~ /^[ ]*$/){print res[1]}}' file.tex | sed 's/^[[:blank:]]*//g' | tr '\n' ' ' | grep -Eo '\\usepackage(\[[^]]*\])?{[^}]+}'
+        #      but there are many cases that could break this down.
     fi
-    __static__ExtractBlockFromFileAndAppendToAnotherFile  ${EXHND_texLocaldefsFilename}  ${outputFilename}  ${partOfDocument}
-    for file in "${listOfFiles[@]}"; do
-        __static__ExtractBlockFromFileAndAppendToAnotherFile  ${file}  ${outputFilename}  ${partOfDocument}
-    done
-    #NOTE: We decided to use guards to divide the parts of the exercises file, because the parsing is then easier.
-    #      For example, to extract packages one could do something like,
-    #         awk '{split($0, res, "%"); if(res[1] !~ /^[ ]*$/){print res[1]}}' file.tex | sed 's/^[[:blank:]]*//g' | tr '\n' ' ' | grep -Eo '\\usepackage(\[[^]]*\])?{[^}]+}'
-    #      but there are many cases that could break this down.
 }
 
 function ProduceTexAuxiliaryFiles(){
