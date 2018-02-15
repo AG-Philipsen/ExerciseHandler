@@ -27,6 +27,7 @@ source ${EXHND_repositoryDirectory}/ListUsedExercises.bash       || exit -2
 source ${EXHND_repositoryDirectory}/ExerciseSelection.bash       || exit -2
 source ${EXHND_repositoryDirectory}/MainTexFilesCreation.bash    || exit -2
 source ${EXHND_repositoryDirectory}/ProduceSheet.bash            || exit -2
+source ${EXHND_repositoryDirectory}/PresenceSheet.bash           || exit -2
 
 #Warning that the script is in developement phase!
 PrintWarning -n "Script under developement and in a beta phase!" "Not everything is guaranteed to work!!"
@@ -34,23 +35,27 @@ PrintWarning -n "Script under developement and in a beta phase!" "Not everything
 #------------------------------------------------------------------------------------------------------------------#
 
 DefineGlobalVariables
-CheckInvokingPosition
 ParseCommandLineParameters "$@"
 
 if [ ${EXHND_doSetup} = 'TRUE' ]; then
     MakeSetup
-elif [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
-    ProduceNewEmptyExerciseAndSolution
-elif [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
-    DisplayExerciseLogfile
-elif [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
-    ProduceExerciseSheet
-elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
-    ProduceSolutionSheet
-elif [ ${EXHND_makeExam} = 'TRUE' ]; then
-    ProduceExamSheet
 else
-    PrintWarning "No mutually exclusive option was specified!" "Use the \"--help\" option to get more information!"
+    CheckInvokingPosition
+    if [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
+        ProduceNewEmptyExerciseAndSolution
+    elif [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
+        DisplayExerciseLogfile
+    elif [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
+        ProduceExerciseSheet
+    elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
+        ProduceSolutionSheet
+    elif [ ${EXHND_makeExam} = 'TRUE' ]; then
+        PrintError "\"-X\" option not implemented yet!"; exit -1
+    elif [ ${EXHND_makePresenceSheet} = 'TRUE' ]; then
+        ProducePresenceSheet
+    else
+        PrintWarning "No mutually exclusive option was specified!" "Use the \"--help\" option to get more information!"
+    fi
 fi
 
 exit 0

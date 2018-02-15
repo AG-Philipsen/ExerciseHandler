@@ -4,7 +4,7 @@ function GetFinalSheetFolderGlobalPathWithoutNumber(){
     #final folder, we cannot here just rely on the EXHND_make* variables
     if [ "$1" != '' ]; then
         mode=$1
-        if [[ ! ${mode} =~ ^(EXERCISE|SOLUTION|EXAM)$ ]]; then
+        if [[ ! ${mode} =~ ^(EXERCISE|SOLUTION|EXAM|PRESENCE)$ ]]; then
             PrintInternal "Function \"${FUNCNAME[0]}\" called with unexpected second argument (\$2=\"$2\")! Aborting..."; exit -1
         fi
     else
@@ -14,6 +14,8 @@ function GetFinalSheetFolderGlobalPathWithoutNumber(){
             mode='SOLUTION'
         elif [ ${EXHND_makeExam} = 'TRUE' ]; then
             mode='EXAM'
+        elif [ ${EXHND_makePresenceSheet} = 'TRUE' ]; then
+            mode='PRESENCE'
         else
             PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario! Aborting..."; exit -1
         fi
@@ -24,6 +26,8 @@ function GetFinalSheetFolderGlobalPathWithoutNumber(){
         string="${EXHND_finalSolutionSheetFolder}/${EXHND_finalSolutionSheetPrefix}"
     elif [ ${mode} = 'EXAM' ]; then
         string="${EXHND_finalExamSheetFolder}/${EXHND_finalExamSheetPrefix}"
+    elif [ ${mode} = 'PRESENCE' ]; then
+        string="${EXHND_presenceSheetFolder}/${EXHND_presenceSheetPrefix}"
     fi
     echo ${string}
 }
@@ -46,7 +50,7 @@ function __static__DetermineSheetNumber(){
     if [[ $lastSheetNumber =~ ^[1-9][0-9]*$ ]]; then
         if [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
             echo $((lastSheetNumber+1))
-        elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
+        elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ] || [ ${EXHND_makePresenceSheet} = 'TRUE' ]; then
             echo ${lastSheetNumber}
         fi
     else
@@ -55,7 +59,7 @@ function __static__DetermineSheetNumber(){
 }
 
 function SetSheetNumber(){
-    if [ ${EXHND_makeExerciseSheet} = 'FALSE' ] && [ ${EXHND_makeSolutionSheet} = 'FALSE' ] && [ ${EXHND_makeExam} = 'FALSE' ]; then
+    if [ ${EXHND_makeExerciseSheet} = 'FALSE' ] && [ ${EXHND_makeSolutionSheet} = 'FALSE' ] && [ ${EXHND_makeExam} = 'FALSE' ] && [ ${EXHND_makePresenceSheet} = 'FALSE' ]; then
         PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario! Aborting..."; exit -1
     fi
     if [ "${EXHND_sheetNumber}" = '' ]; then
@@ -231,11 +235,16 @@ function MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder(){
     destinationFolder+=$(printf "%02d" ${EXHND_sheetNumber})
     newFilenameWithoutExtension=$(basename ${destinationFolder})
     if [ -d "${destinationFolder}" ]; then
-        if [ ${EXHND_fixFinal} = 'FALSE' ]; then
-            PrintError "Folder \"$(basename ${destinationFolder})\" for final sheet is already existing! Aborting..."; exit -2
-        else
-            rm -r "${destinationFolder}" || exit -2
+        if [ ${typeOfSheet} = 'PRESENCE' ]; then
+            mv "${destinationFolder}" "${EXHND_temporaryFolder}/${newFilenameWithoutExtension}_$(date +%d.%m.%Y_%H%M%S)" || exit -2
             mkdir "${destinationFolder}" || exit -2
+        else
+            if [ ${EXHND_fixFinal} = 'FALSE' ]; then
+                PrintError "Folder \"$(basename ${destinationFolder})\" for final sheet is already existing! Aborting..."; exit -2
+            else
+                rm -r "${destinationFolder}" || exit -2
+                mkdir "${destinationFolder}" || exit -2
+            fi
         fi
     else
         mkdir "${destinationFolder}" || exit -2

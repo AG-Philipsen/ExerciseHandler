@@ -7,6 +7,12 @@
 %__BEGIN_DEFINITIONS__%
 \newlength{\myskip}
 \setlength{\myskip}{6mm plus 1mm minus 1mm}
+%Options for Presence Sheet
+\newcommand{\myEveryEvenRowColor}{\rowcolor[gray]{0.92}}
+\newboolean{switchOffSignatureColumn}
+\setboolean{switchOffSignatureColumn}{false}
+\newboolean{switchOffExerciseColumn}
+\setboolean{switchOffExerciseColumn}{false}
 
 \newcommand{\PrintTutorList}{
     \newboolean{tutorsToBePrinted}                 % xifthen package
@@ -59,8 +65,12 @@
                 \centerline{\textit{\exerciseSheetSubtitlePrefix{} #3}}
             }
         }
+        \vspace{2\myskip}
     }{}
-    \vspace{2\myskip}
+    % Print current date as subtitle only for presence sheet
+    \ifthenelse{\equal{#1}{Presence}}{
+        \centerline{\today{}}
+    }{}
 }
 
 \newcounter{Exercise}
