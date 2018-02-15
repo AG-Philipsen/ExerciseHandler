@@ -5,6 +5,8 @@ function GetFinalSheetFolderName(){
         string="${EXHND_finalExerciseSheetFolder}/${EXHND_finalExerciseSheetPrefix}"
     elif [ "${typeOfSheet}" = 'SOLUTION' ]; then
         string="${EXHND_finalSolutionSheetFolder}/${EXHND_finalSolutionSheetPrefix}"
+    elif [ "${typeOfSheet}" = 'PRESENCE' ]; then
+        string="${EXHND_presenceSheetFolder}/${EXHND_presenceSheetPrefix}"
     else
         PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=${typeOfSheet})"; exit -1
     fi
@@ -20,7 +22,7 @@ function GetFinalSheetFolderName(){
 function __static__DetermineSheetNumber(){
     local typeOfSheet lastSheetNumber;
     typeOfSheet="$1"
-    if [ "${typeOfSheet}" != 'EXERCISE' ] && [ "${typeOfSheet}" != 'SOLUTION' ]; then
+    if [ "${typeOfSheet}" != 'EXERCISE' ] && [ "${typeOfSheet}" != 'SOLUTION' ]&& [ "${typeOfSheet}" != 'PRESENCE' ]; then
         PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=${typeOfSheet})"; exit -1
     fi
     lastSheetNumber=$(ls "${EXHND_finalExerciseSheetFolder}" | tail -n1 | grep -o "[0-9]\+" | sed 's/^0*//')
@@ -28,6 +30,8 @@ function __static__DetermineSheetNumber(){
         if [ "${typeOfSheet}" = 'EXERCISE' ]; then
             echo $((lastSheetNumber+1))
         elif [ "${typeOfSheet}" = 'SOLUTION' ]; then
+            echo ${lastSheetNumber}
+        elif [ "${typeOfSheet}" = 'PRESENCE' ]; then
             echo ${lastSheetNumber}
         fi
     else
@@ -41,6 +45,8 @@ function SetSheetNumber(){
             EXHND_sheetNumber=$(__static__DetermineSheetNumber 'EXERCISE')
         elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
             EXHND_sheetNumber=$(__static__DetermineSheetNumber 'SOLUTION')
+        elif [ ${EXHND_makePresenceSheet} = 'TRUE' ]; then
+            EXHND_sheetNumber=$(__static__DetermineSheetNumber 'PRESENCE')
         else
             PrintInternal "Error in ${FUNCNAME[0]}, entered unexpected branch!"; exit -1
         fi
@@ -204,11 +210,16 @@ function MoveSheetFilesToFinalFolderOpenItCompilationFolder(){
     destinationFolder=$(GetFinalSheetFolderName ${typeOfSheet} ${EXHND_sheetNumber})
     newFilenameWithoutExtension=$(basename ${destinationFolder})
     if [ -d "${destinationFolder}" ]; then
-        if [ ${EXHND_fixFinal} = 'FALSE' ]; then
-            PrintError "Folder \"$(basename ${destinationFolder})\" for final sheet is already existing! Aborting..."; exit -2
-        else
-            rm -r "${destinationFolder}" || exit -2
+        if [ ${typeOfSheet} = 'PRESENCE' ]; then
+            mv "${destinationFolder}" "${EXHND_temporaryFolder}/${newFilenameWithoutExtension}_$(date +%d.%m.%Y_%H%M%S)" || exit -2
             mkdir "${destinationFolder}" || exit -2
+        else
+            if [ ${EXHND_fixFinal} = 'FALSE' ]; then
+                PrintError "Folder \"$(basename ${destinationFolder})\" for final sheet is already existing! Aborting..."; exit -2
+            else
+                rm -r "${destinationFolder}" || exit -2
+                mkdir "${destinationFolder}" || exit -2
+            fi
         fi
     else
         mkdir "${destinationFolder}" || exit -2

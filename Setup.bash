@@ -32,6 +32,7 @@ function MakeSetup(){
           ${EXHND_solutionPoolFolder}\
           ${EXHND_finalExerciseSheetFolder}\
           ${EXHND_finalSolutionSheetFolder}\
+          ${EXHND_presenceSheetFolder}\
           ${EXHND_figuresFolder}\
           ${EXHND_temporaryFolder}
     if [ ! -f ${EXHND_texLocaldefsFilename} ]; then

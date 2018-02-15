@@ -5,6 +5,7 @@
 
 \newlength{\myskip}
 \setlength{\myskip}{6mm plus 1mm minus 1mm}
+\newcommand{\myEveryEvenRowColor}{\rowcolor[gray]{0.92}}
 
 \newcommand{\PrintTutorList}{
     \newboolean{tutorsToBePrinted}                 % xifthen package
@@ -57,8 +58,12 @@
                 \centerline{\textit{\exerciseSheetSubtitlePrefix{} #3}}
             }
         }
+        \vspace{2\myskip}
     }{}
-    \vspace{2\myskip}
+    % Print current date as subtitle only for presence sheet
+    \ifthenelse{\equal{#1}{Presence}}{
+        \centerline{\today{}}
+    }{}
 }
 
 \newcounter{Exercise}

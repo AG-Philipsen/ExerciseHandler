@@ -96,8 +96,8 @@ function ParseCommandLineParameters(){
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_listUsedExercises='TRUE'
                 shift ;;
-            -e | --exercisesFromPool )
-                if [[ $2 =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]]; then
+            -e | --exercisesFromPool ) # Here the second regular expression should *also* be allowed to be matched only when producing a presence sheet
+                if [[ $2 =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]] || [[ $2 =~ ^[1-9][0-9]*([.][1-9][0-9]*)*([,][1-9][0-9]*([.][1-9][0-9]*)*)*$ ]]; then
                     EXHND_exercisesFromPoolAsNumbers="$2"
                 else
                     printf "\e[38;5;9m The value of the option \e[1m$1\e[21m was not correctly specified!"; exit -1

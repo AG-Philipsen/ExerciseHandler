@@ -8,6 +8,9 @@ function DefineGlobalVariables(){
     readonly EXHND_solutionPoolFolder="${EXHND_invokingDirectory}/Solutions"
     readonly EXHND_finalExerciseSheetFolder="${EXHND_invokingDirectory}/FinalExerciseSheets"
     readonly EXHND_finalExerciseSheetPrefix="ExerciseSheet_"
+    readonly EXHND_presenceSheetFolder="${EXHND_invokingDirectory}/PresenceSheets"
+    readonly EXHND_presenceSheetPrefix="PresenceSheet_"
+    readonly EXHND_listOfStudentsFilename="${EXHND_presenceSheetFolder}/students"
     readonly EXHND_exercisesLogFilename=".exercises.log" #One in each final exSheet folder
     readonly EXHND_finalSolutionSheetFolder="${EXHND_invokingDirectory}/FinalSolutionSheets"
     readonly EXHND_finalSolutionSheetPrefix="SolutionSheet_"
