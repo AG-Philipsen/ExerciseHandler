@@ -9,7 +9,7 @@ function __static__LookForExercisesAndMakeList(){
     if [ ${EXHND_displayAlreadyUsedExercises} = 'FALSE' ]; then
         local folder usedExercises exerciseOfList index
         usedExercises=()
-        for folder in $(GetFinalSheetFolderName 'EXERCISE')*/; do
+        for folder in $(GetFinalSheetFolderGlobalPathWithoutNumber 'EXERCISE')*/; do
             if [ ! -f ${folder}${EXHND_exercisesLogFilename} ]; then
                 PrintWarning "Exercise log file not found in \"${folder}\" folder, not able to exclude from list some used exercises!"
                 continue
@@ -116,7 +116,8 @@ function PickUpExercisesFromListAccordingToUserChoice(){
 
 function ReadOutExercisesFromFinalExerciseSheetLogFile(){
     local finalFolder
-    finalFolder="$(GetFinalSheetFolderName 'EXERCISE' ${EXHND_sheetNumber})"
+    finalFolder=$(GetFinalSheetFolderGlobalPathWithoutNumber) || exit -1
+    finalFolder+=${EXHND_sheetNumber}
     if [ ! -d  "${finalFolder}" ]; then
         PrintError "Folder \"$(basename ${finalFolder})\" not found in \"${EXHND_finalExerciseSheetFolder}\"! Aborting..."
         exit -1

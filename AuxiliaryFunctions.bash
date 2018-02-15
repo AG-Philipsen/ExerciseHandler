@@ -1,51 +1,67 @@
-function GetFinalSheetFolderName(){
-    local typeOfSheet number string
-    typeOfSheet="$1"; number="$2"
-    if [ "${typeOfSheet}" = 'EXERCISE' ]; then
+function GetFinalSheetFolderGlobalPathWithoutNumber(){
+    local mode string
+    #Since this function can be used, e.g., in exam mode to get the exercise
+    #final folder, we cannot here just rely on the EXHND_make* variables
+    if [ "$1" != '' ]; then
+        mode=$1
+        if [[ ! ${mode} =~ ^(EXERCISE|SOLUTION|EXAM)$ ]]; then
+            PrintInternal "Function \"${FUNCNAME[0]}\" called with unexpected second argument (\$2=\"$2\")! Aborting..."; exit -1
+        fi
+    else
+        if [ ${EXHND_makeExerciseSheet} = 'TRUE' ] || [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
+            mode='EXERCISE'
+        elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
+            mode='SOLUTION'
+        elif [ ${EXHND_makeExam} = 'TRUE' ]; then
+            mode='EXAM'
+        else
+            PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario! Aborting..."; exit -1
+        fi
+    fi
+    if [ ${mode} = 'EXERCISE' ]; then
         string="${EXHND_finalExerciseSheetFolder}/${EXHND_finalExerciseSheetPrefix}"
-    elif [ "${typeOfSheet}" = 'SOLUTION' ]; then
+    elif [ ${mode} = 'SOLUTION' ]; then
         string="${EXHND_finalSolutionSheetFolder}/${EXHND_finalSolutionSheetPrefix}"
-    else
-        PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=\"${typeOfSheet}\")"; exit -1
+    elif [ ${mode} = 'EXAM' ]; then
+        string="${EXHND_finalExamSheetFolder}/${EXHND_finalExamSheetPrefix}"
     fi
-    if [ "${number}" = '' ]; then
-        echo ${string}
-    else
-        echo ${string}$(printf "%02d" ${number})
-    fi
+    echo ${string}
 }
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 function __static__DetermineSheetNumber(){
-    local typeOfSheet lastSheetNumber;
-    typeOfSheet="$1"
-    if [[ ! ${typeOfSheet} =~ ^(EXERCISE|SOLUTION)$ ]]; then
-        PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=\"${typeOfSheet}\")"; exit -1
+    local lastSheetNumber string finalFoldersArray
+    if [ ${EXHND_makeExam} = 'TRUE' ]; then
+        string=$(GetFinalSheetFolderGlobalPathWithoutNumber 'EXAM') || exit -1 #https://stackoverflow.com/a/20157997
+    else
+        string=$(GetFinalSheetFolderGlobalPathWithoutNumber 'EXERCISE') || exit -1 #https://stackoverflow.com/a/20157997
     fi
-    lastSheetNumber=$(ls "${EXHND_finalExerciseSheetFolder}" | tail -n1 | grep -o "[0-9]\+" | sed 's/^0*//')
-    if [[ $lastSheetNumber =~ ^[0-9]*$ ]]; then
-        if [ "${typeOfSheet}" = 'EXERCISE' ]; then
+    finalFoldersArray=( $(ls -d ${string}*/ 2>/dev/null) )
+    if [ ${#finalFoldersArray[@]} -eq 0 ]; then
+        echo '1'
+        return
+    fi
+    lastSheetNumber=$(grep -o "[0-9]\+" <<< "$(basename ${finalFoldersArray[-1]})" | sed 's/^0*//')
+    if [[ $lastSheetNumber =~ ^[1-9][0-9]*$ ]]; then
+        if [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
             echo $((lastSheetNumber+1))
-        elif [ "${typeOfSheet}" = 'SOLUTION' ]; then
+        elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
             echo ${lastSheetNumber}
         fi
     else
-        echo '1'
+        PrintError "Unable to determine sheet number!"; exit -1
     fi
 }
 
 function SetSheetNumber(){
+    if [ ${EXHND_makeExerciseSheet} = 'FALSE' ] && [ ${EXHND_makeSolutionSheet} = 'FALSE' ] && [ ${EXHND_makeExam} = 'FALSE' ]; then
+        PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario! Aborting..."; exit -1
+    fi
     if [ "${EXHND_sheetNumber}" = '' ]; then
-        if [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
-            EXHND_sheetNumber=$(__static__DetermineSheetNumber 'EXERCISE')
-        elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
-            EXHND_sheetNumber=$(__static__DetermineSheetNumber 'SOLUTION')
-        else
-            PrintInternal "Error in ${FUNCNAME[0]}, entered unexpected branch!"; exit -1
-        fi
+        EXHND_sheetNumber=$(__static__DetermineSheetNumber)
         if [[ ! $EXHND_sheetNumber =~ ^[1-9][0-9]*$ ]]; then
-            PrintError "Unable to determine sheet number!"; exit -1
+            exit -1
         fi
     fi
 }
@@ -102,13 +118,12 @@ function __static__CheckSelectedFilesToBeUsed(){
 }
 
 function SetListOfFilesToBeUsedAndCheckThem(){
-    local typeOfSheet; typeOfSheet="$1"
-    if [ "${typeOfSheet}" = 'EXERCISE' ]; then
+    if [ ${EXHND_makeExerciseSheet} = 'TRUE' ] || [ ${EXHND_makeExam} = 'TRUE' ]; then
         EXHND_filesToBeUsedGlobalPath=( "${EXHND_choosenExercises[@]/#/${EXHND_exercisePoolFolder}/}" ) #Prepend to each array element (last / is a real / in path)
-    elif [ "${typeOfSheet}" = 'SOLUTION' ]; then
+    elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
         EXHND_filesToBeUsedGlobalPath=( "${EXHND_choosenExercises[@]/#/${EXHND_solutionPoolFolder}/}" ) #Prepend to each array element (last / is a real / in path)
     else
-        PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong typeOfSheet passed! (typeOfSheet=\"${typeOfSheet}\")"; exit -1
+        PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario! Aborting..."; exit -1
     fi
     __static__CheckSelectedFilesToBeUsed
 }
@@ -184,9 +199,16 @@ function MakeCompilationInTemporaryFolder(){
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 function MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder(){
-    local newPdfFilename suffix
-    prefix="$1"
-    newPdfFilename="${EXHND_temporaryFolder}/${prefix}_$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
+    local newPdfFilename
+    if [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
+        newPdfFilename="${EXHND_temporaryFolder}/${EXHND_finalExerciseSheetPrefix}$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
+    elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
+        newPdfFilename="${EXHND_temporaryFolder}/${EXHND_finalSolutionSheetPrefix}$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
+    elif [ ${EXHND_makeExam} = 'TRUE' ]; then
+        newPdfFilename="${EXHND_temporaryFolder}/${EXHND_finalExamSheetPrefix}$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
+    else
+        PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario! Aborting..."; exit -1
+    fi
     cp "${EXHND_mainFilename/.tex/.pdf}" "${newPdfFilename}" || exit -2
     xdg-open "${newPdfFilename}" >/dev/null 2>&1 &
     rm -r "${EXHND_compilationFolder}"
@@ -203,10 +225,10 @@ function __static__CreateExerciseLogfile(){
     done
 }
 
-function MoveSheetFilesToFinalFolderOpenItCompilationFolder(){
-    local typeOfSheet destinationFolder newFilenameWithoutExtension texFile
-    typeOfSheet="$1"
-    destinationFolder=$(GetFinalSheetFolderName ${typeOfSheet} ${EXHND_sheetNumber})
+function MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder(){
+    local destinationFolder newFilenameWithoutExtension texFile
+    destinationFolder=$(GetFinalSheetFolderGlobalPathWithoutNumber) || exit -1
+    destinationFolder+=$(printf "%02d" ${EXHND_sheetNumber})
     newFilenameWithoutExtension=$(basename ${destinationFolder})
     if [ -d "${destinationFolder}" ]; then
         if [ ${EXHND_fixFinal} = 'FALSE' ]; then
@@ -218,7 +240,7 @@ function MoveSheetFilesToFinalFolderOpenItCompilationFolder(){
     else
         mkdir "${destinationFolder}" || exit -2
     fi
-    if [ ${typeOfSheet} = 'EXERCISE' ]; then
+    if [ ${EXHND_makeExerciseSheet} = 'TRUE' ] || [ ${EXHND_makeExam} = 'TRUE' ]; then
         __static__CreateExerciseLogfile ${destinationFolder}/${EXHND_exercisesLogFilename}
     fi
     #Rename .tex main file so that then I can move to final folder all .tex files from compilation folder

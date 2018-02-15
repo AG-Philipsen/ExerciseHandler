@@ -48,7 +48,7 @@ elif [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
 elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
     ProduceSolutionSheet
 elif [ ${EXHND_makeExam} = 'TRUE' ]; then
-    PrintError "\"-X\" option not implemented yet!"; exit -1
+    ProduceExamSheet
 else
     PrintWarning "No mutually exclusive option was specified!" "Use the \"--help\" option to get more information!"
 fi

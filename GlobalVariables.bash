@@ -11,6 +11,9 @@ function DefineGlobalVariables(){
     readonly EXHND_exercisesLogFilename=".exercises.log" #One in each final exercise sheet folder
     readonly EXHND_finalSolutionSheetFolder="${EXHND_invokingDirectory}/FinalSolutionSheets"
     readonly EXHND_finalSolutionSheetPrefix="SolutionSheet_"
+    readonly EXHND_finalExamSheetFolder="${EXHND_invokingDirectory}/FinalExamSheets"
+    readonly EXHND_finalExamSheetPrefix="ExamSheet_"
+    readonly EXHND_examLogFilename=".exam.log" #One in each final exam sheet folder
     readonly EXHND_figuresFolder="${EXHND_invokingDirectory}/Figures"
     readonly EXHND_temporaryFolder="${EXHND_invokingDirectory}/tmp"
     readonly EXHND_compilationFolder="${EXHND_temporaryFolder}/TemporaryCompilationFolder"

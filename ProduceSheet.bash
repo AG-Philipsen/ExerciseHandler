@@ -2,7 +2,7 @@ function ProduceExerciseSheet(){
     SetSheetNumber
     CheckTexLocaldefsTemplate
     PickUpExercisesFromListAccordingToUserChoice
-    SetListOfFilesToBeUsedAndCheckThem 'EXERCISE'
+    SetListOfFilesToBeUsedAndCheckThem
     #TeX part: set up main and sub-files before compilation
     CreateTemporaryCompilationFolder
     ProduceTexAuxiliaryFiles
@@ -11,9 +11,9 @@ function ProduceExerciseSheet(){
     ProduceExerciseTexMainFile
     MakeCompilationInTemporaryFolder
     if [ $EXHND_isFinal = 'FALSE' ]; then
-        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder 'EXERCISE'
+        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder
     else
-        MoveSheetFilesToFinalFolderOpenItCompilationFolder 'EXERCISE'
+        MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder
     fi
 }
 
@@ -23,7 +23,7 @@ function ProduceSolutionSheet(){
     SetSheetNumber
     CheckTexLocaldefsTemplate
     ReadOutExercisesFromFinalExerciseSheetLogFile
-    SetListOfFilesToBeUsedAndCheckThem 'SOLUTION'
+    SetListOfFilesToBeUsedAndCheckThem
     #TeX part: set up main and sub-files before compilation
     CreateTemporaryCompilationFolder
     ProduceTexAuxiliaryFiles
@@ -32,9 +32,32 @@ function ProduceSolutionSheet(){
     ProduceSolutionTexMainFile
     MakeCompilationInTemporaryFolder
     if [ $EXHND_isFinal = 'FALSE' ]; then
-        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder 'SOLUTION'
+        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder
     else
-        MoveSheetFilesToFinalFolderOpenItCompilationFolder 'SOLUTION'
+        MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder
+    fi
+}
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+function ProduceExamSheet(){
+    SetSheetNumber #Needed if final
+    CheckTexLocaldefsTemplate
+    PickUpExercisesFromListAccordingToUserChoice
+    SetListOfFilesToBeUsedAndCheckThem
+
+
+    #TeX part: set up main and sub-files before compilation
+    CreateTemporaryCompilationFolder
+    ProduceTexAuxiliaryFiles
+    CheckTexPackagesFile
+    CheckTexDefinitionsFile
+    ProduceExamTexMainFile
+    MakeCompilationInTemporaryFolder
+    if [ $EXHND_isFinal = 'FALSE' ]; then
+        MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder
+    else
+        MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder
     fi
 }
 

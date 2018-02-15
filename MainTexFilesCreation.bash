@@ -45,3 +45,27 @@ function ProduceSolutionTexMainFile(){
 }
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+function ProduceExamTexMainFile(){
+    rm -f ${EXHND_mainFilename}
+    #Redirect standard output to file
+    exec 3>&1 1>${EXHND_mainFilename}
+    #Template production, overwriting the file
+    echo '\documentclass[a4paper]{article}'
+    echo ''
+    echo '\input{Packages}'
+    echo ''
+    echo '\input{Definitions}'
+    echo '\graphicspath{{'"${EXHND_figuresFolder}/"'}}'
+    echo ''
+    echo '\begin{document}'
+    echo '  \Heading'
+    echo "  \Sheet[][${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
+    echo '  %Exercises'
+    echo '  \input{Document}'
+    echo '\end{document}'
+    #Restore standard output
+    exec 1>&3
+}
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------#
