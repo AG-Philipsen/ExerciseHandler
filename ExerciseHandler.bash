@@ -50,7 +50,7 @@ else
     elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
         ProduceSolutionSheet
     elif [ ${EXHND_makeExam} = 'TRUE' ]; then
-        PrintError "\"-X\" option not implemented yet!"; exit -1
+        ProduceExamSheet
     elif [ ${EXHND_makePresenceSheet} = 'TRUE' ]; then
         ProducePresenceSheet
     else

@@ -45,8 +45,6 @@ function ProduceExamSheet(){
     CheckTexLocaldefsTemplate
     PickUpExercisesFromListAccordingToUserChoice
     SetListOfFilesToBeUsedAndCheckThem
-
-
     #TeX part: set up main and sub-files before compilation
     CreateTemporaryCompilationFolder
     ProduceTexAuxiliaryFiles

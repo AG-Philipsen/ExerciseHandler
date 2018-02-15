@@ -7,7 +7,24 @@ HIGH PRIORITY:
    exclusive ones. Implement some logic to forbid using strange combinations of options.
    Write a short preface to the list of option in the helper.
 
- - Implement -X option.
+ - About presence sheet, split latex code in auxiliary files (Packages.tex, Definitions.tex
+   and Document.tex), so that the ProducePresenceSheetTexMainFile looks like the
+   ProduceExerciseTexMainFile one. This may be done implementing three functions in
+   PresenceSheet.bash file. This will uniform the code.
+    * The function ProduceTexAuxiliaryFiles could be used adding to it an if-else
+      on the EXHND_makePresenceSheet in which some local variables setup is done
+      before calling one after each other the three functions
+        1) CreatePackagesFilename
+        2) CreateDefinitionsFilename
+        3) CreateBodyFilename
+    * In the ProducePresenceSheet function the function ProduceTexAuxiliaryFiles would
+      be called before ProducePresenceSheetTexMainFile and no function would have to
+      pass arguments around.
+
+ - Use EXHND_packagesFilename, EXHND_definitionsFilename and EXHND_bodyFilename in
+   Produce*MainTexFile functions -> $(basename ${EXHND_variable%.tex})
+
+ - Implement latex theme and use it in main tex file for -X option.
 
 NORMAL PRIORITY:
 
