@@ -5,7 +5,12 @@
 
 \newlength{\myskip}
 \setlength{\myskip}{6mm plus 1mm minus 1mm}
+%Options for Presence Sheet
 \newcommand{\myEveryEvenRowColor}{\rowcolor[gray]{0.92}}
+\newboolean{switchOffSignatureColumn}
+\setboolean{switchOffSignatureColumn}{false}
+\newboolean{switchOffExerciseColumn}
+\setboolean{switchOffExerciseColumn}{false}
 
 \newcommand{\PrintTutorList}{
     \newboolean{tutorsToBePrinted}                 % xifthen package

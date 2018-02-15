@@ -35,6 +35,7 @@ function MakeSetup(){
           ${EXHND_presenceSheetFolder}\
           ${EXHND_figuresFolder}\
           ${EXHND_temporaryFolder}
+    touch EXHND_listOfStudentsFilename
     if [ ! -f ${EXHND_texLocaldefsFilename} ]; then
         __static__CreateTexLocaldefsTemplate
         PrintInfo "An empty template for the local definitions file \"$(basename ${EXHND_texLocaldefsFilename})\" to be filled out has been created."

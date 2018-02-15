@@ -6,22 +6,6 @@ HIGH PRIORITY:
  - Decide how to handle the production of exercise solutions that might not be there when the
    script is run with the --final option for the exercise sheet production
 
- - Implement option to produce presence sheet, with columns associated to each exercise.
-   This sheet should have a name column (the first one), as many columns as the exercises and
-   one empty column at the end.
-    * This presence sheet should be constructed by the ExerciseHandler internally producing
-      a .tex file (that uses pgfplotstable) in a tmp folder which is then compiled as the
-      exercise/solution sheets, moving the result elsewhere in case of success.
-    * The construction of this sheet should be based on the .log file of the final sheet
-      from where the number of exercise is deduced
-    * The list of students should be contained in a file, whose name has to be stored into
-      the TexLocaldefs.tex file -> Adjust template!
-    * In the pgfplotstable code, the columns should be added on the fly, using the "create on use"
-      key which is described in sections 4.2 and 4.3 (in particular 4.3.1 for empty cols) of the
-      pgfplotstable package https://ctan.org/pkg/pgfplotstable?lang=en
-   This sheet could be used to gather signatures in tutorials (without exercise columns)
-   or to make student auto-evaluate (without signature column) or to do both.
-
  - Refactor command line helper in order to print secondary options after the mutually
    exclusive ones. Implement some logic to forbid using strange combinations of options.
    Write a short preface to the list of option in the helper.

@@ -37,7 +37,6 @@ function __static__ParseExercisesString(){
 function ProducePresenceSheetTexMainFile(){
     local students="$1"
     local numberOfStudents="$2"
-    echo $numberOfStudents
     shift 2
     local arrayOfExerciseNumbers=("$@")
     local exerciseString=$(echo $(printf ",Ex%s" ${arrayOfExerciseNumbers[@]}))
@@ -62,6 +61,13 @@ function ProducePresenceSheetTexMainFile(){
     echo ''
     echo "\input{${EXHND_themeFilename%.tex}}"
     echo "\input{${EXHND_texLocaldefsFilename%.tex}}"
+    echo ''
+    echo '\ifthenelse{\boolean{switchOffSignatureColumn}}'
+    echo "{\ifthenelse{\boolean{switchOffExerciseColumn}}{\edef\colNames{No.,Name}}{\edef\colNames{No.,Name$exerciseString}}}"
+    echo "{\ifthenelse{\boolean{switchOffExerciseColumn}}{\edef\colNames{No.,Name,Signature}}{\edef\colNames{No.,Name,Signature$exerciseString}}}"
+    echo '\ifthenelse{\boolean{switchOffSignatureColumn}}'
+    echo '{\ifthenelse{\boolean{switchOffExerciseColumn}}{\def\headerString{\toprule & }}{\def\headerString{\toprule & & \multicolumn{\myNumberOfExercises}{C|}{\textsc{Exercises}}}}}'
+    echo '{\ifthenelse{\boolean{switchOffExerciseColumn}}{\def\headerString{\toprule & & }}{\def\headerString{\toprule & & & \multicolumn{\myNumberOfExercises}{C|}{\textsc{Exercises}}}}}'
     echo ''
     echo '\newcolumntype{C}{>{\centering\arraybackslash}p{\myColWidth cm}}'
     echo '\newcolumntype{D}{>{\centering\arraybackslash}p{1cm}}'
@@ -91,7 +97,7 @@ function ProducePresenceSheetTexMainFile(){
     echo '\pgfplotstablenew[columns/.expand once={\colNames}]{\myNumberOfStudents}\loadedtable'
     echo '\pgfplotstabletypeset[columns/.expand once={\colNames},'
     echo 'every even row/.style={output empty row, before row={\myEveryEvenRowColor}},'
-    echo "every head row/.style={before row=\toprule \multicolumn{1}{|D|}{} & \multicolumn{1}{C|}{} & \multicolumn{1}{C|}{} & \multicolumn{\myNumberOfExercises}{C|}{\textsc{Exercises}}\\\,after row=\midrule},
+    echo "every head row/.style={before row=\headerString\\\,after row=\midrule},
                             every last row/.style={output empty row, after row=\bottomrule}
                                     ]\loadedtable"
     echo '\end{center}'
