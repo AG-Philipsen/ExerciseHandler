@@ -235,7 +235,7 @@ function MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder(){
     destinationFolder+=$(printf "%02d" ${EXHND_sheetNumber})
     newFilenameWithoutExtension=$(basename ${destinationFolder})
     if [ -d "${destinationFolder}" ]; then
-        if [ ${EXHND_makePresenceSheet} ]; then
+        if [ ${EXHND_makePresenceSheet} = 'TRUE']; then
             mv "${destinationFolder}" "${EXHND_temporaryFolder}/${newFilenameWithoutExtension}_$(date +%d.%m.%Y_%H%M%S)" || exit -2
             mkdir "${destinationFolder}" || exit -2
         else
