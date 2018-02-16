@@ -116,7 +116,7 @@ function PickUpExercisesFromListAccordingToUserChoice(){
 
 function ReadOutExercisesFromFinalExerciseSheetLogFile(){
     local finalFolder
-    finalFolder=$(GetFinalSheetFolderGlobalPathWithoutNumber) || exit -1
+    finalFolder=$(GetFinalSheetFolderGlobalPathWithoutNumber 'EXERCISE') || exit -1
     finalFolder+=${EXHND_sheetNumber}
     if [ ! -d  "${finalFolder}" ]; then
         PrintError "Folder \"$(basename ${finalFolder})\" not found in \"${EXHND_finalExerciseSheetFolder}\"! Aborting..."
