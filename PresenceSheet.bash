@@ -4,7 +4,7 @@ function ProducePresenceSheet(){
     CreateTemporaryCompilationFolder
     ProducePresenceSheetTexMainFile      $(__static__GetStudents) $(__static__GetNumberOfStudents $(__static__GetStudents)) $(__static__ParseExercisesString)
     MakeCompilationInTemporaryFolder
-    MoveSheetFilesToFinalFolderOpenItCompilationFolder 'PRESENCE'
+    MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder 'PRESENCE'
 }
 
 #=========================================================================================================================================================#
