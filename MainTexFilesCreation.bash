@@ -57,7 +57,6 @@ function ProduceExamTexMainFile(){
     echo '\documentclass[a4paper]{article}'
     echo ''
     echo '\input{Packages}'
-    echo '\usepackage{pgfplotstable, booktabs, colortbl, array}'
     echo ''
     echo '\input{Definitions}'
     echo '\graphicspath{{'"${EXHND_figuresFolder}/"'}}'
