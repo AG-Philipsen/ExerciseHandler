@@ -15,14 +15,14 @@
 \setboolean{switchOffExerciseColumn}{false}
 
 \newcommand{\PrintTutorList}{
-    \newboolean{tutorsToBePrinted}                 % xifthen package
-    \setboolean{tutorsToBePrinted}{true}           % xifthen package
+    \newboolean{printTutor}                 % xifthen package
+    \setboolean{printTutor}{true}           % xifthen package
     \newcounter{Tutor}
-    \whiledo{\boolean{tutorsToBePrinted}}{         % xifthen package
+    \whiledo{\boolean{printTutor}}{         % xifthen package
         \refstepcounter{Tutor}
-        \checkTutor(\theTutor)                     % arrayjob package
-        \ifemptydata                               % arrayjob package
-            \setboolean{tutorsToBePrinted}{false}  % xifthen package
+        \checkTutor(\theTutor)              % arrayjob package
+        \ifemptydata                        % arrayjob package
+            \setboolean{printTutor}{false}  % xifthen package
         \else
             \centerline{
                 \textsc{\Tutor(\theTutor):}
@@ -32,25 +32,29 @@
     }
 }
 
-\newcommand{\Heading}{
+\newcommand{\Heading}[1][true]{
+    \newboolean{printTutorList}             % xifthen package
+    \setboolean{printTutorList}{#1}         % xifthen package
     \centerline{\Large\scshape\lecture}%
     \vskip 2pt%
     \centerline{\scshape\semester~--~\professor}%
     \vskip 3pt%
     \hrule%
     \vskip 5pt%
-    \PrintTutorList
+    \ifthenelse{\boolean{printTutorList}}{%
+        \PrintTutorList%
+    }{}
     \vspace{\myskip}
 }
 
-\newcommandx{\Sheet}[3][1=Exercise, 2=, 3=, usedefault]{
+\newcommandx{\Sheet}[3][1=Exercise sheet, 2=, 3=, usedefault]{
     \ifthenelse{\isempty{#2}}{
-        \centerline{\Large\textbf{#1 sheet}}
+        \centerline{\Large\textbf{#1}}
     }{
-        \centerline{\Large\textbf{#1 sheet #2}}
+        \centerline{\Large\textbf{#1 #2}}
     }
     % Print subtitle only for exercises, not for solutions
-    \ifthenelse{\equal{#1}{Exercise}}{
+    \ifthenelse{\equal{#1}{Exercise sheet}}{
         % Here we have to print as subtitle a string which is the concatenation
         % of \exerciseSheetSubtitlePrefix and #2, which could be empty or not in
         % all the possible combinations. So test them.
@@ -65,12 +69,52 @@
                 \centerline{\textit{\exerciseSheetSubtitlePrefix{} #3}}
             }
         }
-        \vspace{2\myskip}
     }{}
     % Print current date as subtitle only for presence sheet
-    \ifthenelse{\equal{#1}{Presence}}{
+    \ifthenelse{\equal{#1}{Presence sheet}}{
         \centerline{\today{}}
     }{}
+    \vspace{2\myskip}
+}
+
+\newcommand{\ExamCoverPage}[1]{%
+    \begingroup
+        \large
+        \noindent\textbf{Duration:} \examDuration  \hfill \textbf{\examDate}
+        \par% https://tex.stackexchange.com/a/91539
+    \endgroup
+    \vfill%
+    \examRules%
+    \vfill%
+    \begingroup
+        \large
+        \centering
+        \begin{tabular}{rp{0.6\textwidth}}
+            Name:       & \underline{\hspace{0.6\textwidth}} \\[3ex]
+            ID number:  & \underline{\hspace{0.6\textwidth}} \\[5ex]
+        \end{tabular}
+        \setlength{\aboverulesep}{0pt}
+        \setlength{\belowrulesep}{0pt}
+        \renewcommand{\arraystretch}{1.8}
+        \newcolumntype{?}{!{\vrule width \heavyrulewidth}}
+        \pgfmathsetmacro{\numberOfExercises}{#1}
+        \pgfplotstableset{columns/Ex/.style={int detect,column type=?c|,column name=\textsc{Exercise}}}
+        \pgfplotstableset{columns/Score/.style={string type,column type=c?,column name=\textsc{Score}}}
+        \pgfplotstableset{create on use/Ex/.style={create col/set list={1,...,\numberOfExercises}}}
+        \pgfplotstableset{create on use/Score/.style={}}
+        \pgfplotstablenew[columns={Ex,Score}]{\numberOfExercises}\loadedtable
+        \pgfplotstabletypeset[every head row/.style={before row=\toprule, after row=\midrule},
+                              every even row/.style={before row={\rowcolor[gray]{0.9}}},
+                              every last row/.style={after row=\midrule \textsc{Total} & \\ \bottomrule}]\loadedtable
+        \vspace{2\myskip}
+        \begin{tabular}{rp{10cm}}
+            Final mark:       & \underline{\hspace{9cm}} \\[3ex]
+        \end{tabular}
+
+    \par% https://tex.stackexchange.com/a/91539
+    \endgroup
+    \vfill
+    \newpage%
 }
 
 \newcounter{Exercise}

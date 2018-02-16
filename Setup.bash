@@ -20,6 +20,9 @@ function __static__CreateTexLocaldefsTemplate(){
     echo '%\Tutor(3)={}       '
     echo '%\TutorMail(3)={}   '
     echo '\def\exerciseSheetSubtitlePrefix{}'
+    echo '\newcommand{\examDuration}{}'
+    echo '\newcommand{\examDate}{}'
+    echo '\newcommand{\examRules}{}'
     echo -e '%__END_DEFINITIONS__%\n\n\n'
     echo -e '%__BEGIN_BODY__%\n%__END_BODY__%\n\n\n'
     #Restore standard output

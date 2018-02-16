@@ -35,6 +35,8 @@ NORMAL PRIORITY:
    it is not so friendly. It would be nice if the handler would take care of this situation.
    -> Think about a possible solution. Have a look to "lsof +D DIR" command.
 
+ - Should it be possible to write a solution of an exam? Decide and in case implement.
+
  - Give the possibility to the user to create her/his own theme. Implement option
    to abilitate this and pass the file. This should contain the needed commands
    (\Heading, etc.) and it should be input in the main tex file. Add description
@@ -49,3 +51,8 @@ LOW PRIORITY:
  - Use consistent exit error codes (now they are hard coded and without a meaning)
  - Is it worth to make the handler fill the optional latex argument of the solution
    environment if empty, reading it from the corresponding exercise?
+ - Refactor the LaTeX theme in order to give much more freedom to the user.
+    * Each sheet should have a own \Head and a \Sheet command
+    * In the classic theme, where we use the same \Head across all sheets,
+      we can implement an internal \genericHead command and use it in
+      all the provided \nameHead commands.
