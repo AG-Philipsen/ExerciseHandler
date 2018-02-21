@@ -20,8 +20,6 @@ HIGH PRIORITY:
  - Use EXHND_packagesFilename, EXHND_definitionsFilename and EXHND_bodyFilename in
    Produce*MainTexFile functions -> $(basename ${EXHND_variable%.tex})
 
- - Implement latex theme and use it in main tex file for -X option.
-
 NORMAL PRIORITY:
 
  - At the moment, if the fix final option is given, we remove the final folder and recreate it.
