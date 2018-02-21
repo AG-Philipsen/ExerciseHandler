@@ -3,10 +3,6 @@ trying to classify it according to priority.
 
 HIGH PRIORITY:
 
- - Refactor command line helper in order to print secondary options after the mutually
-   exclusive ones. Implement some logic to forbid using strange combinations of options.
-   Write a short preface to the list of option in the helper.
-
  - About presence sheet, split latex code in auxiliary files (Packages.tex, Definitions.tex
    and Document.tex), so that the ProducePresenceSheetTexMainFile looks like the
    ProduceExerciseTexMainFile one. This may be done implementing three functions in

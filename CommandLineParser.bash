@@ -162,12 +162,16 @@ function __static__ReplaceShortOptionsWithLongOnes(){
 
 function __static__PrintHelpHeader(){
     printf "\e[1;38;5;44m"
-    printf "              ____ _  __ ____ ___   _____ ____ ____ ____      __ __ ___    _  __ ___   __    ____ ___    \n"
-    printf "             / __/| |/_// __// _ \ / ___//  _// __// __/     / // // _ |  / |/ // _ \ / /   / __// _ \   \n"
-    printf "            / _/ _>  < / _/ / , _// /__ _/ / _\ \ / _/      / _  // __ | /    // // // /__ / _/ / , _/   \n"
-    printf "           /___//_/|_|/___//_/|_| \___//___//___//___/     /_//_//_/ |_|/_/|_//____//____//___//_/|_|    \n"
-    printf "                                                                                                         \n"
-    printf "\n"
+    printf "           ____ _  __ ____ ___   _____ ____ ____ ____      __ __ ___    _  __ ___   __    ____ ___    \n"
+    printf "          / __/| |/_// __// _ \ / ___//  _// __// __/     / // // _ |  / |/ // _ \ / /   / __// _ \   \n"
+    printf "         / _/ _>  < / _/ / , _// /__ _/ / _\ \ / _/      / _  // __ | /    // // // /__ / _/ / , _/   \n"
+    printf "        /___//_/|_|/___//_/|_| \___//___//___//___/     /_//_//_/ |_|/_/|_//____//____//___//_/|_|    \n"
+    printf "                                                                                                      \n"
+    printf "\n\e[21m"
+    printf "     This script is intended to structure the work associated to the tutorials of a lecture. For more \n"
+    printf "     information about the general functionality refer to the README file. Here in the following you  \n"
+    printf "     find a list of existing command line options together with a minimal explanation of each one.    \n"
+    printf "\e[0m\n"
 }
 
 function __static__AddOptionToHelper(){
@@ -178,9 +182,9 @@ function __static__AddOptionToHelper(){
     type="$1"; option="$2"
     indentation='    '; widthOption=28
     if [ "${type}" = 'PRIMARY' ]; then
-        printf "\e[21;38;5;4m${indentation}"
+        printf "\e[1;38;5;208m${indentation}"
     elif [ "${type}" = 'SECONDARY' ]; then
-        printf "\e[21;38;5;2m${indentation}"
+        printf "\e[38;5;228m${indentation}"
     else
         PrintInternal "Function \"${FUNCNAME[0]}\" called with unknown first argument (type of option)!"; exit -1
     fi
@@ -190,9 +194,10 @@ function __static__AddOptionToHelper(){
 
 function __static__PrintHelpFooter(){
     printf "\n\e[38;5;14m  \e[1m\e[4mNOTES\e[24m:\e[21m"
-    printf " 1) The \e[1;38;5;4mblue\e[21;38;5;14m options are mutually exclusive!\n"
-    printf "         2) The \e[1;38;5;2mgreen\e[21;38;5;14m options are secondary to the primary previously specified.\n"
-    printf "         3) Short options can be combined, e.g. \e[38;5;177m-Efn 3\e[38;5;14m is equivalent to \e[38;5;177m-E -f -n 3\e[38;5;14m."
+    printf " 1) The \e[1;38;5;208morange\e[21;38;5;14m options are mutually exclusive!\n"
+    printf "         2) The \e[1;38;5;228mcream\e[21;38;5;14m options are secondary to the primary previously specified.\n"
+    printf "         3) Values of the options have to be specified after the option leaving a space (no = sign is accepted).\n"
+    printf "         4) Short options can be combined, e.g. \e[38;5;177m-Efn 3\e[38;5;14m is equivalent to \e[38;5;177m-E -f -n 3\e[38;5;14m."
     printf "\e[0m\n\n\n"
 }
 
