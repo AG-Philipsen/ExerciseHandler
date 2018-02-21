@@ -1,4 +1,124 @@
-#NOTE: The following function will be used with readarray and therefore
+function ParseCommandLineParameters(){
+    declare -rA mapOptions=( ['-h']='--help'
+                             ['-U']='--setup'
+                             ['-N']='--newSheet'
+                             ['-E']='--makeExerciseSheet'
+                             ['-S']='--makeSolutionSheet'
+                             ['-P']='--makePresenceSheet'
+                             ['-X']='--makeExam'
+                             ['-L']='--listUsedExercises'
+                             ['-a']='--showAllExercises'
+                             ['-e']='--exercises'
+                             ['-p']='--exerciseSheetPostfix'
+                             ['-n']='--sheetNumber'
+                             ['-f']='--final'
+                             ['-x']='--fix'
+                             ['-t']='--themeFile' )
+    local mutuallyExclusiveOptionsPassed; mutuallyExclusiveOptionsPassed=()
+    #The following if is important because, if there are no command line options,
+    #the readarray would still return an array with one empty option which would
+    #then trigger an error in the parser (it would enter the while instead of skipping it)
+    if [ $# -gt 0 ]; then
+        local commandLineOptions
+        readarray -t commandLineOptions <<< "$(__static__SplitCombinedShortOptionsInSingleOptions "$@")"
+        readarray -t commandLineOptions <<< "$(__static__ReplaceShortOptionsWithLongOnes "${commandLineOptions[@]}")"
+        #Reset function arguments
+        set -- "${commandLineOptions[@]}"
+    fi
+    #Additional logic to distinguish between primary and secondary options
+    local primaryOptions; primaryOptions=( '-U' '-N' '-E' '-P' '-S' '-X' '-L' ) #To keep associative array "ordered"
+    declare -rA secondaryToPrimaryOptionsMapping=([${primaryOptions[0]}]=''
+                                                  [${primaryOptions[1]}]=''
+                                                  [${primaryOptions[2]}]='-a -e -p -n -f -x -t'
+                                                  [${primaryOptions[3]}]='-n -f -x -t'
+                                                  [${primaryOptions[4]}]='-e -n -t'
+                                                  [${primaryOptions[5]}]='-e -f -x -t'
+                                                  [${primaryOptions[6]}]='' )
+    #Parse options: here only long options are used
+    while [ $# -gt 0 ]; do
+        case $1 in
+            --help )
+                __static__PrintHelp
+                exit 0
+                shift ;;
+            --setup )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_doSetup="TRUE"
+                shift;;
+            --newSheet )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_produceNewExercise='TRUE'
+                shift ;;
+            --makeExerciseSheet )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_makeExerciseSheet='TRUE'
+                shift ;;
+            --makeSolutionSheet )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_makeSolutionSheet='TRUE'
+                shift ;;
+            --makePresenceSheet )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_makePresenceSheet='TRUE'
+                shift ;;
+            --makeExam )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_makeExam='TRUE'
+                shift ;;
+            --listUsedExercises )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_listUsedExercises='TRUE'
+                shift ;;
+            --exercises )
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
+                if [[ ${mutuallyExclusiveOptionsPassed[-1]} != '--makePresenceSheet'  &&  $2 =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]] ||
+                   [[ ${mutuallyExclusiveOptionsPassed[-1]}  = '--makePresenceSheet'  &&  $2 =~ ^[1-9][0-9]*([.][1-9][0-9]*)*([,][1-9][0-9]*([.][1-9][0-9]*)*)*$ ]]; then
+                    EXHND_exercisesFromPoolAsNumbers="$2"
+                else
+                    PrintError "The value of the option \"$1\" was not correctly specified!"; exit -1
+                fi
+                shift 2 ;;
+            --exerciseSheetPostfix )
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
+                EXHND_exerciseSheetSubtitlePostfix="$2"
+                shift 2 ;;
+            --sheetNumber )
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
+                EXHND_sheetNumber="$2"
+                shift 2 ;;
+            --final )
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
+                EXHND_isFinal='TRUE'
+                shift ;;
+            --fix )
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
+                EXHND_isFinal='TRUE'
+                EXHND_fixFinal='TRUE'
+                shift ;;
+            --showAllExercises )
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
+                EXHND_displayAlreadyUsedExercises='TRUE'
+                shift ;;
+            --themeFile )
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
+                PrintError "Option \"$1\" still to be implemented! Aborting..."; exit -1; shift ;;
+            *)
+                PrintError "Unrecognized option \"$1\"! Aborting..."; exit -1; shift ;;
+        esac
+    done
+
+    if [ ${#mutuallyExclusiveOptionsPassed[@]} -gt 1 ]; then
+        PrintError "Multiple mutually exclusive options were passed to the script! Use the \"--help\" option to check."
+        exit -1
+    fi
+    exit
+}
+
+#===============================================================================================================================#
+#NOTE: The functions
+#         __static__SplitCombinedShortOptionsInSingleOptions
+#         __static__ReplaceShortOptionsWithLongOnes
+#      will be used with readarray and therefore
 #      the printf in the end uses '\n' as separator (this preserves spaces
 #      in options)
 function __static__SplitCombinedShortOptionsInSingleOptions(){
@@ -17,118 +137,113 @@ function __static__SplitCombinedShortOptionsInSingleOptions(){
     printf "%s\n" "${newOptions[@]}"
 }
 
-
-function ParseCommandLineParameters(){
-    local mutuallyExclusiveOptionsPassed; mutuallyExclusiveOptionsPassed=()
-    #The following if is important because, if there are no command line options,
-    #the readarray would still return an array with one empty option which would
-    #then trigger an error in the parser (it would enter the while instead of skipping it)
-    if [ $# -gt 0 ]; then
-        local commandLineOptions
-        readarray -t commandLineOptions <<< "$(__static__SplitCombinedShortOptionsInSingleOptions "$@")"
-        #Reset function arguments
-        set -- "${commandLineOptions[@]}"
+function __static__KeyInArray(){
+    local array key
+    key=$1; array=$2
+    if eval '[ ${'$array'[$key]+isSet} ]'; then
+        return 0;
+    else
+        return 1;
     fi
-    #Parse them
-    while [ $# -gt 0 ]; do
-        case $1 in
-            -h | --help )
-                printf "\e[1;38;5;44m\n"
-                printf "              ____ _  __ ____ ___   _____ ____ ____ ____      __ __ ___    _  __ ___   __    ____ ___    \n"
-                printf "             / __/| |/_// __// _ \ / ___//  _// __// __/     / // // _ |  / |/ // _ \ / /   / __// _ \   \n"
-                printf "            / _/ _>  < / _/ / , _// /__ _/ / _\ \ / _/      / _  // __ | /    // // // /__ / _/ / , _/   \n"
-                printf "           /___//_/|_|/___//_/|_| \___//___//___//___/     /_//_//_/ |_|/_/|_//____//____//___//_/|_|    \n"
-                printf "                                                                                                         \n"
-                printf "\n"
-                printf "\e[21;38;5;4m\n"
-                printf "    -U | --setup                     ->    Set up of the evironment creating local definitions template and folders.\n"
-                printf "    -N | --newSheet                  ->    Create a new empty exercise and a new empty solution, which are added to the pools.\n"
-                printf "    -E | --makeExerciseSheet         ->    Create a new exercise sheet or fix a previous one. \n"
-                printf "    -S | --makeSolutionSheet         ->    Create a new solution sheet or fix a previous one. \n"
-                printf "    -P | --makePresenceSheet         ->    Create a new presence sheet. \n"
-                printf "    -X | --makeExam                  ->    Create a new exam or fix a previous one. \n"
-                printf "    -L | --listUsedExercises         ->    Get list of exercise tex files used in already produced final exercises. \n"
-                printf "\e[21;38;5;2m\n"
-                printf "    -a | --showAllExercises          ->    Display all available exercise to let the user choose. \n"
-                printf "                                           By default, only those still not used for final sheets are listed.\n"
-                printf "    -e | --exercisesFromPool         ->    Avoid interactive selection of exercises and choose them directly. \n"
-                printf "                                           Use a comma separated list, where ranges X-Y are allowed (boundaries included).\n"
-                printf "                                           Order is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].\n"
-                printf "    -p | --exerciseSheetPostfix      ->    Set the exercise sheet subtitle postfix. \n"
-                printf "    -n | --sheetNumber               ->    Set the sheet number to be produced (either exercise or solution sheet). \n"
-                printf "    -f | --final                     ->    Move the produced pdf and auxiliary files to the corresponding final folder. \n"
-                printf "    -x | --fix                       ->    Produce again a final sheet using its exercises and overwriting it. \n"
-                printf "                                           It implies -f. Use -N to specify the exercise sheet number.\n"
+}
 
-                printf "    -t | --themeFile                 ->    default value = ClassicTheme \n"
-                printf "                                           The user can provide a custom theme file.\n"
-                printf "\n\n\e[38;5;14m  \e[1m\e[4mNOTES\e[24m:\e[21m"
-                printf " 1) The \e[1;38;5;4mblue\e[21;38;5;14m options are mutually exclusive!\n"
-                printf "         2) Short options can be combined, e.g. \e[38;5;177m-Efn 3\e[38;5;14m is equivalent to \e[38;5;177m-E -f -n 3\e[38;5;14m."
-                printf "\e[0m\n\n\n"
-                exit 0
-                shift ;;
-            -U | --setup )
-                mutuallyExclusiveOptionsPassed+=( $1 )
-                EXHND_doSetup="TRUE"
-                shift;;
-            -N | --newSheet )
-                mutuallyExclusiveOptionsPassed+=( $1 )
-                EXHND_produceNewExercise='TRUE'
-                shift ;;
-            -E | --makeExerciseSheet )
-                mutuallyExclusiveOptionsPassed+=( $1 )
-                EXHND_makeExerciseSheet='TRUE'
-                shift ;;
-            -S | --makeSolutionSheet )
-                mutuallyExclusiveOptionsPassed+=( $1 )
-                EXHND_makeSolutionSheet='TRUE'
-                shift ;;
-            -P | --makePresenceSheet )
-                mutuallyExclusiveOptionsPassed+=( $1 )
-                EXHND_makePresenceSheet='TRUE'
-                shift ;;
-            -X | --makeExam )
-                mutuallyExclusiveOptionsPassed+=( $1 )
-                EXHND_makeExam='TRUE'
-                shift ;;
-            -L | --listUsedExercises )
-                mutuallyExclusiveOptionsPassed+=( $1 )
-                EXHND_listUsedExercises='TRUE'
-                shift ;;
-            -e | --exercisesFromPool ) # Here the second regular expression should *also* be allowed to be matched only when producing a presence sheet
-                if [[ $2 =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]] || [[ $2 =~ ^[1-9][0-9]*([.][1-9][0-9]*)*([,][1-9][0-9]*([.][1-9][0-9]*)*)*$ ]]; then
-                    EXHND_exercisesFromPoolAsNumbers="$2"
-                else
-                    printf "\e[38;5;9m The value of the option \e[1m$1\e[21m was not correctly specified!"; exit -1
-                fi
-                shift 2 ;;
-            -p | --exerciseSheetPostfix )
-                EXHND_exerciseSheetSubtitlePostfix="$2"
-                shift 2 ;;
-            -n | --sheetNumber )
-                EXHND_sheetNumber="$2"
-                shift 2 ;;
-            -f | --final )
-                EXHND_isFinal='TRUE'
-                shift ;;
-            -x | --fix )
-                EXHND_isFinal='TRUE'
-                EXHND_fixFinal='TRUE'
-                shift ;;
-            -a | --showAllExercises )
-                EXHND_displayAlreadyUsedExercises='TRUE'
-                shift ;;
-
-            -t | --themeFile )
-                PrintError "Option \"$1\" still to be implemented! Aborting..."; exit -1; shift ;;
-            *)
-                PrintError "Unrecognized option \"$1\"! Aborting..."; exit -1; shift ;;
-        esac
+function __static__ReplaceShortOptionsWithLongOnes(){
+    local newOptions value
+    newOptions=()
+    for value in "$@"; do
+        if __static__KeyInArray "${value}" mapOptions; then
+            newOptions+=( ${mapOptions[$value]} )
+        else
+            newOptions+=( "${value}" )
+        fi
     done
+    printf "%s\n" "${newOptions[@]}"
+}
 
-    if [ ${#mutuallyExclusiveOptionsPassed[@]} -gt 1 ]; then
-        PrintError "Multiple mutually exclusive options were passed to the script! Use the \"--help\" option to check. Aborting..."
-        exit -1
+function __static__PrintHelpHeader(){
+    printf "\e[1;38;5;44m"
+    printf "              ____ _  __ ____ ___   _____ ____ ____ ____      __ __ ___    _  __ ___   __    ____ ___    \n"
+    printf "             / __/| |/_// __// _ \ / ___//  _// __// __/     / // // _ |  / |/ // _ \ / /   / __// _ \   \n"
+    printf "            / _/ _>  < / _/ / , _// /__ _/ / _\ \ / _/      / _  // __ | /    // // // /__ / _/ / , _/   \n"
+    printf "           /___//_/|_|/___//_/|_| \___//___//___//___/     /_//_//_/ |_|/_/|_//____//____//___//_/|_|    \n"
+    printf "                                                                                                         \n"
+    printf "\n"
+}
+
+function __static__AddOptionToHelper(){
+    local type option indentation widthOption
+    #Here option could be the short option with something appended to distinguish between repeated secondary options.
+    #For example, -e is used both for -P and for the rest. To print the correct description for -e used with -P
+    #we pass to this function "-eP" as second argument and we use ${option:0:2} when we need only -e
+    type="$1"; option="$2"
+    indentation='    '; widthOption=28
+    if [ "${type}" = 'PRIMARY' ]; then
+        printf "\e[21;38;5;4m${indentation}"
+    elif [ "${type}" = 'SECONDARY' ]; then
+        printf "\e[21;38;5;2m${indentation}"
+    else
+        PrintInternal "Function \"${FUNCNAME[0]}\" called with unknown first argument (type of option)!"; exit -1
+    fi
+    printf "%-${widthOption}s%s" "${option:0:2} | ${mapOptions[${option:0:2}]}" "  ->  "
+    printf "${optionHelp[$option]//\\n/\\n$(printf "%${widthOption}s" '')      ${indentation}}\n\e[0m"
+}
+
+function __static__PrintHelpFooter(){
+    printf "\n\e[38;5;14m  \e[1m\e[4mNOTES\e[24m:\e[21m"
+    printf " 1) The \e[1;38;5;4mblue\e[21;38;5;14m options are mutually exclusive!\n"
+    printf "         2) The \e[1;38;5;2mgreen\e[21;38;5;14m options are secondary to the primary previously specified.\n"
+    printf "         3) Short options can be combined, e.g. \e[38;5;177m-Efn 3\e[38;5;14m is equivalent to \e[38;5;177m-E -f -n 3\e[38;5;14m."
+    printf "\e[0m\n\n\n"
+}
+
+function __static__PrintHelp(){
+    declare -rA optionHelp=(['-U']='Set up of the evironment creating local definitions template and folders.'
+                            ['-N']='Create a new empty exercise and a new empty solution, which are added to the pools.'
+                            ['-E']='Create a new exercise sheet or fix a previous one.'
+                            ['-S']='Create a new solution sheet or fix a previous one.'
+                            ['-P']='Create a new presence sheet.'
+                            ['-X']='Create a new exam or fix a previous one.'
+                            ['-L']='Get list of exercise tex files used in already produced final exercises.'
+                            ['-a']='Display all available exercise to let the user choose.\nBy default, only those still not used for final sheets are listed.'
+                            ['-e']='Avoid interactive selection of exercises and choose them directly.\nUse a comma separated list, where ranges X-Y are allowed (boundaries included).\nOrder is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].'
+                            ['-eP']='Specify the headers of the exercise columns. Use a comma separated\nlist, where sub-exercises X.Y are allowed (e.g. \"1,2.1,2.2,3\").'
+                            ['-p']='Set the exercise sheet subtitle postfix.'
+                            ['-n']='Set the sheet number to be produced (either exercise or solution sheet).'
+                            ['-f']='Move the produced pdf and auxiliary files to the corresponding final folder.'
+                            ['-x']='Produce again a final sheet using its exercises and overwriting it.\nIt implies -f. Use -N to specify the exercise sheet number.'
+                            ['-t']='User theme TeX file to be used.'    )
+    local primaryOption secondaryOption
+    __static__PrintHelpHeader
+    for primaryOption in ${primaryOptions[@]}; do
+        __static__AddOptionToHelper 'PRIMARY' ${primaryOption}
+        for secondaryOption in ${secondaryToPrimaryOptionsMapping[${primaryOption}]}; do #on purpose not quoted to split secondary options
+            if [ $primaryOption = '-P' ] && [ $secondaryOption = '-e' ]; then
+                secondaryOption+='P'
+            fi
+            __static__AddOptionToHelper 'SECONDARY' ${secondaryOption}
+        done
+        echo
+    done
+    __static__PrintHelpFooter
+}
+
+function __static__GetKeyFromValueInArray(){
+    local value key array content
+    value=$1; array=$2;
+    for key in $(eval echo "\${!${array}[@]}"); do
+        if [ $(eval echo "\${${array}[$key]}") = $value ]; then
+            printf "%s" "$key"
+            return 0
+        fi
+    done
+    return 1
+}
+
+function __static__CheckSecondaryOption(){
+    local primaryOption secondaryOption
+    primaryOption=$(__static__GetKeyFromValueInArray $1 mapOptions) || exit -1
+    secondaryOption=$(__static__GetKeyFromValueInArray $2 mapOptions) || exit -1
+    if [ $(grep -c -- "${secondaryOption}" <<< "${secondaryToPrimaryOptionsMapping[$primaryOption]}") -eq 0 ]; then
+        PrintError "The specified option \"${secondaryOption}\" is not a secondary option of \"${primaryOption}\"!"; exit -1
     fi
 }
