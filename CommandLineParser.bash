@@ -111,7 +111,6 @@ function ParseCommandLineParameters(){
         PrintError "Multiple mutually exclusive options were passed to the script! Use the \"--help\" option to check."
         exit -1
     fi
-    exit
 }
 
 #===============================================================================================================================#
