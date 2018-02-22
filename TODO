@@ -20,10 +20,6 @@ HIGH PRIORITY:
  - Use EXHND_packagesFilename, EXHND_definitionsFilename and EXHND_bodyFilename in
    Produce*MainTexFile functions -> $(basename ${EXHND_variable%.tex})
 
- - Add a second optional argument (using the \newenvironmentx command of xargs package)
-   to attribute a number of points to each exercise. Print it on the "Exercise line"
-   to the right (\hfill).
-
 
 NORMAL PRIORITY:
 

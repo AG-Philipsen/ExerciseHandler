@@ -6,6 +6,7 @@
 
 
 %__BEGIN_DEFINITIONS__%
+\pgfplotsset{compat=1.13}
 \newlength{\myskip}
 \setlength{\myskip}{6mm plus 1mm minus 1mm}
 
@@ -85,7 +86,7 @@
         \large
         \centering
         \begin{tabular}{rp{0.6\textwidth}}
-            Name:       & \underline{\hspace{0.6\textwidth}} \\[3ex]
+            Full name:  & \underline{\hspace{0.6\textwidth}} \\[3ex]
             ID number:  & \underline{\hspace{0.6\textwidth}} \\[5ex]
         \end{tabular}
         \setlength{\aboverulesep}{0pt}
@@ -156,13 +157,21 @@
 }
 
 \newcounter{Exercise}
-\newenvironment{exercise}[1][optional]
+\newenvironmentx{exercise}[2][1=, 2=]
 {
     \refstepcounter{Exercise}
     \ifthenelse{\isempty{#1}}{
-        \noindent{\large\textbf{Exercise \theExercise}}\\[0.75ex]
+        \ifthenelse{\isempty{#2}}{
+            \noindent{\large\textbf{Exercise \theExercise}}\\[0.75ex]
+        }{
+            \noindent{\large\textbf{Exercise \theExercise}}\hfill\texttt{(#2 pts.)}\\[0.75ex]
+        }
     }{
-        \noindent{\large\textbf{Exercise \theExercise}} $\;$[\textit{#1}]\\[0.75ex]
+        \ifthenelse{\isempty{#2}}{
+            \noindent{\large\textbf{Exercise \theExercise}} $\;$[\textit{#1}]\\[0.75ex]
+        }{
+            \noindent{\large\textbf{Exercise \theExercise}} $\;$[\textit{#1}]\hfill\texttt{(#2 pts.)}\\[0.75ex]
+        }
     }
 }
 {\par\vspace{\myskip}}
