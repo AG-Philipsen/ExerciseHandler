@@ -20,7 +20,6 @@ HIGH PRIORITY:
  - Use EXHND_packagesFilename, EXHND_definitionsFilename and EXHND_bodyFilename in
    Produce*MainTexFile functions -> $(basename ${EXHND_variable%.tex})
 
-
 NORMAL PRIORITY:
 
  - At the moment, if the fix final option is given, we remove the final folder and recreate it.
@@ -31,11 +30,6 @@ NORMAL PRIORITY:
    -> Think about a possible solution. Have a look to "lsof +D DIR" command.
 
  - Should it be possible to write a solution of an exam? Decide and in case implement.
-
- - Should there be a column "available score" in the exam cover page table? If yes, how
-   to achieve it? A possibility would be to check if points were provided to exercises
-   (Error if not) and extract them in Bash. Then these number should be passed to
-   the \ExamCoverPage command with a second argument.
 
  - Give the possibility to the user to create her/his own theme. Implement option
    to abilitate this and pass the file. This should contain the needed commands

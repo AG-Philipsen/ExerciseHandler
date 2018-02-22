@@ -50,10 +50,29 @@ function ProduceSolutionTexMainFile(){
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
+function __static__GetPointsFromExercises(){
+    local exercise score allScores; allScores=''
+    for exercise in "${EXHND_filesToBeUsedGlobalPath[@]}"; do
+        score=$(grep '\\begin{exercise}\[.*\]\[[0-9]\+\]' ${exercise})
+        if [ "${score}" = '' ]; then
+            PrintError "Exercise \"$(basename ${exercise})\" seems not to contain a score! Invalid for exam!"; exit -1
+        fi
+        score=$(grep -o '\[[0-9]\+\]$' <<< "${score}" | grep -o '[0-9]\+')
+        if [[ ! ${score} =~ ^[0-9]+$ ]]; then
+            PrintInternal "Error extracting score from exercise \"$(basename ${exercise})\"!"; exit -1
+        fi
+        allScores+="${score},"
+    done
+    echo ${allScores%?}
+}
+
 function ProduceExamTexMainFile(){
+    #Single exercise warning
     if [ $(basename ${EXHND_themeFilename}) = 'ClassicTheme.tex' ] && [ ${#EXHND_choosenExercises[@]} -eq 1 ]; then
         PrintWarning "Having only one exercise in the exam leads to an extra empty line in cover page table -> https://tex.stackexchange.com/a/373213"
     fi
+    #Get scores
+    local exerciseScores; exerciseScores=$(__static__GetPointsFromExercises) || { PrintError "Unable to recover scores from exercises in exam mode!" && exit -1; }
     rm -f ${EXHND_mainFilename}
     #Redirect standard output to file
     exec 3>&1 1>${EXHND_mainFilename}
@@ -70,7 +89,7 @@ function ProduceExamTexMainFile(){
     echo '\begin{document}'
     echo '  \Heading[false]'
     echo "  \Sheet[Exam][][${EXHND_exerciseSheetSubtitlePostfix}]"
-    echo "  \ExamCoverPage{${#EXHND_choosenExercises[@]}}"
+    echo "  \ExamCoverPage{${#EXHND_choosenExercises[@]}}{${exerciseScores}}"
     echo '  %Exercises'
     echo '  \input{Document}'
     echo '\end{document}'

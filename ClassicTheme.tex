@@ -73,7 +73,7 @@
     \vspace{2\myskip}
 }
 
-\newcommand{\ExamCoverPage}[1]{%
+\newcommand{\ExamCoverPage}[2]{%
     \begingroup
         \large
         \noindent\textbf{Duration:} \examDuration  \hfill \textbf{\examDate}
@@ -89,25 +89,38 @@
             Full name:  & \underline{\hspace{0.6\textwidth}} \\[3ex]
             ID number:  & \underline{\hspace{0.6\textwidth}} \\[5ex]
         \end{tabular}
+        %Prepare table formatting and layout
         \setlength{\aboverulesep}{0pt}
         \setlength{\belowrulesep}{0pt}
         \renewcommand{\arraystretch}{1.8}
         \newcolumntype{?}{!{\vrule width \heavyrulewidth}}
+        \newcolumntype{C}{>{\centering\arraybackslash}p{0.2\textwidth}}
         \pgfmathsetmacro{\numberOfExercises}{#1}
-        \pgfplotstableset{columns/Ex/.style={int detect,column type=?c|,column name=\textsc{Exercise}}}
-        \pgfplotstableset{columns/Score/.style={string type,column type=c?,column name=\textsc{Score}}}
-        \pgfplotstableset{create on use/Ex/.style={create col/set list={1,...,\numberOfExercises}}}
-        \pgfplotstableset{create on use/Score/.style={}}
+        %Sum exercise points -> https://tex.stackexchange.com/a/336724
+        \pgfmathsetmacro{\totalScore}{0}%
+        \foreach \i in {#2}{%
+          \pgfmathsetmacro\totalScore{int(\totalScore+\i)}
+          \xdef\totalScore{\totalScore}%
+        }%
+        \pgfmathparse{\totalScore}
+        %Prepare and make table
+        \pgfplotstableset{%
+               brackets/.style={postproc cell content/.append style={/pgfplots/table/@cell content/.add={\relax$\;\quad$/}{}}},
+               columns/Ex/.style={int detect,column type=?C|,column name=\textsc{Exercise}},
+               columns/Score/.style={string type, brackets, column type=C?,column name=\textsc{Score}},
+               create on use/Ex/.style={create col/set list={1,...,\numberOfExercises}},
+               create on use/Score/.style={create col/set list={#2}},
+        }
         \pgfplotstablenew[columns={Ex,Score}]{\numberOfExercises}\loadedtable
-        \pgfplotstabletypeset[every head row/.style={before row=\toprule, after row=\midrule},
-                              every even row/.style={before row={\rowcolor[gray]{0.9}}},
-                              every last row/.style={after row=\midrule \textsc{Total} & \\ \bottomrule}]\loadedtable
-        \vspace{2\myskip}
+        \pgfplotstabletypeset[
+               every head row/.style={before row=\toprule, after row=\midrule},
+               every even row/.style={before row={\rowcolor[gray]{0.9}}},
+               every last row/.style={after row=\midrule \textsc{Total} & $\;\quad/\totalScore$ \\ \bottomrule}]{\loadedtable}
+        \par\vspace{2\myskip}
         \begin{tabular}{rp{10cm}}
             Final mark:       & \underline{\hspace{9cm}} \\[3ex]
         \end{tabular}
-
-    \par% https://tex.stackexchange.com/a/91539
+        \par% https://tex.stackexchange.com/a/91539
     \endgroup
     \vfill
     \newpage%
