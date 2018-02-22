@@ -85,7 +85,7 @@ function CheckBlocksInFile(){
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
-function CheckTexLocaldefsTemplate(){
+function CheckTexLocaldefsAndLatexTheme(){
     local line brackets oldIFS
     #Parse file line by line
     while read -r line || [[ -n "${line}" ]]; do # [[ -n "${line}" ]] is to read also last line if it does not end with \n
@@ -106,7 +106,8 @@ function CheckTexLocaldefsTemplate(){
         IFS=${oldIFS}
     done < "${EXHND_texLocaldefsFilename}"
     #General checks on blocks
-    CheckBlocksInFile "${EXHND_texLocaldefsFilename}" "PACKAGES" "DEFINITIONS" "BODY"
+    CheckBlocksInFile "${EXHND_texLocaldefsFilename}" "OPTIONS" "PACKAGES" "DEFINITIONS" "BODY"
+    CheckBlocksInFile "${EXHND_themeFilename}" "PACKAGES" "DEFINITIONS"
 }
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -117,7 +118,7 @@ function __static__CheckSelectedFilesToBeUsed(){
         if [ ! -f ${file} ]; then
             PrintError "File \"$(basename ${file})\" not found in \"$(dirname ${EXHND_solutionPoolFolder})\" folder."; exit -1
         fi
-        CheckBlocksInFile ${file} "PACKAGES" "DEFINITIONS" "BODY"
+        CheckBlocksInFile ${file} "OPTIONS" "PACKAGES" "DEFINITIONS" "BODY"
     done
 }
 
@@ -153,10 +154,10 @@ function __static__ProduceTexAuxiliaryFile(){
     local outputFilename partOfDocument listOfFiles file
     outputFilename="$1"; partOfDocument="$2"; shift 2
     listOfFiles=( "$@" )
-    if [[ ! ${partOfDocument} =~ ^(PACKAGES|DEFINITIONS|BODY)$  ]]; then
+    if [[ ! ${partOfDocument} =~ ^(OPTIONS|PACKAGES|DEFINITIONS|BODY)$  ]]; then
         PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong partOfDocument passed! (partOfDocument=\"${partOfDocument}\")"; exit -1
     else
-        if [ ${partOfDocument} = 'PACKAGES' ] || [ ${partOfDocument} = 'DEFINITIONS' ]; then
+        if [[ ${partOfDocument} =~ ^(PACKAGES|DEFINITIONS)$  ]]; then
             __static__ExtractBlockFromFileAndAppendToAnotherFile  ${EXHND_themeFilename}  ${outputFilename}  ${partOfDocument}
         fi
         __static__ExtractBlockFromFileAndAppendToAnotherFile  ${EXHND_texLocaldefsFilename}  ${outputFilename}  ${partOfDocument}
@@ -171,6 +172,7 @@ function __static__ProduceTexAuxiliaryFile(){
 }
 
 function ProduceTexAuxiliaryFiles(){
+    __static__ProduceTexAuxiliaryFile ${EXHND_optionsFilename}     "OPTIONS"     "${EXHND_filesToBeUsedGlobalPath[@]}"
     __static__ProduceTexAuxiliaryFile ${EXHND_packagesFilename}    "PACKAGES"    "${EXHND_filesToBeUsedGlobalPath[@]}"
     __static__ProduceTexAuxiliaryFile ${EXHND_definitionsFilename} "DEFINITIONS" "${EXHND_filesToBeUsedGlobalPath[@]}"
     __static__ProduceTexAuxiliaryFile ${EXHND_bodyFilename}        "BODY"        "${EXHND_filesToBeUsedGlobalPath[@]}"

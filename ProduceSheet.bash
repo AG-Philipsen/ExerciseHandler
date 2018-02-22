@@ -1,6 +1,6 @@
 function ProduceExerciseSheet(){
     SetSheetNumber
-    CheckTexLocaldefsTemplate
+    CheckTexLocaldefsAndLatexTheme
     PickUpExercisesFromListAccordingToUserChoice
     SetListOfFilesToBeUsedAndCheckThem
     #TeX part: set up main and sub-files before compilation
@@ -21,7 +21,7 @@ function ProduceExerciseSheet(){
 
 function ProduceSolutionSheet(){
     SetSheetNumber
-    CheckTexLocaldefsTemplate
+    CheckTexLocaldefsAndLatexTheme
     ReadOutExercisesFromFinalExerciseSheetLogFile
     SetListOfFilesToBeUsedAndCheckThem
     #TeX part: set up main and sub-files before compilation
@@ -42,7 +42,7 @@ function ProduceSolutionSheet(){
 
 function ProduceExamSheet(){
     SetSheetNumber #Needed if final
-    CheckTexLocaldefsTemplate
+    CheckTexLocaldefsAndLatexTheme
     PickUpExercisesFromListAccordingToUserChoice
     SetListOfFilesToBeUsedAndCheckThem
     #TeX part: set up main and sub-files before compilation

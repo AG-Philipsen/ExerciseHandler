@@ -3,6 +3,8 @@ function ProduceExerciseTexMainFile(){
     #Redirect standard output to file
     exec 3>&1 1>${EXHND_mainFilename}
     #Template production, overwriting the file
+    echo '\input{Options}'
+    echo ''
     echo '\documentclass[a4paper]{article}'
     echo ''
     echo '\input{Packages}'
@@ -27,6 +29,8 @@ function ProduceSolutionTexMainFile(){
     #Redirect standard output to file
     exec 3>&1 1>${EXHND_mainFilename}
     #Template production, overwriting the file
+    echo '\input{Options}'
+    echo ''
     echo '\documentclass[a4paper]{article}'
     echo ''
     echo '\input{Packages}'
@@ -54,6 +58,8 @@ function ProduceExamTexMainFile(){
     #Redirect standard output to file
     exec 3>&1 1>${EXHND_mainFilename}
     #Template production, overwriting the file
+    echo '\input{Options}'
+    echo ''
     echo '\documentclass[a4paper]{article}'
     echo ''
     echo '\input{Packages}'

@@ -3,6 +3,7 @@ function __static__ProduceTemplate(){
     environment="$1"; outputFile="$2"
     #Redirect standard output to file
     exec 3>&1 1>"${outputFile}"
+    printf '%s\n\n%s\n\n\n\n'   '%__BEGIN_OPTIONS__%'      '%__END_OPTIONS__%'
     printf '%s\n\n%s\n\n\n\n'   '%__BEGIN_PACKAGES__%'     '%__END_PACKAGES__%'
     printf '%s\n\n%s\n\n\n\n'   '%__BEGIN_DEFINITIONS__%'  '%__END_DEFINITIONS__%'
     printf '%s\n'               '%__BEGIN_BODY__%'
