@@ -23,6 +23,11 @@ function __static__CreateTexLocaldefsTemplate(){
     echo '\newcommand{\examDuration}{}'
     echo '\newcommand{\examDate}{}'
     echo '\newcommand{\examRules}{}'
+    echo '\newcommand{\myEveryEvenRowColorForPresenceSheet}{\rowcolor[gray]{0.92}}'
+    echo '\newboolean{switchOffSignatureColumnForPresenceSheet}'
+    echo '\setboolean{switchOffSignatureColumnForPresenceSheet}{false}'
+    echo '\newboolean{switchOffExerciseColumnForPresenceSheet}'
+    echo '\setboolean{switchOffExerciseColumnForPresenceSheet}{false}'
     echo -e '%__END_DEFINITIONS__%\n\n\n'
     echo -e '%__BEGIN_BODY__%\n%__END_BODY__%\n\n\n'
     #Restore standard output

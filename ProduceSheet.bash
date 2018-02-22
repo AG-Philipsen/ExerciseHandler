@@ -60,3 +60,17 @@ function ProduceExamSheet(){
 }
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+function ProducePresenceSheet(){
+    SetSheetNumber
+    CheckTexLocaldefsTemplate
+    CreateTemporaryCompilationFolder
+    ProduceTexAuxiliaryFiles
+    CheckTexPackagesFile
+    CheckTexDefinitionsFile
+    ProducePresenceSheetTexMainFile
+    MakeCompilationInTemporaryFolder
+    MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder
+}
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------#
