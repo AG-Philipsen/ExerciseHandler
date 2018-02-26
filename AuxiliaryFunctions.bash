@@ -158,6 +158,7 @@ function __static__ProduceTexAuxiliaryFile(){
         PrintInternal "Error in \"${FUNCNAME[0]}\" function, wrong partOfDocument passed! (partOfDocument=\"${partOfDocument}\")"; exit -1
     else
         if [[ ${partOfDocument} =~ ^(PACKAGES|DEFINITIONS)$  ]]; then
+            __static__ExtractBlockFromFileAndAppendToAnotherFile  ${EXHND_vocabularyFilename}  ${outputFilename}  ${partOfDocument}
             __static__ExtractBlockFromFileAndAppendToAnotherFile  ${EXHND_themeFilename}  ${outputFilename}  ${partOfDocument}
         fi
         __static__ExtractBlockFromFileAndAppendToAnotherFile  ${EXHND_texLocaldefsFilename}  ${outputFilename}  ${partOfDocument}

@@ -4,7 +4,7 @@ function __static__CreateTexLocaldefsTemplate(){
     #Redirect standard output to file
     exec 3>&1 1>${EXHND_texLocaldefsFilename}
     echo '%__BEGIN_OPTIONS__%'
-    echo '%\PassOptionsToPackage{option}{package} %Uncomment this line if needed'
+    echo '\PassOptionsToPackage{english}{babel} %Use similar lines if needed'
     echo -e '%__END_OPTIONS__%\n\n\n'
     echo '%__BEGIN_PACKAGES__%'
     echo '\usepackage{arrayjobx}'

@@ -1,0 +1,122 @@
+%__BEGIN_PACKAGES__%
+\usepackage{translations}
+%__END_PACKAGES__%
+
+
+%__BEGIN_DEFINITIONS__%
+
+%Give an error when a language is used for which no translation exists
+\newcommand{\CheckTranslation}[1]{%
+  \IfTranslation{\languagename}{#1}{}{%
+    \PackageError{Vocabulary}{%
+      No available translation for\MessageBreak
+      \space\space\space "#1"\MessageBreak
+      in the used language (\languagename).\MessageBreak
+      Vocabulary is not really a package.\MessageBreak
+      This error means that you are using\MessageBreak
+      a language that is not supported in\MessageBreak
+      the present version of the Exercise\MessageBreak
+      Handler. See README for more help!
+    }{%
+      More information can be found in the README file.
+    }
+  }%
+}
+
+%Capitalize first letter (inspired from https://tex.stackexchange.com/a/380505
+\newcommand\firstUp[1]{\expandafter\firstUpAux#1\relax}
+\def\firstUpAux#1#2\relax{\uppercase{#1}#2}
+
+%Wrapper for \GetTranslation in order to have capital letter variant
+\newcommand{\translate}[1]{\CheckTranslation{#1}\GetTranslation{#1}}
+\newcommand{\Translate}[1]{\CheckTranslation{#1}\SaveTranslation{\tmpVar}{#1}\firstUp{\tmpVar}}
+
+%-----------------------------------------------------------%
+%Here in the following the translation, organised in blocks %
+%-----------------------------------------------------------%
+
+%Exercise
+\DeclareTranslation{English}{exercise}{exercise}
+\DeclareTranslation{German}{exercise}{Aufgabe}
+\DeclareTranslation{French}{exercise}{exercice}
+\DeclareTranslation{Italian}{exercise}{esercizio}
+
+%Exercise sheet
+\DeclareTranslation{English}{exercise-sheet}{exercise sheet}
+\DeclareTranslation{German}{exercise-sheet}{Aufgabenblatt}
+\DeclareTranslation{French}{exercise-sheet}{feuille d'exercices}
+\DeclareTranslation{Italian}{exercise-sheet}{esercitazione}
+
+%Solution sheet
+\DeclareTranslation{English}{solution-sheet}{solution sheet}
+\DeclareTranslation{German}{solution-sheet}{L\"osungsblatt}
+\DeclareTranslation{French}{solution-sheet}{feuille des solutions}
+\DeclareTranslation{Italian}{solution-sheet}{soluzioni del foglio}
+
+%Presence sheet
+\DeclareTranslation{English}{presence-sheet}{presence sheet}
+\DeclareTranslation{German}{presence-sheet}{Anwesenheitsliste}
+\DeclareTranslation{French}{presence-sheet}{feuille de pr\'esence}
+\DeclareTranslation{Italian}{presence-sheet}{foglio delle presenze}
+
+%Number short
+\DeclareTranslation{English}{number-short}{no.}
+\DeclareTranslation{German}{number-short}{Nr.}
+\DeclareTranslation{French}{number-short}{n$^o$}
+\DeclareTranslation{Italian}{number-short}{n.}
+
+%Full name
+\DeclareTranslation{English}{name}{name}
+\DeclareTranslation{German}{name}{Name}
+\DeclareTranslation{French}{name}{nom}
+\DeclareTranslation{Italian}{name}{nome}
+
+%Signature
+\DeclareTranslation{English}{signature}{signature}
+\DeclareTranslation{German}{signature}{Unterschrift}
+\DeclareTranslation{French}{signature}{signature}
+\DeclareTranslation{Italian}{signature}{firma}
+
+%Exam
+\DeclareTranslation{English}{exam}{exam}
+\DeclareTranslation{German}{exam}{Klausur}
+\DeclareTranslation{French}{exam}{examen}
+\DeclareTranslation{Italian}{exam}{esame}
+
+%Duration
+\DeclareTranslation{English}{duration}{duration}
+\DeclareTranslation{German}{duration}{Dauer}
+\DeclareTranslation{French}{duration}{dur\'ee}
+\DeclareTranslation{Italian}{duration}{durata}
+
+%Full name
+\DeclareTranslation{English}{full-name}{full name}
+\DeclareTranslation{German}{full-name}{vollst\"andiger Name}
+\DeclareTranslation{French}{full-name}{nom entier}
+\DeclareTranslation{Italian}{full-name}{nome completo}
+
+%ID number
+\DeclareTranslation{English}{ID-number}{ID number}
+\DeclareTranslation{German}{ID-number}{Matrikelnummer}
+\DeclareTranslation{French}{ID-number}{num\'ero de matricule}
+\DeclareTranslation{Italian}{ID-number}{numero di matricola}
+
+%Score
+\DeclareTranslation{English}{score}{score}
+\DeclareTranslation{German}{score}{Punkte}
+\DeclareTranslation{French}{score}{points}
+\DeclareTranslation{Italian}{score}{punti}
+
+%Total
+\DeclareTranslation{English}{sum}{sum}
+\DeclareTranslation{German}{sum}{Summe}
+\DeclareTranslation{French}{sum}{somme}
+\DeclareTranslation{Italian}{sum}{somma}
+
+%Final mark
+\DeclareTranslation{English}{final-mark}{final mark}
+\DeclareTranslation{German}{final-mark}{Gesamtnote}
+\DeclareTranslation{French}{final-mark}{note finale}
+\DeclareTranslation{Italian}{final-mark}{voto finale}
+
+%__END_DEFINITIONS__%

@@ -1,6 +1,7 @@
 function DefineGlobalVariables(){
 
     #Global internal variables
+    readonly EXHND_vocabularyFilename="${EXHND_repositoryDirectory}/Vocabulary.tex"
     readonly EXHND_themeFilename="${EXHND_repositoryDirectory}/ClassicTheme.tex"
     readonly EXHND_invokingDirectory="$(pwd)"
     readonly EXHND_texLocaldefsFilename="${EXHND_invokingDirectory}/TexLocaldefs.tex"
