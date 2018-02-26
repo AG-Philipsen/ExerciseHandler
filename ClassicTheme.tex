@@ -111,10 +111,10 @@
                create on use/Ex/.style={create col/set list={1,...,\numberOfExercises}},
                create on use/Score/.style={create col/set list={#2}},
         }
-        \pgfplotstablenew[columns={Ex,Score}]{\numberOfExercises}\loadedtable
+        \pgfplotstablenew[columns={Ex,Score}]{\numberOfExercises}{\loadedtable}
         \pgfplotstabletypeset[
                every head row/.style={before row=\toprule, after row=\midrule},
-               every even row/.style={before row={\rowcolor[gray]{0.9}}},
+               every even row/.style={before row={\rowcolor{\myEveryEvenRowColor}}},
                every last row/.style={after row=\midrule \textsc{Total} & $\;\quad/\totalScore$ \\ \bottomrule}]{\loadedtable}
         \par\vspace{2\myskip}
         \begin{tabular}{rp{10cm}}
@@ -127,46 +127,81 @@
 }
 
 \newcommand{\PresenceSheet}[5]{
-    \pgfmathsetmacro{\myNumberOfStudents}{#4 + 2}
-    \pgfmathsetmacro{\myNumberOfExercises}{#3}
-    \pgfmathsetmacro{\counter}{0}
-    \pgfmathsetmacro{\myColWidth}{0.31}
-    \pgfmathsetmacro{\mySubColWidth}{\myColWidth / \myNumberOfExercises}
-
-    \setlength{\tabcolsep}{0pt}
-    \setlength{\aboverulesep}{0pt}
-    \setlength{\belowrulesep}{0pt}
-    \renewcommand{\arraystretch}{2}
-
-    \newcolumntype{C}{>{\centering\arraybackslash}p{\myColWidth\textwidth}}
-    \newcolumntype{D}{>{\centering\arraybackslash}p{0.07\textwidth}}
-    \newcolumntype{E}{>{\centering\arraybackslash}p{\mySubColWidth\textwidth}}
-    \newcolumntype{?}{!{\vrule width \heavyrulewidth}}
-
-    \ifthenelse{\boolean{switchOffSignatureColumnForPresenceSheet}}
-    {\ifthenelse{\boolean{switchOffExerciseColumnForPresenceSheet}}{\edef\colNames{No.,Name}}{\edef\colNames{No.,Name#2}}}
-    {\ifthenelse{\boolean{switchOffExerciseColumnForPresenceSheet}}{\edef\colNames{No.,Name,Signature}}{\edef\colNames{No.,Name,Signature#2}}}
-    \ifthenelse{\boolean{switchOffSignatureColumnForPresenceSheet}}
-    {\ifthenelse{\boolean{switchOffExerciseColumnForPresenceSheet}}{\def\headerString{\toprule & }}{\def\headerString{\toprule & & \multicolumn{\myNumberOfExercises}{C?}{\textsc{Exercises}}}}}
-    {\ifthenelse{\boolean{switchOffExerciseColumnForPresenceSheet}}{\def\headerString{\toprule & & }}{\def\headerString{\toprule & & & \multicolumn{\myNumberOfExercises}{C?}{\textsc{Exercises}}}}}
-
-    \pagestyle{empty}
-
-    \centering
-
-    \pgfplotstableset{columns/No./.style={int detect,column type=?D?,column name=\textsc{N.}}, columns/Name/.style={string type,column type=C?,column name=\textsc{Name}}, columns/Signature/.style={string type,column type=C?,column name=\textsc{Signature}}}
-    \pgfplotsforeachungrouped \j in {#1}{\pgfmathsetmacro{\counter}{int(\counter+1)} \ifthenelse{\counter = \myNumberOfExercises}{\pgfplotstableset{columns/Ex\j/.estyle={empty cells with={},column type=E?,column name=\j}}}{\pgfplotstableset{columns/Ex\j/.estyle={empty cells with={},column type=E|,column name=\j}}}}
-
-    \pgfplotstableset{create on use/No./.style={create col/set list={1,...,\myNumberOfStudents}}, create on use/Name/.style={create col/set list={#5}}, create on use/Signature/.style={}}
-    \pgfplotsforeachungrouped \i in {#1}{\pgfplotstableset{create on use/Ex\i/.style={}}}
-
-    \pgfplotstablenew[columns/.expand once={\colNames}]{\myNumberOfStudents}\loadedtable
-    \pgfplotstabletypeset[columns/.expand once={\colNames},
-                          every even row/.style={output empty row, before row={\myEveryEvenRowColorForPresenceSheet}},
-                          every head row/.style={before row=\headerString\\,after row=\midrule},
-                          every last row/.style={output empty row, after row=\bottomrule}
-                         ]\loadedtable
-
+    \begingroup
+        \centering
+        %Some macros for later
+        \pgfmathsetmacro{\myNumberOfStudents}{#4 + 2}
+        \pgfmathsetmacro{\myNumberOfExercises}{#3}
+        \pgfmathsetmacro{\counter}{-1}
+        \pgfmathsetmacro{\myColWidth}{0.31}
+        \pgfmathsetmacro{\mySubColWidth}{\myColWidth / \myNumberOfExercises}
+        %Table layout
+        \setlength{\tabcolsep}{0pt}
+        \setlength{\aboverulesep}{0pt}
+        \setlength{\belowrulesep}{0pt}
+        \renewcommand{\arraystretch}{2}
+        \newcolumntype{C}{>{\centering\arraybackslash}p{\myColWidth\textwidth}}
+        \newcolumntype{D}{>{\centering\arraybackslash}p{0.07\textwidth}}
+        \newcolumntype{E}{>{\centering\arraybackslash}p{\mySubColWidth\textwidth}}
+        \newcolumntype{?}{!{\vrule width \heavyrulewidth}}
+        %Show/hide columns depending on user setup
+        \ifthenelse{\boolean{switchOffSignatureColumnForPresenceSheet}}{%
+            \ifthenelse{\boolean{switchOffExerciseColumnForPresenceSheet}}{%
+                \edef\colNames{No.,Name}
+            }{%
+                \edef\colNames{No.,Name#2}
+            }
+        }{%
+            \ifthenelse{\boolean{switchOffExerciseColumnForPresenceSheet}}{%
+                \edef\colNames{No.,Name,Signature}
+            }{%
+                \edef\colNames{No.,Name,Signature#2}
+            }
+        }
+        \ifthenelse{\boolean{switchOffSignatureColumnForPresenceSheet}}{%
+            \ifthenelse{\boolean{switchOffExerciseColumnForPresenceSheet}}{%
+                \def\headerString{\toprule & }
+            }{%
+                \def\headerString{\toprule & & \multicolumn{\myNumberOfExercises}{C?}{\textsc{Exercises}}}
+            }
+        }{%
+            \ifthenelse{\boolean{switchOffExerciseColumnForPresenceSheet}}{%
+                \def\headerString{\toprule & & }
+            }{%
+                \def\headerString{\toprule & & & \multicolumn{\myNumberOfExercises}{C?}{\textsc{Exercises}}}
+            }
+        }
+        %Setup of columns
+        \pgfplotstableset{%
+            columns/No./.style={int detect,column type=?D?,column name=\textsc{N.}},
+            columns/Name/.style={string type,column type=C?,column name=\textsc{Name}},
+            columns/Signature/.style={string type,column type=C?,column name=\textsc{Signature}}
+        }
+        \pgfplotsforeachungrouped \j in {#1}{%
+            \pgfmathsetmacro{\counter}{int(\counter+1)}
+            \ifthenelse{\counter = \myNumberOfExercises}{%
+                \pgfplotstableset{columns/Ex\j/.estyle={empty cells with={},column type=E?,column name=\j}}
+            }{%
+                \pgfplotstableset{columns/Ex\j/.estyle={empty cells with={},column type=E|,column name=\j}}
+            }
+        }
+        \pgfplotstableset{%
+            create on use/No./.style={create col/set list={1,...,\myNumberOfStudents}},
+            create on use/Name/.style={create col/set list={#5}},
+            create on use/Signature/.style={}
+        }
+        \pgfplotsforeachungrouped \i in {#1}{%
+            \pgfplotstableset{create on use/Ex\i/.style={}}
+        }
+        %Create actual table and print it
+        \pgfplotstablenew[columns/.expand once={\colNames}]{\myNumberOfStudents}\loadedtable
+        \pgfplotstabletypeset[
+            columns/.expand once={\colNames},
+            every even row/.style={output empty row, before row={\rowcolor{\myEveryEvenRowColor}}},
+            every head row/.style={before row=\headerString\\,after row=\midrule},
+            every last row/.style={output empty row, after row=\bottomrule}]{\loadedtable}
+        \par% https://tex.stackexchange.com/a/91539
+    \endgroup
 }
 
 \newcounter{Exercise}
