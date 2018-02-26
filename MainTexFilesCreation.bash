@@ -3,20 +3,20 @@ function ProduceExerciseTexMainFile(){
     #Redirect standard output to file
     exec 3>&1 1>${EXHND_mainFilename}
     #Template production, overwriting the file
-    echo '\input{Options}'
+    echo "\input{$(basename ${EXHND_optionsFilename%.tex})}"
     echo ''
     echo '\documentclass[a4paper]{article}'
     echo ''
-    echo '\input{Packages}'
+    echo "\input{$(basename ${EXHND_packagesFilename%.tex})}"
     echo ''
-    echo '\input{Definitions}'
+    echo "\input{$(basename ${EXHND_definitionsFilename%.tex})}"
     echo '\graphicspath{{'"${EXHND_figuresFolder}/"'}}'
     echo ''
     echo '\begin{document}'
     echo '  \Heading'
     echo "  \Sheet{exercise-sheet}[${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
     echo '  %Exercises'
-    echo '  \input{Document}'
+    echo "  \input{$(basename ${EXHND_bodyFilename%.tex})}"
     echo '\end{document}'
     #Restore standard output
     exec 1>&3
@@ -29,20 +29,20 @@ function ProduceSolutionTexMainFile(){
     #Redirect standard output to file
     exec 3>&1 1>${EXHND_mainFilename}
     #Template production, overwriting the file
-    echo '\input{Options}'
+    echo "\input{$(basename ${EXHND_optionsFilename%.tex})}"
     echo ''
     echo '\documentclass[a4paper]{article}'
     echo ''
-    echo '\input{Packages}'
+    echo "\input{$(basename ${EXHND_packagesFilename%.tex})}"
     echo ''
-    echo '\input{Definitions}'
+    echo "\input{$(basename ${EXHND_definitionsFilename%.tex})}"
     echo '\graphicspath{{'"${EXHND_figuresFolder}/"'}}'
     echo ''
     echo '\begin{document}'
     echo '  \Heading'
     echo "  \Sheet{solution-sheet}[${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]" #subtitle passed to give freedom in customized theme!
     echo '  %Exercises'
-    echo '  \input{Document}'
+    echo "  \input{$(basename ${EXHND_bodyFilename%.tex})}"
     echo '\end{document}'
     #Restore standard output
     exec 1>&3
@@ -77,13 +77,13 @@ function ProduceExamTexMainFile(){
     #Redirect standard output to file
     exec 3>&1 1>${EXHND_mainFilename}
     #Template production, overwriting the file
-    echo '\input{Options}'
+    echo "\input{$(basename ${EXHND_optionsFilename%.tex})}"
     echo ''
     echo '\documentclass[a4paper]{article}'
     echo ''
-    echo '\input{Packages}'
+    echo "\input{$(basename ${EXHND_packagesFilename%.tex})}"
     echo ''
-    echo '\input{Definitions}'
+    echo "\input{$(basename ${EXHND_definitionsFilename%.tex})}"
     echo '\graphicspath{{'"${EXHND_figuresFolder}/"'}}'
     echo ''
     echo '\begin{document}'
@@ -91,7 +91,7 @@ function ProduceExamTexMainFile(){
     echo "  \Sheet{exam}[][${EXHND_exerciseSheetSubtitlePostfix}]"
     echo "  \ExamCoverPage{${#EXHND_choosenExercises[@]}}{${exerciseScores}}"
     echo '  %Exercises'
-    echo '  \input{Document}'
+    echo "  \input{$(basename ${EXHND_bodyFilename%.tex})}"
     echo '\end{document}'
     #Restore standard output
     exec 1>&3
@@ -124,13 +124,13 @@ function ProducePresenceSheetTexMainFile(){
     #Redirect standard output to file
     exec 3>&1 1>${EXHND_mainFilename}
     #Template production, overwriting the file
-    echo '\input{Options}'
+    echo "\input{$(basename ${EXHND_optionsFilename%.tex})}"
     echo ''
     echo '\documentclass[10pt,a4paper]{article}'
     echo ''
-    echo '\input{Packages}'
+    echo "\input{$(basename ${EXHND_packagesFilename%.tex})}"
     echo ''
-    echo '\input{Definitions}'
+    echo "\input{$(basename ${EXHND_definitionsFilename%.tex})}"
     echo ''
     echo '\pagestyle{empty}'
     echo '\begin{document}'
