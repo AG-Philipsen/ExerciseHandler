@@ -14,7 +14,7 @@ function ProduceExerciseTexMainFile(){
     echo ''
     echo '\begin{document}'
     echo '  \Heading'
-    echo "  \Sheet[][${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
+    echo "  \Sheet{exercise-sheet}[${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
     echo '  %Exercises'
     echo '  \input{Document}'
     echo '\end{document}'
@@ -40,7 +40,7 @@ function ProduceSolutionTexMainFile(){
     echo ''
     echo '\begin{document}'
     echo '  \Heading'
-    echo "  \Sheet[Solution of exercise sheet][${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]" #subtitle passed to give freedom in customized theme!
+    echo "  \Sheet{solution-sheet}[${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]" #subtitle passed to give freedom in customized theme!
     echo '  %Exercises'
     echo '  \input{Document}'
     echo '\end{document}'
@@ -88,7 +88,7 @@ function ProduceExamTexMainFile(){
     echo ''
     echo '\begin{document}'
     echo '  \Heading[false]'
-    echo "  \Sheet[Exam][][${EXHND_exerciseSheetSubtitlePostfix}]"
+    echo "  \Sheet{exam}[][${EXHND_exerciseSheetSubtitlePostfix}]"
     echo "  \ExamCoverPage{${#EXHND_choosenExercises[@]}}{${exerciseScores}}"
     echo '  %Exercises'
     echo '  \input{Document}'
@@ -135,7 +135,7 @@ function ProducePresenceSheetTexMainFile(){
     echo '\pagestyle{empty}'
     echo '\begin{document}'
     echo '    \Heading'
-    echo "    \Sheet[Presence sheet][${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
+    echo "    \Sheet{presence-sheet}[${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
     echo ''
     echo "    \PresenceSheet{$exerciseNumberString}{$exerciseString}{${#arrayOfExerciseNumbers[@]}}{$numberOfStudents}{$students}"
     echo '\end{document}'

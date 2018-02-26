@@ -1,7 +1,8 @@
 %__BEGIN_PACKAGES__%
+\usepackage{babel}
 \usepackage{xifthen}
 \usepackage{xargs}
-\usepackage{pgfplotstable, array, booktabs, colortbl} %For \ExamCoverPage and presence sheet
+\usepackage{pgfplotstable, array, booktabs, colortbl} %For \ExamCoverPage and \PresenceSheet
 %__END_PACKAGES__%
 
 
@@ -43,14 +44,14 @@
     \vspace{\myskip}
 }
 
-\newcommandx{\Sheet}[3][1=Exercise sheet, 2=, 3=, usedefault]{
+\newcommandx{\Sheet}[3][2=, 3=]{
     \ifthenelse{\isempty{#2}}{
-        \centerline{\Large\textbf{#1}}
+        \centerline{\Large\textbf{\Translate{#1}}}
     }{
-        \centerline{\Large\textbf{#1 #2}}
+        \centerline{\Large\textbf{\Translate{#1} #2}}
     }
     % Print subtitle only for exercises, not for solutions
-    \ifthenelse{\equal{#1}{Exercise sheet}}{
+    \ifthenelse{\equal{#1}{exercise-sheet}}{
         % Here we have to print as subtitle a string which is the concatenation
         % of \exerciseSheetSubtitlePrefix and #3, which could be empty or not in
         % all the possible combinations. So test them.
@@ -76,7 +77,7 @@
 \newcommand{\ExamCoverPage}[2]{%
     \begingroup
         \large
-        \noindent\textbf{Duration:} \examDuration  \hfill \textbf{\examDate}
+        \noindent\textbf{\Translate{duration}:} \examDuration  \hfill \textbf{\examDate}
         \par% https://tex.stackexchange.com/a/91539
     \endgroup
     \vfill%
@@ -86,8 +87,8 @@
         \large
         \centering
         \begin{tabular}{rp{0.6\textwidth}}
-            Full name:  & \underline{\hspace{0.6\textwidth}} \\[3ex]
-            ID number:  & \underline{\hspace{0.6\textwidth}} \\[5ex]
+            \Translate{full-name}:  & \underline{\hspace{0.6\textwidth}} \\[3ex]
+            \Translate{ID-number}:  & \underline{\hspace{0.6\textwidth}} \\[5ex]
         \end{tabular}
         %Prepare table formatting and layout
         \setlength{\aboverulesep}{0pt}
@@ -106,8 +107,8 @@
         %Prepare and make table
         \pgfplotstableset{%
                brackets/.style={postproc cell content/.append style={/pgfplots/table/@cell content/.add={\relax$\;\quad$/}{}}},
-               columns/Ex/.style={int detect,column type=?C|,column name=\textsc{Exercise}},
-               columns/Score/.style={string type, brackets, column type=C?,column name=\textsc{Score}},
+               columns/Ex/.style={int detect,column type=?C|,column name=\textsc{\Translate{exercise}}},
+               columns/Score/.style={string type, brackets, column type=C?,column name=\textsc{\Translate{score}}},
                create on use/Ex/.style={create col/set list={1,...,\numberOfExercises}},
                create on use/Score/.style={create col/set list={#2}},
         }
@@ -115,10 +116,10 @@
         \pgfplotstabletypeset[
                every head row/.style={before row=\toprule, after row=\midrule},
                every even row/.style={before row={\rowcolor{\myEveryEvenRowColor}}},
-               every last row/.style={after row=\midrule \textsc{Total} & $\;\quad/\totalScore$ \\ \bottomrule}]{\loadedtable}
+               every last row/.style={after row=\midrule \textsc{\Translate{sum}:} & $\;\quad/\totalScore$ \\ \bottomrule}]{\loadedtable}
         \par\vspace{2\myskip}
         \begin{tabular}{rp{10cm}}
-            Final mark:       & \underline{\hspace{9cm}} \\[3ex]
+            \Translate{final-mark}:       & \underline{\hspace{9cm}} \\[3ex]
         \end{tabular}
         \par% https://tex.stackexchange.com/a/91539
     \endgroup
@@ -173,9 +174,9 @@
         }
         %Setup of columns
         \pgfplotstableset{%
-            columns/No./.style={int detect,column type=?D?,column name=\textsc{N.}},
-            columns/Name/.style={string type,column type=C?,column name=\textsc{Name}},
-            columns/Signature/.style={string type,column type=C?,column name=\textsc{Signature}}
+            columns/No./.style={int detect,column type=?D?,column name=\textsc{\Translate{number-short}}},
+            columns/Name/.style={string type,column type=C?,column name=\textsc{\Translate{name}}},
+            columns/Signature/.style={string type,column type=C?,column name=\textsc{\Translate{signature}}}
         }
         \pgfplotsforeachungrouped \j in {#1}{%
             \pgfmathsetmacro{\counter}{int(\counter+1)}
@@ -208,17 +209,17 @@
 \newenvironmentx{exercise}[2][1=, 2=]
 {
     \refstepcounter{Exercise}
-    \ifthenelse{\isempty{#1}}{
-        \ifthenelse{\isempty{#2}}{
-            \noindent{\large\textbf{Exercise \theExercise}}\\[0.75ex]
-        }{
-            \noindent{\large\textbf{Exercise \theExercise}}\hfill\texttt{(#2 pts.)}\\[0.75ex]
+    \ifthenelse{\isempty{#1}}{%
+        \ifthenelse{\isempty{#2}}{%
+            \noindent{\large\textbf{\Translate{exercise} \theExercise}}\\[0.75ex]
+        }{%
+            \noindent{\large\textbf{\Translate{exercise} \theExercise}}\hfill\texttt{(#2 pts.)}\\[0.75ex]
         }
-    }{
-        \ifthenelse{\isempty{#2}}{
-            \noindent{\large\textbf{Exercise \theExercise}} $\;$[\textit{#1}]\\[0.75ex]
-        }{
-            \noindent{\large\textbf{Exercise \theExercise}} $\;$[\textit{#1}]\hfill\texttt{(#2 pts.)}\\[0.75ex]
+    }{%
+        \ifthenelse{\isempty{#2}}{%
+            \noindent{\large\textbf{\Translate{exercise} \theExercise}} $\;$[\textit{#1}]\\[0.75ex]
+        }{%
+            \noindent{\large\textbf{\Translate{exercise} \theExercise}} $\;$[\textit{#1}]\hfill\texttt{(#2 pts.)}\\[0.75ex]
         }
     }
 }
@@ -228,10 +229,10 @@
 \newenvironment{solution}[1][optional]
 {
     \refstepcounter{Solution}
-    \ifthenelse{\isempty{#1}}{
-        \noindent{\large\textbf{Exercise \theSolution}}\\[0.75ex]
-    }{
-        \noindent{\large\textbf{Exercise \theSolution}} $\;$[\textit{#1}]\\[0.75ex]
+    \ifthenelse{\isempty{#1}}{%
+        \noindent{\large\textbf{\Translate{exercise} \theSolution}}\\[0.75ex]
+    }{%
+        \noindent{\large\textbf{\Translate{exercise} \theSolution}} $\;$[\textit{#1}]\\[0.75ex]
     }
 }
 {\par\vspace{\myskip}}
