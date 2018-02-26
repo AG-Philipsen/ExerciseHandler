@@ -27,7 +27,6 @@ source ${EXHND_repositoryDirectory}/ListUsedExercises.bash       || exit -2
 source ${EXHND_repositoryDirectory}/ExerciseSelection.bash       || exit -2
 source ${EXHND_repositoryDirectory}/MainTexFilesCreation.bash    || exit -2
 source ${EXHND_repositoryDirectory}/ProduceSheet.bash            || exit -2
-source ${EXHND_repositoryDirectory}/PresenceSheet.bash           || exit -2
 
 #Warning that the script is in developement phase!
 PrintWarning -n "Script under developement and in a beta phase!" "Not everything is guaranteed to work!!"

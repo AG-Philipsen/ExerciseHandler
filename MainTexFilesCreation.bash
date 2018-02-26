@@ -99,6 +99,9 @@ function ProduceExamTexMainFile(){
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
 function __static__GetStudents(){
+    if [ ! -f ${EXHND_listOfStudentsFilename} ]; then
+        PrintWarning "File \"$(basename ${EXHND_listOfStudentsFilename})\" with students list not found in folder \"$(basename ${EXHND_presenceSheetFolder})\"."
+    fi
     echo "$(awk 'BEGIN {ORS=","}$0 ~ /^[[:space:]]*$/{next}{ print $0 }' $EXHND_listOfStudentsFilename)"
 }
 
@@ -136,7 +139,7 @@ function ProducePresenceSheetTexMainFile(){
     echo '    \Heading'
     echo "    \Sheet[Presence sheet][${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
     echo ''
-    echo "    \PresenceSheet{$EXHND_exercisesFromPoolAsNumbers}{$exerciseString}{${#arrayOfExerciseNumbers[@]}}{$numberOfStudents}{$students}"
+    echo "    \PresenceSheet{${exerciseString[@]//Ex/}}{$exerciseString}{${#arrayOfExerciseNumbers[@]}}{$numberOfStudents}{$students}"
     echo '\end{document}'
     #Restore standard output
     exec 1>&3
