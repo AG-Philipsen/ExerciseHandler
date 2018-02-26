@@ -3,23 +3,6 @@ trying to classify it according to priority.
 
 HIGH PRIORITY:
 
- - About presence sheet, split latex code in auxiliary files (Packages.tex, Definitions.tex
-   and Document.tex), so that the ProducePresenceSheetTexMainFile looks like the
-   ProduceExerciseTexMainFile one. This may be done implementing three functions in
-   PresenceSheet.bash file. This will uniform the code.
-    * The function ProduceTexAuxiliaryFiles could be used adding to it an if-else
-      on the EXHND_makePresenceSheet in which some local variables setup is done
-      before calling one after each other the three functions
-        1) CreatePackagesFilename
-        2) CreateDefinitionsFilename
-        3) CreateBodyFilename
-    * In the ProducePresenceSheet function the function ProduceTexAuxiliaryFiles would
-      be called before ProducePresenceSheetTexMainFile and no function would have to
-      pass arguments around.
-
- - Use EXHND_packagesFilename, EXHND_definitionsFilename and EXHND_bodyFilename in
-   Produce*MainTexFile functions -> $(basename ${EXHND_variable%.tex})
-
 NORMAL PRIORITY:
 
  - At the moment, if the fix final option is given, we remove the final folder and recreate it.
@@ -41,8 +24,6 @@ NORMAL PRIORITY:
    Consider also the fact that passing a theme from command line option would need to
    be always done -> Put it in local defs is better.
 
- - How to support multiple languages? So far only english. -> https://tex.stackexchange.com/a/42791
-
 LOW PRIORITY:
 
  - Trap CTRL-C in a nice way: cleaning files/folders. etc. -> DESIGN
@@ -54,7 +35,7 @@ LOW PRIORITY:
     * In the classic theme, where we use the same \Head across all sheets,
       we can implement an internal \genericHead command and use it in
       all the provided \nameHead commands.
- - Use consistently quotation marks, in particular in filenames -> consider possible names
+ - Use consistently quotation marks, in particular in filenames -> consider possible spaces
    in spaces?!
  - Use only printf, no echo.
  - Implement more pedantic check on localdefs file to check that commands that should be there
