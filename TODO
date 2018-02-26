@@ -38,6 +38,8 @@ NORMAL PRIORITY:
    expect to get the full path to the custom theme as an argument to the command line
    option, or we use a field in localdefs for the path and the command line option to
    just pass the name (useful also if we will ever have a folder with many available themes).
+   Consider also the fact that passing a theme from command line option would need to
+   be always done -> Put it in local defs is better.
 
  - How to support multiple languages? So far only english. -> https://tex.stackexchange.com/a/42791
 
