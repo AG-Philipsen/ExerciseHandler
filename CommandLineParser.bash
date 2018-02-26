@@ -30,7 +30,7 @@ function ParseCommandLineParameters(){
     declare -rA secondaryToPrimaryOptionsMapping=([${primaryOptions[0]}]=''
                                                   [${primaryOptions[1]}]=''
                                                   [${primaryOptions[2]}]='-a -e -p -n -f -x -t'
-                                                  [${primaryOptions[3]}]='-n -f -x -t'
+                                                  [${primaryOptions[3]}]='-n -e -f -x -t'
                                                   [${primaryOptions[4]}]='-e -n -t'
                                                   [${primaryOptions[5]}]='-e -f -x -t'
                                                   [${primaryOptions[6]}]='' )
