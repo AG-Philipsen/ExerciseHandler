@@ -98,21 +98,11 @@ function ProduceExamTexMainFile(){
 }
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
-function __static__GetStudents(){
-    if [ ! -f ${EXHND_listOfStudentsFilename} ]; then
-        PrintWarning "File \"$(basename ${EXHND_listOfStudentsFilename})\" with students list not found in folder \"$(basename ${EXHND_presenceSheetFolder})\"."
-    fi
-    echo "$(awk 'BEGIN {ORS=","}$0 ~ /^[[:space:]]*$/{next}{ print $0 }' $EXHND_listOfStudentsFilename)"
-}
-
-function __static__GetNumberOfStudents(){
-    echo "$(grep -o ',' <<< "$1" | wc -l)"
-}
 
 function __static__ParseExercisesString(){
     if [[ $EXHND_exercisesFromPoolAsNumbers = "" ]]; then
         ReadOutExercisesFromFinalExerciseSheetLogFile
-        echo "$(seq 1 ${#EXHND_choosenExercises[@]})"
+        seq 1 ${#EXHND_choosenExercises[@]}
     elif [[ $EXHND_exercisesFromPoolAsNumbers =~ ^[1-9][0-9]*([.][1-9][0-9]*)*([,][1-9][0-9]*([.][1-9][0-9]*)*)*$ ]]; then
         echo $EXHND_exercisesFromPoolAsNumbers | tr , "\n"
     else
@@ -121,25 +111,33 @@ function __static__ParseExercisesString(){
 }
 
 function ProducePresenceSheetTexMainFile(){
-    local students=$(__static__GetStudents)
-    local numberOfStudents=$(__static__GetNumberOfStudents $students)
-    local arrayOfExerciseNumbers=($(__static__ParseExercisesString))
-    local exerciseString=$(echo $(printf ",Ex%s" ${arrayOfExerciseNumbers[@]}))
+    if [ ! -f ${EXHND_listOfStudentsFilename} ]; then
+        PrintWarning "File \"$(basename ${EXHND_listOfStudentsFilename})\" with students list not found in folder \"$(basename ${EXHND_presenceSheetFolder})\"."
+    fi
+    local students numberOfStudents arrayOfExerciseNumbers exerciseNumberString exerciseString
+    students=$(awk 'BEGIN {ORS=","}$0 ~ /^[[:space:]]*$/{next}{ print $0 }' $EXHND_listOfStudentsFilename)
+    numberOfStudents=$(grep -o ',' <<< "$students" | wc -l)
+    arrayOfExerciseNumbers=($(__static__ParseExercisesString))
+    exerciseNumberString=$(printf ",%s" ${arrayOfExerciseNumbers[@]})
+    exerciseString=$(printf ",Ex%s" ${arrayOfExerciseNumbers[@]})
     rm -f ${EXHND_mainFilename}
     #Redirect standard output to file
     exec 3>&1 1>${EXHND_mainFilename}
     #Template production, overwriting the file
+    echo '\input{Options}'
+    echo ''
     echo '\documentclass[10pt,a4paper]{article}'
     echo ''
     echo '\input{Packages}'
     echo ''
     echo '\input{Definitions}'
     echo ''
+    echo '\pagestyle{empty}'
     echo '\begin{document}'
     echo '    \Heading'
     echo "    \Sheet[Presence sheet][${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
     echo ''
-    echo "    \PresenceSheet{${exerciseString[@]//Ex/}}{$exerciseString}{${#arrayOfExerciseNumbers[@]}}{$numberOfStudents}{$students}"
+    echo "    \PresenceSheet{$exerciseNumberString}{$exerciseString}{${#arrayOfExerciseNumbers[@]}}{$numberOfStudents}{$students}"
     echo '\end{document}'
     #Restore standard output
     exec 1>&3
