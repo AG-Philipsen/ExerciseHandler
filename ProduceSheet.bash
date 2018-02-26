@@ -63,7 +63,8 @@ function ProduceExamSheet(){
 
 function ProducePresenceSheet(){
     SetSheetNumber
-    CheckTexLocaldefsTemplate
+    CheckTexLocaldefsAndLatexTheme
+    #TeX part: set up main and sub-files before compilation
     CreateTemporaryCompilationFolder
     ProduceTexAuxiliaryFiles
     CheckTexPackagesFile
