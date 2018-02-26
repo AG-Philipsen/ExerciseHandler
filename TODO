@@ -57,3 +57,5 @@ LOW PRIORITY:
  - Use consistently quotation marks, in particular in filenames -> consider possible names
    in spaces?!
  - Use only printf, no echo.
+ - Implement more pedantic check on localdefs file to check that commands that should be there
+   are indeed there?!
