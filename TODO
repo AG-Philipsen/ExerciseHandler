@@ -36,7 +36,7 @@ LOW PRIORITY:
       we can implement an internal \genericHead command and use it in
       all the provided \nameHead commands.
  - Use consistently quotation marks, in particular in filenames -> consider possible spaces
-   in spaces?!
+   in filenames?!
  - Use only printf, no echo.
  - Implement more pedantic check on localdefs file to check that commands that should be there
    are indeed there?!
