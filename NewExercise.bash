@@ -7,9 +7,9 @@ function __static__ProduceTemplate(){
     printf '%s\n\n%s\n\n\n\n'   '%__BEGIN_PACKAGES__%'     '%__END_PACKAGES__%'
     printf '%s\n\n%s\n\n\n\n'   '%__BEGIN_DEFINITIONS__%'  '%__END_DEFINITIONS__%'
     printf '%s\n'               '%__BEGIN_BODY__%'
-    printf '\\begin{%s}[]\n'  "${environment}"
+    printf '\\begin{%s}\n'  "${environment}"
     if [ ${environment} = 'solution' ]; then
-        printf '    Solution not provided.\n'
+        printf '    \Translate{solution-not-provided}.\n'
     else
         printf '\n'
     fi
