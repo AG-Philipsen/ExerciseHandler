@@ -1,6 +1,6 @@
 %__BEGIN_PACKAGES__%
 \usepackage{babel}
-\usepackage{xifthen}
+\usepackage{etoolbox}
 \usepackage{xargs}
 \usepackage{pgfplotstable, array, booktabs, colortbl} %For \ExamCoverPage and \PresenceSheet
 %__END_PACKAGES__%
@@ -12,14 +12,14 @@
 \setlength{\myskip}{6mm plus 1mm minus 1mm}
 
 \newcommand{\PrintTutorList}{
-    \newboolean{printTutor}                 % xifthen package
-    \setboolean{printTutor}{true}           % xifthen package
+    \newbool{printTutor}                    %etoolbox package
+    \setbool{printTutor}{true}              %etoolbox package
     \newcounter{Tutor}
-    \whiledo{\boolean{printTutor}}{         % xifthen package
+    \whileboolexpr{bool{printTutor}}{       %etoolbox package (sec. 3.6.5)
         \refstepcounter{Tutor}
-        \checkTutor(\theTutor)              % arrayjob package
-        \ifemptydata                        % arrayjob package
-            \setboolean{printTutor}{false}  % xifthen package
+        \checkTutor(\theTutor)              %arrayjob package
+        \ifemptydata                        %arrayjob package
+            \setbool{printTutor}{false}     %etoolbox package
         \else
             \centerline{
                 \textsc{\Tutor(\theTutor):}
@@ -30,37 +30,37 @@
 }
 
 \newcommand{\Heading}[1][true]{
-    \newboolean{printTutorList}             % xifthen package
-    \setboolean{printTutorList}{#1}         % xifthen package
+    \newbool{printTutorList}                %etoolbox package
+    \setbool{printTutorList}{#1}            %etoolbox package
     \centerline{\Large\scshape\lecture}%
     \vskip 2pt%
     \centerline{\scshape\semester~--~\professor}%
     \vskip 3pt%
     \hrule%
     \vskip 5pt%
-    \ifthenelse{\boolean{printTutorList}}{%
+    \ifbool{printTutorList}{%
         \PrintTutorList%
     }{}
     \vspace{\myskip}
 }
 
 \newcommandx{\Sheet}[3][2=, 3=]{
-    \ifthenelse{\isempty{#2}}{
+    \ifstrempty{#2}{
         \centerline{\Large\textbf{\Translate{#1}}}
     }{
         \centerline{\Large\textbf{\Translate{#1} #2}}
     }
     % Print subtitle only for exercises, not for solutions
-    \ifthenelse{\equal{#1}{exercise-sheet}}{
+    \ifstrequal{#1}{exercise-sheet}{
         % Here we have to print as subtitle a string which is the concatenation
         % of \exerciseSheetSubtitlePrefix and #3, which could be empty or not in
         % all the possible combinations. So test them.
-        \ifthenelse{\isempty{\exerciseSheetSubtitlePrefix}}{
-            \ifthenelse{\isempty{#3}}{}{
+        \expandafter\ifstrempty\expandafter{\exerciseSheetSubtitlePrefix}{ % https://tex.stackexchange.com/a/24924
+            \ifstrempty{#3}{}{
                 \centerline{\textit{#3}}
             }
         }{
-            \ifthenelse{\isempty{#3}}{
+            \ifstrempty{#3}{
                 \centerline{\textit{\exerciseSheetSubtitlePrefix}}
             }{
                 \centerline{\textit{\exerciseSheetSubtitlePrefix{} #3}}
@@ -68,7 +68,7 @@
         }
     }{}
     % Print current date as subtitle only for presence sheet
-    \ifthenelse{\equal{#1}{Presence sheet}}{
+    \ifstrequal{#1}{presence-sheet}{
         \centerline{\today{}}
     }{}
     \vspace{2\myskip}
@@ -146,27 +146,31 @@
         \newcolumntype{E}{>{\centering\arraybackslash}p{\mySubColWidth\textwidth}}
         \newcolumntype{?}{!{\vrule width \heavyrulewidth}}
         %Show/hide columns depending on user setup
-        \ifthenelse{\boolean{switchOffSignatureColumnForPresenceSheet}}{%
-            \ifthenelse{\boolean{switchOffExerciseColumnForPresenceSheet}}{%
+        \newbool{switchOffSignatureColumnForPresenceSheet}
+        \newbool{switchOffExercisesColumnForPresenceSheet}
+        \setbool{switchOffSignatureColumnForPresenceSheet}{\hideSignatureColumnInPresenceSheet}
+        \setbool{switchOffExercisesColumnForPresenceSheet}{\hideExercisesColumnInPresenceSheet}
+        \ifbool{switchOffSignatureColumnForPresenceSheet}{%
+            \ifbool{switchOffExercisesColumnForPresenceSheet}{%
                 \edef\colNames{No.,Name}
             }{%
                 \edef\colNames{No.,Name#2}
             }
         }{%
-            \ifthenelse{\boolean{switchOffExerciseColumnForPresenceSheet}}{%
+            \ifbool{switchOffExercisesColumnForPresenceSheet}{%
                 \edef\colNames{No.,Name,Signature}
             }{%
                 \edef\colNames{No.,Name,Signature#2}
             }
         }
-        \ifthenelse{\boolean{switchOffSignatureColumnForPresenceSheet}}{%
-            \ifthenelse{\boolean{switchOffExerciseColumnForPresenceSheet}}{%
+        \ifbool{switchOffSignatureColumnForPresenceSheet}{%
+            \ifbool{switchOffExercisesColumnForPresenceSheet}{%
                 \def\headerString{\toprule & }
             }{%
                 \def\headerString{\toprule & & \multicolumn{\myNumberOfExercises}{C?}{\textsc{Exercises}}}
             }
         }{%
-            \ifthenelse{\boolean{switchOffExerciseColumnForPresenceSheet}}{%
+            \ifbool{switchOffExercisesColumnForPresenceSheet}{%
                 \def\headerString{\toprule & & }
             }{%
                 \def\headerString{\toprule & & & \multicolumn{\myNumberOfExercises}{C?}{\textsc{Exercises}}}
@@ -180,7 +184,7 @@
         }
         \pgfplotsforeachungrouped \j in {#1}{%
             \pgfmathsetmacro{\counter}{int(\counter+1)}
-            \ifthenelse{\counter = \myNumberOfExercises}{%
+            \ifnumequal{\counter}{\myNumberOfExercises}{%
                 \pgfplotstableset{columns/Ex\j/.estyle={empty cells with={},column type=E?,column name=\j}}
             }{%
                 \pgfplotstableset{columns/Ex\j/.estyle={empty cells with={},column type=E|,column name=\j}}
@@ -209,14 +213,14 @@
 \newenvironmentx{exercise}[2][1=, 2=]
 {
     \refstepcounter{Exercise}
-    \ifthenelse{\isempty{#1}}{%
-        \ifthenelse{\isempty{#2}}{%
+    \ifstrempty{#1}{%
+        \ifstrempty{#2}{%
             \noindent{\large\textbf{\Translate{exercise} \theExercise}}\\[0.75ex]
         }{%
             \noindent{\large\textbf{\Translate{exercise} \theExercise}}\hfill\texttt{(#2 pts.)}\\[0.75ex]
         }
     }{%
-        \ifthenelse{\isempty{#2}}{%
+        \ifstrempty{#2}{%
             \noindent{\large\textbf{\Translate{exercise} \theExercise}} $\;$[\textit{#1}]\\[0.75ex]
         }{%
             \noindent{\large\textbf{\Translate{exercise} \theExercise}} $\;$[\textit{#1}]\hfill\texttt{(#2 pts.)}\\[0.75ex]
@@ -226,10 +230,10 @@
 {\par\vspace{\myskip}}
 
 \newcounter{Solution}
-\newenvironment{solution}[1][optional]
+\newenvironment{solution}[1][]
 {
     \refstepcounter{Solution}
-    \ifthenelse{\isempty{#1}}{%
+    \ifstrempty{#1}{%
         \noindent{\large\textbf{\Translate{exercise} \theSolution}}\\[0.75ex]
     }{%
         \noindent{\large\textbf{\Translate{exercise} \theSolution}} $\;$[\textit{#1}]\\[0.75ex]
