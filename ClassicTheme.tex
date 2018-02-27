@@ -50,7 +50,7 @@
     }{
         \centerline{\Large\textbf{\Translate{#1} #2}}
     }
-    % Print subtitle only for exercises, not for solutions
+    % Print subtitle only for exercises
     \ifstrequal{#1}{exercise-sheet}{
         % Here we have to print as subtitle a string which is the concatenation
         % of \exerciseSheetSubtitlePrefix and #3, which could be empty or not in
@@ -70,6 +70,10 @@
     % Print current date as subtitle only for presence sheet
     \ifstrequal{#1}{presence-sheet}{
         \centerline{\today{}}
+    }{}
+    % Print exam date as subtitle for exam solution
+    \ifstrequal{#1}{exam-solution}{
+        \centerline{\Translate{exam-date}: \examDate{}}
     }{}
     \vspace{2\myskip}
 }

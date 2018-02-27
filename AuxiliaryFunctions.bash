@@ -4,14 +4,18 @@ function GetFinalSheetFolderGlobalPathWithoutNumber(){
     #final folder, we cannot here just rely on the EXHND_make* variables
     if [ "$1" != '' ]; then
         mode=$1
-        if [[ ! ${mode} =~ ^(EXERCISE|SOLUTION|EXAM|PRESENCE)$ ]]; then
+        if [[ ! ${mode} =~ ^(EXERCISE|SOLUTION|SOLUTION-EXAM|EXAM|PRESENCE)$ ]]; then
             PrintInternal "Function \"${FUNCNAME[0]}\" called with unexpected second argument (\$2=\"$2\")! Aborting..."; exit -1
         fi
     else
         if [ ${EXHND_makeExerciseSheet} = 'TRUE' ] || [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
             mode='EXERCISE'
         elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
-            mode='SOLUTION'
+            if [ ${EXHND_solutionOfExam} = 'TRUE' ]; then
+                mode='SOLUTION-EXAM'
+            else
+                mode='SOLUTION'
+            fi
         elif [ ${EXHND_makeExam} = 'TRUE' ]; then
             mode='EXAM'
         elif [ ${EXHND_makePresenceSheet} = 'TRUE' ]; then
@@ -24,6 +28,8 @@ function GetFinalSheetFolderGlobalPathWithoutNumber(){
         string="${EXHND_finalExerciseSheetFolder}/${EXHND_finalExerciseSheetPrefix}"
     elif [ ${mode} = 'SOLUTION' ]; then
         string="${EXHND_finalSolutionSheetFolder}/${EXHND_finalSolutionSheetPrefix}"
+    elif [ ${mode} = 'SOLUTION-EXAM' ]; then
+        string="${EXHND_finalExamSheetFolder}/${EXHND_finalExamSolutionPrefix}"
     elif [ ${mode} = 'EXAM' ]; then
         string="${EXHND_finalExamSheetFolder}/${EXHND_finalExamSheetPrefix}"
     elif [ ${mode} = 'PRESENCE' ]; then
@@ -38,6 +44,8 @@ function __static__DetermineSheetNumber(){
     local lastSheetNumber string finalFoldersArray
     if [ ${EXHND_makeExam} = 'TRUE' ]; then
         string=$(GetFinalSheetFolderGlobalPathWithoutNumber 'EXAM') || exit -1 #https://stackoverflow.com/a/20157997
+    elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ] && [ ${EXHND_solutionOfExam} = 'TRUE' ]; then
+        string=$(GetFinalSheetFolderGlobalPathWithoutNumber 'SOLUTION-EXAM') || exit -1 #https://stackoverflow.com/a/20157997
     else
         string=$(GetFinalSheetFolderGlobalPathWithoutNumber 'EXERCISE') || exit -1 #https://stackoverflow.com/a/20157997
     fi
@@ -216,7 +224,11 @@ function MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder(){
     if [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
         newPdfFilename="${EXHND_temporaryFolder}/${EXHND_finalExerciseSheetPrefix}$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
     elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
-        newPdfFilename="${EXHND_temporaryFolder}/${EXHND_finalSolutionSheetPrefix}$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
+        if [ ${EXHND_solutionOfExam} = 'TRUE' ]; then
+            newPdfFilename="${EXHND_temporaryFolder}/${EXHND_finalExamSolutionPrefix}$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
+        else
+            newPdfFilename="${EXHND_temporaryFolder}/${EXHND_finalSolutionSheetPrefix}$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
+        fi
     elif [ ${EXHND_makeExam} = 'TRUE' ]; then
         newPdfFilename="${EXHND_temporaryFolder}/${EXHND_finalExamSheetPrefix}$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
     else
@@ -258,8 +270,10 @@ function MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder(){
     else
         mkdir "${destinationFolder}" || exit -2
     fi
-    if [ ${EXHND_makeExerciseSheet} = 'TRUE' ] || [ ${EXHND_makeExam} = 'TRUE' ]; then
+    if [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
         __static__CreateExerciseLogfile ${destinationFolder}/${EXHND_exercisesLogFilename}
+    elif [ ${EXHND_makeExam} = 'TRUE' ]; then
+        __static__CreateExerciseLogfile ${destinationFolder}/${EXHND_examLogFilename}
     fi
     #Rename .tex main file so that then I can move to final folder all .tex files from compilation folder
     #(moving before and renaming after is possible but require some more work)

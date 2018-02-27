@@ -39,8 +39,13 @@ function ProduceSolutionTexMainFile(){
     echo '\graphicspath{{'"${EXHND_figuresFolder}/"'}}'
     echo ''
     echo '\begin{document}'
-    echo '  \Heading'
-    echo "  \Sheet{solution-sheet}[${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]" #subtitle passed to give freedom in customized theme!
+    if [ ${EXHND_solutionOfExam} = 'TRUE' ]; then
+        echo '  \Heading[false]'
+        echo "  \Sheet{exam-solution}[${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]" #subtitle passed to give freedom in customized theme!
+    else
+        echo '  \Heading'
+        echo "  \Sheet{solution-sheet}[${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]" #subtitle passed to give freedom in customized theme!
+    fi
     echo '  %Exercises'
     echo "  \input{$(basename ${EXHND_bodyFilename%.tex})}"
     echo '\end{document}'
@@ -104,7 +109,7 @@ function ProduceExamTexMainFile(){
 
 function __static__ParseExercisesString(){
     if [[ $EXHND_exercisesFromPoolAsNumbers = "" ]]; then
-        ReadOutExercisesFromFinalExerciseSheetLogFile
+        ReadOutExercisesFromFinalSheetLogFile
         seq 1 ${#EXHND_choosenExercises[@]}
     elif [[ $EXHND_exercisesFromPoolAsNumbers =~ ^[1-9][0-9]*([.][1-9][0-9]*)*([,][1-9][0-9]*([.][1-9][0-9]*)*)*$ ]]; then
         echo $EXHND_exercisesFromPoolAsNumbers | tr , "\n"

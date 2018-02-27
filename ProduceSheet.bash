@@ -22,7 +22,7 @@ function ProduceExerciseSheet(){
 function ProduceSolutionSheet(){
     SetSheetNumber
     CheckTexLocaldefsAndLatexTheme
-    ReadOutExercisesFromFinalExerciseSheetLogFile
+    ReadOutExercisesFromFinalSheetLogFile
     SetListOfFilesToBeUsedAndCheckThem
     #TeX part: set up main and sub-files before compilation
     CreateTemporaryCompilationFolder

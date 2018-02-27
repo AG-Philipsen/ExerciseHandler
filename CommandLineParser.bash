@@ -11,6 +11,7 @@ function ParseCommandLineParameters(){
                              ['-e']='--exercises'
                              ['-p']='--exerciseSheetPostfix'
                              ['-s']='--showAlsoSolutions'
+                             ['-m']='--ofExam'
                              ['-n']='--sheetNumber'
                              ['-f']='--final'
                              ['-x']='--fix'
@@ -86,6 +87,10 @@ function ParseCommandLineParameters(){
             --showAlsoSolutions )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
                 EXHND_showAlsoSolutions="TRUE"
+                shift ;;
+            --ofExam )
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
+                EXHND_solutionOfExam="TRUE"
                 shift ;;
             --sheetNumber )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
@@ -226,6 +231,7 @@ function __static__PrintHelp(){
                             ['-eP']='Specify the headers of the exercise columns. Use a comma separated\nlist, where sub-exercises X.Y are allowed (e.g. \"1,2.1,2.2,3\").'
                             ['-p']='Set the exercise sheet subtitle postfix.'
                             ['-s']='Show solutions of exercises in the same file.'
+                            ['-m']='Make solution of exam instead of exercise sheet.'
                             ['-n']='Set the sheet number to be produced (either exercise or solution sheet).'
                             ['-f']='Move the produced pdf and auxiliary files to the corresponding final folder.'
                             ['-x']='Produce again a final sheet using its exercises and overwriting it.\nIt implies -f. Use -N to specify the exercise sheet number.'

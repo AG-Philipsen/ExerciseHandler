@@ -96,7 +96,7 @@ function __static__PickupExercises(){
 function PickUpExercisesFromListAccordingToUserChoice(){
     __static__LookForExercisesAndMakeList
     if [ ${EXHND_fixFinal} = 'TRUE' ]; then
-        ReadOutExercisesFromFinalExerciseSheetLogFile
+        ReadOutExercisesFromFinalSheetLogFile
     else
         if [ "$EXHND_exercisesFromPoolAsNumbers" = '' ]; then
             __static__PrintListOfExercises ${EXHND_exerciseList[@]}
@@ -114,19 +114,25 @@ function PickUpExercisesFromListAccordingToUserChoice(){
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
-function ReadOutExercisesFromFinalExerciseSheetLogFile(){
-    local finalFolder
-    finalFolder=$(GetFinalSheetFolderGlobalPathWithoutNumber 'EXERCISE') || exit -1
-    finalFolder+=${EXHND_sheetNumber}
+function ReadOutExercisesFromFinalSheetLogFile(){
+    local finalFolder logFile
+    if [ ${EXHND_solutionOfExam} = 'TRUE' ]; then
+        finalFolder=$(GetFinalSheetFolderGlobalPathWithoutNumber 'EXAM') || exit -1
+        logFile=${EXHND_examLogFilename}
+    else
+        finalFolder=$(GetFinalSheetFolderGlobalPathWithoutNumber 'EXERCISE') || exit -1
+        logFile=${EXHND_exercisesLogFilename}
+    fi
+    finalFolder+=$(printf "%02d" ${EXHND_sheetNumber})
     if [ ! -d  "${finalFolder}" ]; then
         PrintError "Folder \"$(basename ${finalFolder})\" not found in \"${EXHND_finalExerciseSheetFolder}\"! Aborting..."
         exit -1
     else
-        if [ ! -f "${finalFolder}/${EXHND_exercisesLogFilename}" ]; then
-            PrintError "Exercise log file not found in \"${finalFolder}\" folder! Aborting..."
+        if [ ! -f "${finalFolder}/${logFile}" ]; then
+            PrintError "Log file not found in \"${finalFolder}\" folder! Aborting..."
             exit -1
         else
-            EXHND_choosenExercises=( $(awk '{print $2}' "${finalFolder}/${EXHND_exercisesLogFilename}") )
+            EXHND_choosenExercises=( $(awk '{print $2}' "${finalFolder}/${logFile}") )
         fi
     fi
 }

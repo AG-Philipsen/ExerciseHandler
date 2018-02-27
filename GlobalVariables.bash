@@ -12,8 +12,9 @@ function DefineGlobalVariables(){
     readonly EXHND_exercisesLogFilename=".exercises.log" #One in each final exercise sheet folder
     readonly EXHND_finalSolutionSheetFolder="${EXHND_invokingDirectory}/FinalSolutionSheets"
     readonly EXHND_finalSolutionSheetPrefix="SolutionSheet_"
-    readonly EXHND_finalExamSheetFolder="${EXHND_invokingDirectory}/FinalExamSheets"
-    readonly EXHND_finalExamSheetPrefix="ExamSheet_"
+    readonly EXHND_finalExamSheetFolder="${EXHND_invokingDirectory}/FinalExams"
+    readonly EXHND_finalExamSheetPrefix="Exam_"
+    readonly EXHND_finalExamSolutionPrefix="ExamSolution_"
     readonly EXHND_examLogFilename=".exam.log" #One in each final exam sheet folder
     readonly EXHND_presenceSheetFolder="${EXHND_invokingDirectory}/PresenceSheets"
     readonly EXHND_presenceSheetPrefix="PresenceSheet_"
@@ -40,6 +41,7 @@ function DefineGlobalVariables(){
     EXHND_makeExerciseSheet='FALSE'
     EXHND_showAlsoSolutions='FALSE'
     EXHND_makeSolutionSheet='FALSE'
+    EXHND_solutionOfExam='FALSE'
     EXHND_makePresenceSheet='FALSE'
     EXHND_makeExam='FALSE'
     EXHND_listUsedExercises='FALSE'
