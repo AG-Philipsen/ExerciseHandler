@@ -111,12 +111,15 @@ function __static__ParseExercisesString(){
 }
 
 function ProducePresenceSheetTexMainFile(){
-    if [ ! -f ${EXHND_listOfStudentsFilename} ]; then
-        PrintWarning "File \"$(basename ${EXHND_listOfStudentsFilename})\" with students list not found in folder \"$(basename ${EXHND_presenceSheetFolder})\"."
-    fi
     local students numberOfStudents arrayOfExerciseNumbers exerciseNumberString exerciseString
     students=$(awk 'BEGIN {ORS=","}$0 ~ /^[[:space:]]*$/{next}{ print $0 }' $EXHND_listOfStudentsFilename)
     numberOfStudents=$(grep -o ',' <<< "$students" | wc -l)
+    thresholdNumberOfStudents=15
+    if [ $numberOfStudents -gt $(($thresholdNumberOfStudents-2)) ]; then
+        numberOfStudents=$(($numberOfStudents+2))
+    else
+        numberOfStudents=$thresholdNumberOfStudents
+    fi
     arrayOfExerciseNumbers=($(__static__ParseExercisesString))
     exerciseNumberString=$(printf ",%s" ${arrayOfExerciseNumbers[@]})
     exerciseString=$(printf ",Ex%s" ${arrayOfExerciseNumbers[@]})

@@ -5,6 +5,7 @@ function __static__IsInvokingPositionWrong(){
                     ${EXHND_solutionPoolFolder}
                     ${EXHND_finalExerciseSheetFolder}
                     ${EXHND_finalSolutionSheetFolder}
+                    ${EXHND_finalExamSheetFolder}
                     ${EXHND_figuresFolder}
                     ${EXHND_temporaryFolder} )
     for filename in "${listOfFiles[@]}"; do
@@ -20,8 +21,22 @@ function __static__IsInvokingPositionWrong(){
     return 1
 }
 
-function CheckInvokingPosition(){
+function __static__CheckInvokingPosition(){
     if __static__IsInvokingPositionWrong; then
         PrintError "Invoking position of the Exercise Handler seems to be wrong! Run the setup to create missing files/folders! Aborting..."; exit -1
     fi
+}
+
+function __static__CheckExistenceOfAuxiliaryFiles() {
+    if [ ${EXHND_makePresenceSheet} = 'TRUE' ]; then
+        if [ ! -f ${EXHND_listOfStudentsFilename} ]; then
+            touch ${EXHND_listOfStudentsFilename}
+            PrintWarning "File \"$(basename ${EXHND_listOfStudentsFilename})\" with students list not found in folder \"$(basename ${EXHND_presenceSheetFolder})\". Created empty one!"
+        fi
+    fi
+}
+
+function MakePreliminaryChecks(){
+    __static__CheckInvokingPosition
+    __static__CheckExistenceOfAuxiliaryFiles
 }

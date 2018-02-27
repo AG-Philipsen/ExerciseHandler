@@ -39,7 +39,7 @@ ParseCommandLineParameters "$@"
 if [ ${EXHND_doSetup} = 'TRUE' ]; then
     MakeSetup
 else
-    CheckInvokingPosition
+    MakePreliminaryChecks
     if [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
         ProduceNewEmptyExerciseAndSolution
     elif [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
