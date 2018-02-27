@@ -1,7 +1,7 @@
 function ParseCommandLineParameters(){
     declare -rA mapOptions=( ['-h']='--help'
                              ['-U']='--setup'
-                             ['-N']='--newSheet'
+                             ['-N']='--newExercise'
                              ['-E']='--makeExerciseSheet'
                              ['-S']='--makeSolutionSheet'
                              ['-P']='--makePresenceSheet'
@@ -10,6 +10,7 @@ function ParseCommandLineParameters(){
                              ['-a']='--showAllExercises'
                              ['-e']='--exercises'
                              ['-p']='--exerciseSheetPostfix'
+                             ['-s']='--showAlsoSolutions'
                              ['-n']='--sheetNumber'
                              ['-f']='--final'
                              ['-x']='--fix'
@@ -29,10 +30,10 @@ function ParseCommandLineParameters(){
     local primaryOptions; primaryOptions=( '-U' '-N' '-E' '-P' '-S' '-X' '-L' ) #To keep associative array "ordered"
     declare -rA secondaryToPrimaryOptionsMapping=([${primaryOptions[0]}]=''
                                                   [${primaryOptions[1]}]=''
-                                                  [${primaryOptions[2]}]='-a -e -p -n -f -x -t'
-                                                  [${primaryOptions[3]}]='-n -e -f -x -t'
-                                                  [${primaryOptions[4]}]='-e -n -t'
-                                                  [${primaryOptions[5]}]='-e -f -x -t'
+                                                  [${primaryOptions[2]}]='-a -e -p -s -n -f -x -t'
+                                                  [${primaryOptions[3]}]='-e -n -t'
+                                                  [${primaryOptions[4]}]='-m -n -f -x -t'
+                                                  [${primaryOptions[5]}]='-e -s -f -x -t'
                                                   [${primaryOptions[6]}]='' )
     #Parse options: here only long options are used
     while [ $# -gt 0 ]; do
@@ -45,7 +46,7 @@ function ParseCommandLineParameters(){
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_doSetup="TRUE"
                 shift;;
-            --newSheet )
+            --newExercise )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_produceNewExercise='TRUE'
                 shift ;;
@@ -82,6 +83,10 @@ function ParseCommandLineParameters(){
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
                 EXHND_exerciseSheetSubtitlePostfix="$2"
                 shift 2 ;;
+            --showAlsoSolutions )
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
+                EXHND_showAlsoSolutions="TRUE"
+                shift ;;
             --sheetNumber )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
                 EXHND_sheetNumber="$2"
@@ -110,6 +115,14 @@ function ParseCommandLineParameters(){
     if [ ${#mutuallyExclusiveOptionsPassed[@]} -gt 1 ]; then
         PrintError "Multiple mutually exclusive options were passed to the script! Use the \"--help\" option to check."
         exit -1
+    fi
+}
+
+function FurtherChecksOnCommandLineOptions(){
+    if [ ${EXHND_makeExerciseSheet} = 'TRUE' ] || [ ${EXHND_makeExam} = 'TRUE' ]; then
+        if [ ${EXHND_isFinal} = 'TRUE' ] && [ ${EXHND_showAlsoSolutions} = 'TRUE' ]; then
+            PrintError "Option \"--showAlsoSolutions\" cannot be combined with the option \"--final\"."; exit -1
+        fi
     fi
 }
 
@@ -212,6 +225,7 @@ function __static__PrintHelp(){
                             ['-e']='Avoid interactive selection of exercises and choose them directly.\nUse a comma separated list, where ranges X-Y are allowed (boundaries included).\nOrder is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].'
                             ['-eP']='Specify the headers of the exercise columns. Use a comma separated\nlist, where sub-exercises X.Y are allowed (e.g. \"1,2.1,2.2,3\").'
                             ['-p']='Set the exercise sheet subtitle postfix.'
+                            ['-s']='Show solutions of exercises in the same file.'
                             ['-n']='Set the sheet number to be produced (either exercise or solution sheet).'
                             ['-f']='Move the produced pdf and auxiliary files to the corresponding final folder.'
                             ['-x']='Produce again a final sheet using its exercises and overwriting it.\nIt implies -f. Use -N to specify the exercise sheet number.'

@@ -116,7 +116,7 @@ function __static__CheckSelectedFilesToBeUsed(){
     local file
     for file in ${EXHND_filesToBeUsedGlobalPath[@]}; do
         if [ ! -f ${file} ]; then
-            PrintError "File \"$(basename ${file})\" not found in \"$(dirname ${EXHND_solutionPoolFolder})\" folder."; exit -1
+            PrintError "File \"$(basename ${file})\" not found in \"$(basename $(dirname ${file}))\" folder."; exit -1
         fi
         CheckBlocksInFile ${file} "OPTIONS" "PACKAGES" "DEFINITIONS" "BODY"
     done
@@ -124,7 +124,13 @@ function __static__CheckSelectedFilesToBeUsed(){
 
 function SetListOfFilesToBeUsedAndCheckThem(){
     if [ ${EXHND_makeExerciseSheet} = 'TRUE' ] || [ ${EXHND_makeExam} = 'TRUE' ]; then
-        EXHND_filesToBeUsedGlobalPath=( "${EXHND_choosenExercises[@]/#/${EXHND_exercisePoolFolder}/}" ) #Prepend to each array element (last / is a real / in path)
+        local exercise
+        for exercise in ${EXHND_choosenExercises[@]}; do
+            EXHND_filesToBeUsedGlobalPath+=( "${exercise/#/${EXHND_exercisePoolFolder}/}" )     #Prepend to each exercise the exercise pool (last / is a real / in path)
+            if [ ${EXHND_showAlsoSolutions} = 'TRUE' ]; then
+                EXHND_filesToBeUsedGlobalPath+=( "${exercise/#/${EXHND_solutionPoolFolder}/}" ) #Prepend to each exercise the solution pool (last / is a real / in path)
+            fi
+        done
     elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
         EXHND_filesToBeUsedGlobalPath=( "${EXHND_choosenExercises[@]/#/${EXHND_solutionPoolFolder}/}" ) #Prepend to each array element (last / is a real / in path)
     else

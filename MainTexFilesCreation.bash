@@ -53,6 +53,9 @@ function ProduceSolutionTexMainFile(){
 function __static__GetPointsFromExercises(){
     local exercise score allScores; allScores=''
     for exercise in "${EXHND_filesToBeUsedGlobalPath[@]}"; do
+        if [ $(grep -c '\\begin{solution}' ${exercise}) -ne 0 ]; then
+            continue
+        fi
         score=$(grep '\\begin{exercise}\[.*\]\[[0-9]\+\]' ${exercise})
         if [ "${score}" = '' ]; then
             PrintError "Exercise \"$(basename ${exercise})\" seems not to contain a score! Invalid for exam!"; exit -1

@@ -35,6 +35,7 @@ PrintWarning -n "Script under developement and in a beta phase!" "Not everything
 
 DefineGlobalVariables
 ParseCommandLineParameters "$@"
+FurtherChecksOnCommandLineOptions
 
 if [ ${EXHND_doSetup} = 'TRUE' ]; then
     MakeSetup

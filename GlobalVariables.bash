@@ -38,6 +38,7 @@ function DefineGlobalVariables(){
     EXHND_doSetup='FALSE'
     EXHND_produceNewExercise='FALSE'
     EXHND_makeExerciseSheet='FALSE'
+    EXHND_showAlsoSolutions='FALSE'
     EXHND_makeSolutionSheet='FALSE'
     EXHND_makePresenceSheet='FALSE'
     EXHND_makeExam='FALSE'
