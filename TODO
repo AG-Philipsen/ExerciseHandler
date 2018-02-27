@@ -5,13 +5,6 @@ HIGH PRIORITY:
 
 NORMAL PRIORITY:
 
- - At the moment, if the fix final option is given, we remove the final folder and recreate it.
-   However, if the user forgot to close a file in that folder, the rm -r command fail and the script
-   aborts. This is bad, because usually the rm -r command will have already deleted partially
-   the final folder! A workaround for the user is to recreate the final sheet in this case, but
-   it is not so friendly. It would be nice if the handler would take care of this situation.
-   -> Think about a possible solution. Have a look to "lsof +D DIR" command.
-
  - Give the possibility to the user to create her/his own theme. Implement option
    to abilitate this and pass the file. This should contain the needed commands
    (\Heading, etc.) and it should be input in the main tex file. Add description
