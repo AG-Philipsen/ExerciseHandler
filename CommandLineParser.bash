@@ -29,12 +29,12 @@ function ParseCommandLineParameters(){
     fi
     #Additional logic to distinguish between primary and secondary options
     local primaryOptions; primaryOptions=( '-U' '-N' '-E' '-P' '-S' '-X' '-L' ) #To keep associative array "ordered"
-    declare -rA secondaryToPrimaryOptionsMapping=([${primaryOptions[0]}]=''
+    declare -rA secondaryToPrimaryOptionsMapping=([${primaryOptions[0]}]='-t'
                                                   [${primaryOptions[1]}]=''
-                                                  [${primaryOptions[2]}]='-a -e -p -s -n -f -x -t'
-                                                  [${primaryOptions[3]}]='-e -n -t'
-                                                  [${primaryOptions[4]}]='-m -n -f -x -t'
-                                                  [${primaryOptions[5]}]='-e -s -f -x -t'
+                                                  [${primaryOptions[2]}]='-a -e -p -s -n -f -x'
+                                                  [${primaryOptions[3]}]='-e -n'
+                                                  [${primaryOptions[4]}]='-m -n -f -x'
+                                                  [${primaryOptions[5]}]='-e -s -f -x'
                                                   [${primaryOptions[6]}]='' )
     #Parse options: here only long options are used
     while [ $# -gt 0 ]; do
@@ -111,7 +111,8 @@ function ParseCommandLineParameters(){
                 shift ;;
             --themeFile )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
-                PrintError "Option \"$1\" still to be implemented! Aborting..."; exit -1; shift ;;
+                EXHND_userDefinedTheme="$2"
+                shift 2 ;;
             *)
                 PrintError "Unrecognized option \"$1\"! Aborting..."; exit -1; shift ;;
         esac
@@ -235,7 +236,7 @@ function __static__PrintHelp(){
                             ['-n']='Set the sheet number to be produced (either exercise or solution sheet).'
                             ['-f']='Move the produced pdf and auxiliary files to the corresponding final folder.'
                             ['-x']='Produce again a final sheet using its exercises and overwriting it.\nIt implies -f. Use -N to specify the exercise sheet number.'
-                            ['-t']='User theme TeX file to be used.'    )
+                            ['-t']='TeX theme file to be used.' )
     local primaryOption secondaryOption
     __static__PrintHelpHeader
     for primaryOption in ${primaryOptions[@]}; do

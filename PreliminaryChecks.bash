@@ -1,6 +1,7 @@
 function __static__IsInvokingPositionWrong(){
     local listOfFiles listOfFolders filename foldername
-    listOfFiles=( ${EXHND_texLocaldefsFilename} )
+    listOfFiles=( ${EXHND_texLocaldefsFilename}
+                  ${EXHND_themeFilename} )
     listOfFolders=( ${EXHND_exercisePoolFolder}
                     ${EXHND_solutionPoolFolder}
                     ${EXHND_finalExerciseSheetFolder}
