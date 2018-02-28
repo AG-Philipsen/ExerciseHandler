@@ -50,6 +50,10 @@ function ParseCommandLineParameters(){
             --newExercise )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_produceNewExercise='TRUE'
+                if [ "$2" != '' ] && [[ ! $2 =~ ^- ]]; then
+                    EXHND_newExerciseFilename="$2"
+                    shift
+                fi
                 shift ;;
             --makeExerciseSheet )
                 mutuallyExclusiveOptionsPassed+=( $1 )
@@ -221,7 +225,7 @@ function __static__PrintHelpFooter(){
 
 function __static__PrintHelp(){
     declare -rA optionHelp=(['-U']='Set up of the evironment creating local definitions template and folders.'
-                            ['-N']='Create a new empty exercise and a new empty solution, which are added to the pools.'
+                            ['-N']='Create a new empty exercise and a new empty solution, which are added to the pools.\n\e[21mThe name of the exercise may be specified as argument, but it cannot start with \"-\".'
                             ['-E']='Create a new exercise sheet or fix a previous one.'
                             ['-S']='Create a new solution sheet or fix a previous one.'
                             ['-P']='Create a new presence sheet.'

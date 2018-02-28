@@ -33,6 +33,7 @@ function DefineGlobalVariables(){
 
     #Variables with input from user
     EXHND_userDefinedTheme=''
+    EXHND_newExerciseFilename=''
     EXHND_exerciseSheetSubtitlePostfix=''
     EXHND_sheetNumber=''
     EXHND_exercisesFromPoolAsNumbers=''

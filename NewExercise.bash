@@ -21,15 +21,19 @@ function __static__ProduceTemplate(){
 
 
 function ProduceNewEmptyExerciseAndSolution(){
-    printf "\e[38;5;207m\n Please, insert the exercise filename: \e[0m\e[s"
     local newExerciseGlobalPath newSolutionGlobalPath
-    while read newExerciseGlobalPath; do
-        [ "${newExerciseGlobalPath}" = '' ] && printf "\e[u\e[1A" && continue
-        if [[ ! ${newExerciseGlobalPath} =~ [.]tex$ ]]; then
-            newExerciseGlobalPath+=".tex"
-        fi
-        echo; break
-    done
+    if [ "${EXHND_newExerciseFilename}" = '' ]; then
+        printf "\e[38;5;207m\n Please, insert the exercise filename: \e[0m\e[s"
+        while read newExerciseGlobalPath; do
+            [ "${newExerciseGlobalPath}" = '' ] && printf "\e[u\e[1A" && continue
+            echo; break
+        done
+    else
+        newExerciseGlobalPath="${EXHND_newExerciseFilename}"
+    fi
+    if [[ ! ${newExerciseGlobalPath} =~ [.]tex$ ]]; then
+        newExerciseGlobalPath+=".tex"
+    fi
     newSolutionGlobalPath="${EXHND_solutionPoolFolder}/${newExerciseGlobalPath}"
     newExerciseGlobalPath="${EXHND_exercisePoolFolder}/${newExerciseGlobalPath}"
     #Create exercise
@@ -41,7 +45,7 @@ function ProduceNewEmptyExerciseAndSolution(){
     fi
     #Create solution
     if [ -f "${newSolutionGlobalPath}" ]; then
-        PrintWarning "Solution \"$(basename "${newSolutionGlobalPath}")\" already existing."
+        PrintWarning "Solution \"$(basename "${newSolutionGlobalPath}")\" already existing, not created."
     else
         __static__ProduceTemplate 'solution' "${newSolutionGlobalPath}"
         PrintInfo "New solution \"$(basename "${newSolutionGlobalPath}")\" template was successfully created."
