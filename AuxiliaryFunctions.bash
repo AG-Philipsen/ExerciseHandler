@@ -56,10 +56,12 @@ function __static__DetermineSheetNumber(){
     fi
     lastSheetNumber=$(grep -o "[0-9]\+" <<< "$(basename ${finalFoldersArray[-1]})" | sed 's/^0*//')
     if [[ $lastSheetNumber =~ ^[1-9][0-9]*$ ]]; then
-        if [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
+        if [ ${EXHND_makeExerciseSheet} = 'TRUE' ] || [ ${EXHND_makeExam} = 'TRUE' ]; then
             echo $((lastSheetNumber+1))
         elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ] || [ ${EXHND_makePresenceSheet} = 'TRUE' ]; then
             echo ${lastSheetNumber}
+        else
+            PrintInternal "Unexpected branch in \"${FUNCNAME[0]}\" function."
         fi
     else
         PrintError "Unable to determine sheet number!"; exit -1
