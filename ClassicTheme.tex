@@ -221,13 +221,13 @@
         \ifstrempty{#2}{%
             \noindent{\large\textbf{\Translate{exercise} \theExercise}}\\[0.75ex]
         }{%
-            \noindent{\large\textbf{\Translate{exercise} \theExercise}}\hfill\texttt{(#2 pts.)}\\[0.75ex]
+            \noindent{\large\textbf{\Translate{exercise} \theExercise}}\hfill\texttt{(#2 \translate{score-short})}\\[0.75ex]
         }
     }{%
         \ifstrempty{#2}{%
             \noindent{\large\textbf{\Translate{exercise} \theExercise}} $\;$[\textit{#1}]\\[0.75ex]
         }{%
-            \noindent{\large\textbf{\Translate{exercise} \theExercise}} $\;$[\textit{#1}]\hfill\texttt{(#2 pts.)}\\[0.75ex]
+            \noindent{\large\textbf{\Translate{exercise} \theExercise}} $\;$[\textit{#1}]\hfill\texttt{(#2 \translate{score-short})}\\[0.75ex]
         }
     }
 }
