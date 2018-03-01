@@ -239,7 +239,7 @@ function __static__PrintHelp(){
                             ['-m']='Make solution of exam instead of exercise sheet.'
                             ['-n']='Set the sheet number to be produced (either exercise or solution sheet).'
                             ['-f']='Move the produced pdf and auxiliary files to the corresponding final folder.'
-                            ['-x']='Produce again a final sheet using its exercises and overwriting it.\nIt implies -f. Use -N to specify the exercise sheet number.'
+                            ['-x']='Produce again a final sheet using its exercises and overwriting it.\nIt implies -f. Use -n to specify the exercise sheet number.'
                             ['-t']='TeX theme file to be used.' )
     local primaryOption secondaryOption
     __static__PrintHelpHeader
