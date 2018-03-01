@@ -1,12 +1,17 @@
 # Exercise Handler
 
 The `Exercise Handler` is a tool to structure and automatise pretty much all of the tasks related to the organisation of tutorials for a given (e.g. academic) lecture by mostly producing, organising and compiling TeX files.
+It makes it possible for you as tutor to devote your time to the sole content of exercises and solutions.
+Writing new ones from scratch, or even just extending or reusing existing ones in the pool that will get populated while the `Exercise Handler` is used, possibly by many tutors, over the semesters.
+
+At the same time, by making use of the `Exercise Handler`, you are not just trading your freedom in typesetting nice-looking customized exercise sheets for some more "spare" time.
+On the contrary, you can implement your own theme, rather than using the provided classic one, and you can even profit from the provided support for different languages (:uk: :us: :de: :fr: :it:).
 
 ## Main Features
 
 Interacting with the `Exercise Handler` main bash script, by specifying the appropriate command line option(s), it will be (as easy as) possible to achieve:
 
-* A **set up** of the "tutorial evironment" including a to-be-filled-in local definitions template, a (usable/customizable/replaceable) TeX theme file and the necessary folder structure.
+* A **set-up** of the "tutorial evironment" including a to-be-filled-in local definitions template, a (usable/customizable/replaceable) TeX theme file and the necessary folder structure.
 * The creation of **new exercises** and (optionally) of the corresponding solutions, progressively populating a pool of exercises (and solutions).
 * The creation of **exercise sheets**, including any selection of exercises in the pool, to be delivered during the tutorial.
 * The creation of **presence sheets** to be used during the tutorial as attendance register and/or to take note of the (self)evaluation of the delivered exercises.
@@ -22,11 +27,9 @@ Once you will have cloned the repository, you will be able to run it straight aw
 The script has a helper, that can be obtained using the `--help` option, providing a compact *getting started*.
 For a complete overview you can refer to the [Wiki documentation](https://github.com/AG-Philipsen/Exercise_Handler/wiki) and in particular to [this page](https://github.com/AG-Philipsen/ExerciseHandler/wiki/How-it-works).
 
-
-:exclamation: Consider that, to be able to properly work, the `Exercise Handler` needs to be once run in **set up** mode (with command line option `-U`) so that it can then be configured with the needed information, by filling up the produced local definitions template.
+Running the `Exercise Handler` in **set-up** mode (with command line option `-U`) will allow you to configure it with the needed information, by filling up the produced local definitions template.
 If this file is not filled out properly, you will be warned in successive runs.
-Also a custom TeX theme can be chosen in the set up phase.
-A classic one is provided.
+In the set-up phase you will also choose a LaTeX theme, possibly the provided classic one or your own (after having read some detail in the relevant [Wiki page](https://github.com/AG-Philipsen/ExerciseHandler/wiki/The-LaTeX-theme)).
 
 ## Authors
 
