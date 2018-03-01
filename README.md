@@ -1,10 +1,11 @@
 # Exercise Handler
 
 The `Exercise Handler` is a tool to structure and automatise pretty much all of the tasks related to the organisation of tutorials for a given (e.g. academic) lecture by mostly producing, organising and compiling TeX files.
+
 It makes it possible for you as tutor to devote your time to the sole content of exercises and solutions.
 Writing new ones from scratch, or even just extending or reusing existing ones in the pool that will get populated while the `Exercise Handler` is used, possibly by many tutors, over the semesters.
 
-At the same time, by making use of the `Exercise Handler`, you are not just trading your freedom in typesetting nice-looking customized exercise sheets for some more "spare" time.
+At the same time, by making use of the `Exercise Handler`, you are not just trading your freedom in typesetting nice-looking customised exercise sheets for some more "spare" time.
 On the contrary, you can implement your own theme, rather than using the provided classic one, and you can even profit from the provided support for different languages (:uk: :us: :de: :fr: :it:).
 
 ## Main Features
