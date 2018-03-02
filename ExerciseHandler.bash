@@ -16,17 +16,17 @@
 readonly EXHND_repositoryDirectory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 #Sourcing auxiliary file(s)
-source ${EXHND_repositoryDirectory}/GlobalVariables.bash         || exit -2
-source ${EXHND_repositoryDirectory}/OutputFunctionality.bash     || exit -2
-source ${EXHND_repositoryDirectory}/PreliminaryChecks.bash       || exit -2
-source ${EXHND_repositoryDirectory}/CommandLineParser.bash       || exit -2
-source ${EXHND_repositoryDirectory}/Setup.bash                   || exit -2
-source ${EXHND_repositoryDirectory}/NewExercise.bash             || exit -2
-source ${EXHND_repositoryDirectory}/AuxiliaryFunctions.bash      || exit -2
-source ${EXHND_repositoryDirectory}/ListUsedExercises.bash       || exit -2
-source ${EXHND_repositoryDirectory}/ExerciseSelection.bash       || exit -2
-source ${EXHND_repositoryDirectory}/MainTexFilesCreation.bash    || exit -2
-source ${EXHND_repositoryDirectory}/ProduceSheet.bash            || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/GlobalVariables.bash         || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/OutputFunctionality.bash     || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/PreliminaryChecks.bash       || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/CommandLineParser.bash       || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/Setup.bash                   || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/NewExercise.bash             || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/AuxiliaryFunctions.bash      || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/ListUsedExercises.bash       || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/ExerciseSelection.bash       || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/MainTexFilesCreation.bash    || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/ProduceSheet.bash            || exit -2
 
 #Warning that the script is in developement phase!
 PrintWarning -n "Script under developement and in a beta phase!" "Not everything is guaranteed to work!!"
