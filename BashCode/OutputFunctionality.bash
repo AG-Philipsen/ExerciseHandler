@@ -33,5 +33,5 @@ function PrintError(){
 }
 
 function PrintInternal(){
-    __static__PrintMessageToScreen "INTERNAL" "$@"  >&2
+    __static__PrintMessageToScreen "INTERNAL" "$@" "Please contact the developers reporting this message and how you run the script."  >&2
 }
