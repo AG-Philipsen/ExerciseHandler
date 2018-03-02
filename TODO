@@ -5,14 +5,6 @@ HIGH PRIORITY:
 
 NORMAL PRIORITY:
 
- - Write quite detailed README file in markdown (ready for GitHub)
-
- - Write WIKI page with main information about theme.
-   Add description where commands to be provided in a new theme should be listed.
-
- - Is command line helper enough or should we add something in the WIKI pages
-   about usage? What else should the user know that does not go in the README?
-
 LOW PRIORITY:
 
  - Trap CTRL-C in a nice way: cleaning files/folders. etc. -> DESIGN
