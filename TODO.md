@@ -13,7 +13,8 @@ All tasks are classified according to priority and typology.
 * :memo: Documentation
 
 ----
-##Future work
+
+## Future work
 
 ### High priority
 
@@ -38,4 +39,5 @@ All tasks are classified according to priority and typology.
  - [ ] :question: Implement reordering of packages according to known rules to fix possible [LaTeX package conflicts](http://www.macfreek.nl/memory/LaTeX_package_conflicts#Unicode_in_Listing)?
 
 ----
-##Past work
+
+## Past work
