@@ -1,4 +1,7 @@
-Here we keep track of work that is planned to be done for the future, classified according to priority and typology.
+Here we keep track of work that is either planned to be done for the future or done in between two consecutive releases.
+In particular, one can refer to the [Past work section](#past-work) to know about the changes that will be included in the next release.
+
+All tasks are classified according to priority and typology.
 
 ----
 
@@ -10,14 +13,15 @@ Here we keep track of work that is planned to be done for the future, classified
 * :memo: Documentation
 
 ----
+##Future work
 
-## High priority
-
-
-## Normal priority
+### High priority
 
 
-## Low priority
+### Normal priority
+
+
+### Low priority
 
  - [ ] :fire: :recycle: :new: Trap CTRL-C in a nice way: cleaning files/folders, etc. -> DESIGN.
  - [ ] :fire: Use consistent exit error codes (now they are hard coded and without a meaning).
@@ -31,5 +35,7 @@ Here we keep track of work that is planned to be done for the future, classified
  - [ ] :question: Use TikZ to "draw" tables instead of pgfplotstable?!
  This would solve the single line table exam problem, but it should be checked if all functionality can be guaranteed.
  - [ ] :new: Implement way to switch to different LaTeX compiler.
- - [ ] :question: Implement reordering of packages according to known rules?
- http://www.macfreek.nl/memory/LaTeX_package_conflicts#Unicode_in_Listing
+ - [ ] :question: Implement reordering of packages according to known rules to fix possible [LaTeX package conflicts](http://www.macfreek.nl/memory/LaTeX_package_conflicts#Unicode_in_Listing)?
+
+----
+##Past work
