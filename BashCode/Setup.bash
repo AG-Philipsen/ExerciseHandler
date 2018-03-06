@@ -26,6 +26,7 @@ function __static__CreateTexLocaldefsTemplate(){
     echo '\newcommand{\examDuration}{}'
     echo '\newcommand{\examDate}{}'
     echo '\newcommand{\examRules}{}'
+    echo '\newcommand{\makeBinaryExam}{false}                     %Set it to true is needed'
     echo '\newcommand{\myEveryEvenRowColor}{gray}'
     echo '\newcommand{\hideSignatureColumnInPresenceSheet}{false} %Set it to true is needed'
     echo '\newcommand{\hideExercisesColumnInPresenceSheet}{false} %Set it to true is needed'

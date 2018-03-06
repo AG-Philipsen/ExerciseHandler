@@ -92,7 +92,7 @@
         \centering
         \begin{tabular}{rp{0.6\textwidth}}
             \Translate{full-name}:  & \underline{\hspace{0.6\textwidth}} \\[3ex]
-            \Translate{ID-number}:  & \underline{\hspace{0.6\textwidth}} \\[5ex]
+            \Translate{ID-number}:  & \underline{\hspace{0.6\textwidth}} \\[4ex]
         \end{tabular}
         %Prepare table formatting and layout
         \setlength{\aboverulesep}{0pt}
@@ -121,10 +121,18 @@
                every head row/.style={before row=\toprule, after row=\midrule},
                every even row/.style={before row={\rowcolor{\myEveryEvenRowColor}}},
                every last row/.style={after row=\midrule \textsc{\Translate{sum}:} & $\;\quad/\totalScore$ \\ \bottomrule}]{\loadedtable}
-        \par\vspace{2\myskip}
-        \begin{tabular}{rp{10cm}}
-            \Translate{final-mark}:       & \underline{\hspace{9cm}} \\[3ex]
-        \end{tabular}
+        \par\vspace{\myskip}
+        \newbool{examIsPassedOrFailed}
+        \setbool{examIsPassedOrFailed}{\makeBinaryExam}
+        \ifbool{examIsPassedOrFailed}{%
+            \begin{tabular}{rp{2cm}p{2cm}}
+                \Translate{passed}: & \fbox{\phantom{X}}$\quad$\Translate{yes} & \fbox{\phantom{X}}$\quad$\Translate{no} \\
+            \end{tabular}
+        }{%
+            \begin{tabular}{rp{10cm}}
+                \Translate{final-mark}:       & \underline{\hspace{9cm}} \\
+            \end{tabular}
+        }
         \par% https://tex.stackexchange.com/a/91539
     \endgroup
     \vfill
