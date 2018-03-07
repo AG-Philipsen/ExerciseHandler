@@ -34,7 +34,7 @@ function ParseCommandLineParameters(){
                                                   [${primaryOptions[2]}]='-a -e -p -s -n -f -x'
                                                   [${primaryOptions[3]}]='-e -n'
                                                   [${primaryOptions[4]}]='-m -n -f -x'
-                                                  [${primaryOptions[5]}]='-e -s -f -x'
+                                                  [${primaryOptions[5]}]='-e -n -s -f -x'
                                                   [${primaryOptions[6]}]='' )
     #Parse options: here only long options are used
     while [ $# -gt 0 ]; do
