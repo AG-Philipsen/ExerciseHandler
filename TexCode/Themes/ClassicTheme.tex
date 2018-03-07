@@ -79,6 +79,7 @@
 }
 
 \newcommand{\ExamCoverPage}[2]{%
+    \thispagestyle{empty}
     \begingroup
         \large
         \noindent\textbf{\Translate{duration}:} \examDuration  \hfill \textbf{\examDate}
@@ -137,6 +138,7 @@
     \endgroup
     \vfill
     \newpage%
+    \pagenumbering{arabic}% Arabic page numbers (and reset to 1)
 }
 
 \newcommand{\PresenceSheet}[5]{
