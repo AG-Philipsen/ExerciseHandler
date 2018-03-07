@@ -123,7 +123,7 @@ function PickUpExercisesFromListAccordingToUserChoice(){
 
 function ReadOutExercisesFromFinalSheetLogFile(){
     local finalFolder logFile
-    if [ ${EXHND_solutionOfExam} = 'TRUE' ]; then
+    if [ ${EXHND_makeExam} = 'TRUE' ] || [ ${EXHND_solutionOfExam} = 'TRUE' ]; then
         finalFolder=$(GetFinalSheetFolderGlobalPathWithoutNumber 'EXAM') || exit -1
         logFile=${EXHND_examLogFilename}
     else
