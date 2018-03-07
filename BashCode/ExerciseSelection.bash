@@ -16,6 +16,13 @@ function __static__LookForExercisesAndMakeList(){
             fi
             usedExercises+=( $(awk '{print $2}' ${folder}${EXHND_exercisesLogFilename}) )
         done
+        for folder in $(GetFinalSheetFolderGlobalPathWithoutNumber 'EXAM')*/; do
+            if [ ! -f ${folder}${EXHND_examLogFilename} ]; then
+                PrintWarning "Exercise log file not found in \"${folder}\" folder, not able to exclude from list some used exercises!"
+                continue
+            fi
+            usedExercises+=( $(awk '{print $2}' ${folder}${EXHND_examLogFilename}) )
+        done
         for exerciseOfUsed in ${usedExercises[@]}; do
             for index in ${!EXHND_exerciseList[@]}; do
                 if [ ${EXHND_exerciseList[$index]} = ${exerciseOfUsed} ]; then
