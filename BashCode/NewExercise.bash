@@ -23,9 +23,9 @@ function __static__ProduceTemplate(){
 function ProduceNewEmptyExerciseAndSolution(){
     local newExerciseGlobalPath newSolutionGlobalPath
     if [ "${EXHND_newExerciseFilename}" = '' ]; then
-        printf "\e[38;5;207m\n Please, insert the exercise filename: \e[0m\e[s"
+        printf "\e[38;5;207m Please, insert the exercise filename: \e[0m\e[s"
         while read newExerciseGlobalPath; do
-            [ "${newExerciseGlobalPath}" = '' ] && printf "\e[u\e[1A" && continue
+            [ "${newExerciseGlobalPath}" = '' ] && printf "\e[u" && continue
             echo; break
         done
     else
