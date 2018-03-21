@@ -198,11 +198,11 @@ function ProduceTexAuxiliaryFiles(){
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 function CheckTexPackagesFile(){
-    PrintWarning "Function \"${FUNCNAME}\" not implemented yet! It is up to you to avoid conflicts in loading packages!!"
+    PrintWarning "Function \"${FUNCNAME}\" not implemented yet! It is up to you to avoid conflicts in loading packages!"
 }
 
 function CheckTexDefinitionsFile(){
-    PrintWarning "Function \"${FUNCNAME}\" not implemented yet! It is up to you to avoid conflicts in loading packages!!"
+    PrintWarning "Function \"${FUNCNAME}\" not implemented yet! It is up to you to avoid conflicts between user commands!"
 }
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
