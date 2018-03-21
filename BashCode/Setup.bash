@@ -8,7 +8,7 @@ function __static__CreateTexLocaldefsTemplate(){
     echo -e '%__END_OPTIONS__%\n\n\n'
     echo '%__BEGIN_PACKAGES__%'
     echo '\usepackage{arrayjobx}'
-    echo '%\usepackage{graphicx} %Uncomment this line if your exercises needs figures'
+    echo '%\usepackage{graphicx} %Uncomment this line if your exercises need figures'
     echo -e '%__END_PACKAGES__%\n\n\n'
     echo '%__BEGIN_DEFINITIONS__%'
     echo '\def\lecture{}      '
