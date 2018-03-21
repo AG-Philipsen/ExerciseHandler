@@ -42,10 +42,8 @@ function GetFinalSheetFolderGlobalPathWithoutNumber(){
 
 function __static__DetermineSheetNumber(){
     local lastSheetNumber string finalFoldersArray
-    if [ ${EXHND_makeExam} = 'TRUE' ]; then
-        string=$(GetFinalSheetFolderGlobalPathWithoutNumber 'EXAM') || exit -1 #https://stackoverflow.com/a/20157997
-    elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ] && [ ${EXHND_solutionOfExam} = 'TRUE' ]; then
-        string=$(GetFinalSheetFolderGlobalPathWithoutNumber 'SOLUTION-EXAM') || exit -1 #https://stackoverflow.com/a/20157997
+    if [ ${EXHND_makeExam} = 'TRUE' ] || { [ ${EXHND_makeSolutionSheet} = 'TRUE' ] && [ ${EXHND_solutionOfExam} = 'TRUE' ] ; }; then
+        string=$(GetFinalSheetFolderGlobalPathWithoutNumber 'EXAM')     || exit -1 #https://stackoverflow.com/a/20157997
     else
         string=$(GetFinalSheetFolderGlobalPathWithoutNumber 'EXERCISE') || exit -1 #https://stackoverflow.com/a/20157997
     fi
