@@ -28,11 +28,9 @@ source ${EXHND_repositoryDirectory}/BashCode/ExerciseSelection.bash       || exi
 source ${EXHND_repositoryDirectory}/BashCode/MainTexFilesCreation.bash    || exit -2
 source ${EXHND_repositoryDirectory}/BashCode/ProduceSheet.bash            || exit -2
 
-#Warning that the script is in developement phase!
-PrintWarning -n "Script under developement and in a beta phase!" "Not everything is guaranteed to work!!"
-
 #------------------------------------------------------------------------------------------------------------------#
 
+printf "\n"
 DefineGlobalVariables
 ParseCommandLineParameters "$@"
 FurtherChecksOnCommandLineOptions
