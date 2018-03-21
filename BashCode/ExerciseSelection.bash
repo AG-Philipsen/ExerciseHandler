@@ -9,14 +9,14 @@ function __static__LookForExercisesAndMakeList(){
     if [ ${EXHND_displayAlreadyUsedExercises} = 'FALSE' ]; then
         local folder usedExercises exerciseOfList index
         usedExercises=()
-        for folder in $(GetFinalSheetFolderGlobalPathWithoutNumber 'EXERCISE')*/; do
+        for folder in $(ls -d $(GetFinalSheetFolderGlobalPathWithoutNumber 'EXERCISE')*/ 2>/dev/null); do
             if [ ! -f ${folder}${EXHND_exercisesLogFilename} ]; then
                 PrintWarning "Exercise log file not found in \"${folder}\" folder, not able to exclude from list some used exercises!"
                 continue
             fi
             usedExercises+=( $(awk '{print $2}' ${folder}${EXHND_exercisesLogFilename}) )
         done
-        for folder in $(GetFinalSheetFolderGlobalPathWithoutNumber 'EXAM')*/; do
+        for folder in $(ls -d $(GetFinalSheetFolderGlobalPathWithoutNumber 'EXAM')*/ 2>/dev/null); do
             if [ ! -f ${folder}${EXHND_examLogFilename} ]; then
                 PrintWarning "Exercise log file not found in \"${folder}\" folder, not able to exclude from list some used exercises!"
                 continue
@@ -35,21 +35,25 @@ function __static__LookForExercisesAndMakeList(){
 }
 
 function __static__PrintListOfExercises(){
-    local givenList index numberOfTerminalColumns longestFilenameLength\
-          tableColumnsWidth maxNumberOfColumnsInTable stringFormat
-    printf "\e[1;38;5;207m\n List of exercises found in the pool\e[21m:\n\n\e[0m"
-    givenList=( $@ )
-    index=0
-    for index in "${!givenList[@]}" ; do
-        givenList[${index}]="$(printf "%3d" $((index+1)))) ${givenList[${index}]}"
-    done
-    numberOfTerminalColumns=$(tput cols)
-    longestFilenameLength=$(printf "%s\n" "${givenList[@]}" | awk '{print length}' | sort -n | tail -n1)
-    tableColumnsWidth=$((longestFilenameLength+10))
-    maxNumberOfColumnsInTable=$((numberOfTerminalColumns/tableColumnsWidth))
-    stringFormat=""; for((index=0; index<maxNumberOfColumnsInTable; index++)); do stringFormat+="%-${tableColumnsWidth}s"; done
-    printf "${stringFormat}\n" "${givenList[@]}"
-
+    if [ $# -eq 0 ]; then
+        PrintError "No exercise available in the pool!"
+        exit -1
+    else
+        local givenList index numberOfTerminalColumns longestFilenameLength\
+              tableColumnsWidth maxNumberOfColumnsInTable stringFormat
+        printf "\e[1;38;5;207m List of exercises found in the pool\e[21m:\n\n\e[0m"
+        givenList=( $@ )
+        index=0
+        for index in "${!givenList[@]}" ; do
+            givenList[${index}]="$(printf "%3d" $((index+1)))) ${givenList[${index}]}"
+        done
+        numberOfTerminalColumns=$(tput cols)
+        longestFilenameLength=$(printf "%s\n" "${givenList[@]}" | awk '{print length}' | sort -n | tail -n1)
+        tableColumnsWidth=$((longestFilenameLength+10))
+        maxNumberOfColumnsInTable=$((numberOfTerminalColumns/tableColumnsWidth))
+        stringFormat=""; for((index=0; index<maxNumberOfColumnsInTable; index++)); do stringFormat+="%-${tableColumnsWidth}s"; done
+        printf "${stringFormat}\n" "${givenList[@]}"
+    fi
     #TODO: Print list going vertically and not horizontally!
 }
 
