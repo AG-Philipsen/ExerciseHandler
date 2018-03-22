@@ -263,7 +263,7 @@ function MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder(){
             if [ ${EXHND_fixFinal} = 'FALSE' ]; then
                 PrintError "Folder \"$(basename ${destinationFolder})\" for final sheet is already existing! Aborting..."; exit -2
             else
-                if [ "$(lsof +D "${destinationFolder}")" != '' ]; then
+                if [ "$(lsof +D "${destinationFolder}" 2>/dev/null)" != '' ]; then #std err of lsof is suppressed (it could contain warnings due to permissions on root files)
                     PrintError "Some process seems to be using some file in the" "  ${destinationFolder}" "folder. Cannot fix final sheet."; exit -1
                 else
                     rm -r "${destinationFolder}" || exit -2
