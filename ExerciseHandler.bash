@@ -20,6 +20,7 @@ source ${EXHND_repositoryDirectory}/BashCode/GlobalVariables.bash         || exi
 source ${EXHND_repositoryDirectory}/BashCode/OutputFunctionality.bash     || exit -2
 source ${EXHND_repositoryDirectory}/BashCode/PreliminaryChecks.bash       || exit -2
 source ${EXHND_repositoryDirectory}/BashCode/CommandLineParser.bash       || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/Version.bash                 || exit -2
 source ${EXHND_repositoryDirectory}/BashCode/Setup.bash                   || exit -2
 source ${EXHND_repositoryDirectory}/BashCode/NewExercise.bash             || exit -2
 source ${EXHND_repositoryDirectory}/BashCode/AuxiliaryFunctions.bash      || exit -2
@@ -39,7 +40,9 @@ if [ ${EXHND_doSetup} = 'TRUE' ]; then
     MakeSetup
 else
     MakePreliminaryChecks
-    if [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
+    if [ ${EXHND_printVersion} = 'TRUE' ]; then
+        PrintCodeVersion
+    elif [ ${EXHND_produceNewExercise} = 'TRUE' ]; then
         ProduceNewEmptyExerciseAndSolution
     elif [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
         DisplayExerciseLogfile

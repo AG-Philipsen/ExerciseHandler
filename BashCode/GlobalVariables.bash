@@ -48,6 +48,7 @@ function DefineGlobalVariables(){
     EXHND_makePresenceSheet='FALSE'
     EXHND_makeExam='FALSE'
     EXHND_listUsedExercises='FALSE'
+    EXHND_printVersion='FALSE'
 
     #Behaviour options
     EXHND_isFinal='FALSE'

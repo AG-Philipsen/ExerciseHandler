@@ -7,6 +7,7 @@ function ParseCommandLineParameters(){
                              ['-P']='--makePresenceSheet'
                              ['-X']='--makeExam'
                              ['-L']='--listUsedExercises'
+                             ['-V']='--version'
                              ['-a']='--showAllExercises'
                              ['-e']='--exercises'
                              ['-p']='--exerciseSheetPostfix'
@@ -28,14 +29,15 @@ function ParseCommandLineParameters(){
         set -- "${commandLineOptions[@]}"
     fi
     #Additional logic to distinguish between primary and secondary options
-    local primaryOptions; primaryOptions=( '-U' '-N' '-E' '-P' '-S' '-X' '-L' ) #To keep associative array "ordered"
+    local primaryOptions; primaryOptions=( '-U' '-N' '-E' '-P' '-S' '-X' '-L' '-V' ) #To keep associative array "ordered"
     declare -rA secondaryToPrimaryOptionsMapping=([${primaryOptions[0]}]='-t'
                                                   [${primaryOptions[1]}]=''
                                                   [${primaryOptions[2]}]='-a -e -p -s -n -f -x'
                                                   [${primaryOptions[3]}]='-e -n'
                                                   [${primaryOptions[4]}]='-m -n -f -x'
                                                   [${primaryOptions[5]}]='-e -n -s -f -x'
-                                                  [${primaryOptions[6]}]='' )
+                                                  [${primaryOptions[6]}]=''
+                                                  [${primaryOptions[7]}]='' )
     #Parse options: here only long options are used
     while [ $# -gt 0 ]; do
         case $1 in
@@ -74,6 +76,10 @@ function ParseCommandLineParameters(){
             --listUsedExercises )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_listUsedExercises='TRUE'
+                shift ;;
+            --version )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_printVersion='TRUE'
                 shift ;;
             --exercises )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[-1]} $1
@@ -231,6 +237,7 @@ function __static__PrintHelp(){
                             ['-P']='Create a new presence sheet.'
                             ['-X']='Create a new exam or fix a previous one.'
                             ['-L']='Get list of exercise tex files used in already produced final exercises.'
+                            ['-V']='Print the version in use of the Exercise Handler.'
                             ['-a']='Display all available exercise to let the user choose.\nBy default, only those still not used for final sheets are listed.'
                             ['-e']='Avoid interactive selection of exercises and choose them directly.\nUse a comma separated list, where ranges X-Y are allowed (boundaries included).\nOrder is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].'
                             ['-eP']='Specify the headers of the exercise columns. Use a comma separated\nlist, where sub-exercises X.Y are allowed (e.g. \"1,2.1,2.2,3\").'
