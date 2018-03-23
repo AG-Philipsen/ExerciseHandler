@@ -5,10 +5,6 @@ In particular, one can refer to the [Past work section](#past-work) to know abou
 Please, keep in mind that this is more a file for the developers than for the users and some statements in the following may sound cryptic.
 Refer to the [CHANGELOG](https://github.com/AG-Philipsen/ExerciseHandler/blob/master/CHANGELOG.md) to read about notable changes to the project.
 
-All tasks are classified according to priority and typology.
-
-----
-
 ### Legend
 
 * :new: Feature to be added
