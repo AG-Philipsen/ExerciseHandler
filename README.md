@@ -1,5 +1,7 @@
 # Exercise Handler
 
+[![version][Release-badge]](CHANGELOG.md) [![license][License-badge]](LICENSE.md)
+
 The `Exercise Handler` is a tool to structure and automatise pretty much all of the tasks related to the organisation of tutorials for a given (e.g. academic) lecture by mostly producing, organising and compiling TeX files.
 
 It makes it possible for you as tutor to devote your time to the sole content of exercises and solutions.
@@ -36,6 +38,6 @@ In the set-up phase you will also choose a LaTeX theme, possibly the provided cl
 
 The `Exercise Handler` has been developed since 2016 by a few [contributors](https://github.com/AG-Philipsen/ExerciseHandler/graphs/contributors) willing to be contacted by users for suggestions, feedbacks, bug reports, etc.
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+[Release-badge]: https://img.shields.io/badge/Last%20Release-1.0-brightgreen.svg
+[License-badge]: https://img.shields.io/badge/License-MIT-blue.svg
