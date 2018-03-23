@@ -7,9 +7,9 @@ In particular (even though this is not a strict, always respected rule), given a
  - `Y` is incremented for minor changes (e.g. bug fixes) and 
  - `X` for major ones (e.g. new features).
 
-Refer also to the [TODO.md](https://github.com/AG-Philipsen/ExerciseHandler/blob/master/TODO.md) file to get more information of the changes occurred since the last release.
+Refer also to the [TODO](TODO.md) file to get more information of the changes occurred since the last release.
 
-#### Legend
+### Legend
 
  * :heavy_plus_sign: New feature
  * :heavy_check_mark: Enhancement
