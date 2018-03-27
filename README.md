@@ -1,6 +1,7 @@
 # Exercise Handler
 
 [![version][Release-badge]](CHANGELOG.md) [![license][License-badge]](LICENSE.md)
+[![live][Live-badge]](https://github.com/AG-Philipsen/ExerciseHandler/releases/download/v1.0/ExerciseHandlerPresentation_v1.pdf)
 
 The `Exercise Handler` is a tool to structure and automatise pretty much all of the tasks related to the organisation of tutorials for a given (e.g. academic) lecture by mostly producing, organising and compiling TeX files.
 
@@ -41,3 +42,4 @@ The `Exercise Handler` has been developed since 2016 by a few [contributors](htt
 
 [Release-badge]: https://img.shields.io/badge/Last%20Release-1.0-brightgreen.svg
 [License-badge]: https://img.shields.io/badge/License-MIT-blue.svg
+[Live-badge]: https://img.shields.io/badge/Live%20Example-1.0-orange.svg
