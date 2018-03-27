@@ -22,7 +22,10 @@ Refer to the [CHANGELOG](https://github.com/AG-Philipsen/ExerciseHandler/blob/ma
 
 ### Normal priority
 
-
+ - [ ] :new: :memo: Add a secondary `-i` option to `-U` in order to *inherit* the exercises and the solutions from a previous lecture. Give the possibility to specify a path in which there should be an `Exercises`, `Solutions` and a `Figures` folder which are copied to the place from which `-U` is run. Add documentation (Wiki)
+ - [ ] :memo: :question: It would be nice if figures used in sheets would be copied to the final folder. At the same time we did not come up with a good way to do this. Which figures should be copied? One could deduce them from the `.tex` files but different users could include them differently (e.g. wrap `\includegraphics` in an own macro)! Moreover `\graphicspath` should be changed and a fix of the sheet which is about fixing a figure is not immediate (we could not move from `Figures` to the final folder because otherwise the user should know that to fix (s)he should work in the final folder; we could still copy from `Figures` to the final folders and repeat this copy at each fix...). Is this what we want? Is it maintainable? Disuss this point in the documentation (Wiki).
+ 
+ 
 ### Low priority
 
  - [ ] :fire: :recycle: :new: Trap `CTRL-C` in a nice way: cleaning files/folders, etc. `->` DESIGN.
