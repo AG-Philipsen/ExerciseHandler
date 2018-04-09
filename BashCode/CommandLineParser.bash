@@ -82,45 +82,45 @@ function ParseCommandLineParameters(){
                 EXHND_printVersion='TRUE'
                 shift ;;
             --exercises )
-                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed: -1} $1
-                if [[ ${mutuallyExclusiveOptionsPassed: -1} != '--makePresenceSheet'  &&  $2 =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]] ||
-                   [[ ${mutuallyExclusiveOptionsPassed: -1}  = '--makePresenceSheet'  &&  $2 =~ ^[1-9][0-9]*([.][1-9][0-9]*)*([,][1-9][0-9]*([.][1-9][0-9]*)*)*$ ]]; then
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
+                if [[ ${mutuallyExclusiveOptionsPassed[@]: -1} != '--makePresenceSheet'  &&  $2 =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]] ||
+                   [[ ${mutuallyExclusiveOptionsPassed[@]: -1}  = '--makePresenceSheet'  &&  $2 =~ ^[1-9][0-9]*([.][1-9][0-9]*)*([,][1-9][0-9]*([.][1-9][0-9]*)*)*$ ]]; then
                     EXHND_exercisesFromPoolAsNumbers="$2"
                 else
                     PrintError "The value of the option \"$1\" was not correctly specified!"; exit -1
                 fi
                 shift 2 ;;
             --exerciseSheetPostfix )
-                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed: -1} $1
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_exerciseSheetSubtitlePostfix="$2"
                 shift 2 ;;
             --showAlsoSolutions )
-                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed: -1} $1
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_showAlsoSolutions="TRUE"
                 shift ;;
             --ofExam )
-                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed: -1} $1
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_solutionOfExam="TRUE"
                 shift ;;
             --sheetNumber )
-                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed: -1} $1
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_sheetNumber="$2"
                 shift 2 ;;
             --final )
-                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed: -1} $1
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_isFinal='TRUE'
                 shift ;;
             --fix )
-                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed: -1} $1
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_isFinal='TRUE'
                 EXHND_fixFinal='TRUE'
                 shift ;;
             --showAllExercises )
-                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed: -1} $1
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_displayAlreadyUsedExercises='TRUE'
                 shift ;;
             --themeFile )
-                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed: -1} $1
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_userDefinedTheme="$2"
                 shift 2 ;;
             *)
