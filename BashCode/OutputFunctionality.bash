@@ -1,9 +1,10 @@
 function __static__PrintMessageToScreen()
 {
-    local initialEndline typeOfMessage messageColor fullMessage
-    typeOfMessage="$1"; shift
-    initialEndline=""
+    local initialEndline continuation typeOfMessage messageColor fullMessage
+    initialEndline=""; continuation='FALSE'
     [ "$1" = '-n' ] && initialEndline='\n' && shift
+    [ "$1" = '-c' ] && initialEndline='\e[1A' && continuation='TRUE' && shift
+    typeOfMessage="$1"; shift
     case "$typeOfMessage" in
         INFO )
             messageColor='\033[92m' ;;
@@ -14,10 +15,15 @@ function __static__PrintMessageToScreen()
         * )
             messageColor='\033[38;5;208m'
     esac
+    [ $continuation = 'TRUE' ] && typeOfMessage=${typeOfMessage//?/ }
     #Prepare full message on several lines leaving the exact amount of space at the beginning of
     #each line except the first one (i.e. as many spaces as the chars in typeOfMessage).
     fullMessage="$(printf "$messageColor%s\n   ${typeOfMessage//?/ }" "$@")"
-    printf "$initialEndline \e[1m\e[4m${messageColor}${typeOfMessage}\033[24m:\033[21m ${fullMessage//%/%%}\n\033[0m"
+    if [ $continuation = 'FALSE' ]; then
+        printf "$initialEndline \e[1m\e[4m${messageColor}${typeOfMessage}\033[24m:\033[21m ${fullMessage//%/%%}\n\033[0m"
+    else
+        printf "$initialEndline ${messageColor}${typeOfMessage}  ${fullMessage//%/%%}\n\033[0m"
+    fi
 }
 
 function PrintInfo(){
@@ -29,7 +35,11 @@ function PrintWarning(){
 }
 
 function PrintError(){
-    __static__PrintMessageToScreen "ERROR" "$@"  >&2
+    if [ "$1" = '-c' ]; then
+        shift; __static__PrintMessageToScreen -c "ERROR" "$@"  >&2
+    else
+        __static__PrintMessageToScreen "ERROR" "$@"  >&2
+    fi
 }
 
 function PrintInternal(){
