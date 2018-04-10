@@ -124,7 +124,7 @@ function ParseCommandLineParameters(){
                 EXHND_userDefinedTheme="$2"
                 shift 2 ;;
             *)
-                PrintError "Unrecognized option \"$1\"! Aborting..."; exit -1; shift ;;
+                PrintError "Unrecognized option \"$1\"!"; exit -1; shift ;;
         esac
     done
 

@@ -1,10 +1,10 @@
 function __static__LookForExercisesAndMakeList(){
     if [ ! -d ${EXHND_exercisePoolFolder} ]; then
-        PrintError "No exercise pool folder \"${EXHND_exercisePoolFolder}\" has been found! Aborting..."; exit -2
+        PrintError "No exercise pool folder \"${EXHND_exercisePoolFolder}\" has been found!"; exit -2
     fi
     EXHND_exerciseList=( $(ls ${EXHND_exercisePoolFolder}/*.tex 2> /dev/null | xargs -d '\n' -n 1 basename) )
     if [ ${#EXHND_exerciseList[@]} -eq 0 ]; then
-        PrintError "No exercise .tex file has been found in pool folder \"${EXHND_exercisePoolFolder}\"! Aborting..."; exit -2
+        PrintError "No exercise .tex file has been found in pool folder \"${EXHND_exercisePoolFolder}\"!"; exit -2
     fi
     if [ ${EXHND_displayAlreadyUsedExercises} = 'FALSE' ]; then
         local folder usedExercises exerciseOfList index
@@ -115,7 +115,7 @@ function PickUpExercisesFromListAccordingToUserChoice(){
         else
             EXHND_exercisesFromPoolAsNumbers=( $(__static__GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges ${EXHND_exercisesFromPoolAsNumbers}) )
             if __static__IsAnyExerciseNotExisting ${#EXHND_exerciseList[@]} ${EXHND_exercisesFromPoolAsNumbers[@]}; then
-                PrintError "Some of the chosen exercises are not existing! Aborting..."; exit 0
+                PrintError "Some of the chosen exercises are not existing!"; exit 0
             else
                 __static__FillChoosenExercisesArray "${EXHND_exercisesFromPoolAsNumbers[*]}" "${EXHND_exerciseList[*]}" #https://stackoverflow.com/a/16628100
             fi
@@ -136,11 +136,11 @@ function ReadOutExercisesFromFinalSheetLogFile(){
     fi
     finalFolder+=$(printf "%02d" ${EXHND_sheetNumber})
     if [ ! -d  "${finalFolder}" ]; then
-        PrintError "Folder \"$(basename ${finalFolder})\" not found in \"${EXHND_finalExerciseSheetFolder}\"! Aborting..."
+        PrintError "Folder \"$(basename ${finalFolder})\" not found in \"${EXHND_finalExerciseSheetFolder}\"!"
         exit -1
     else
         if [ ! -f "${finalFolder}/${logFile}" ]; then
-            PrintError "Log file not found in \"${finalFolder}\" folder! Aborting..."
+            PrintError "Log file not found in \"${finalFolder}\" folder!"
             exit -1
         else
             EXHND_choosenExercises=( $(awk '{print $2}' "${finalFolder}/${logFile}") )

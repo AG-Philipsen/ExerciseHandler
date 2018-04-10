@@ -5,7 +5,7 @@ function GetFinalSheetFolderGlobalPathWithoutNumber(){
     if [ "$1" != '' ]; then
         mode=$1
         if [[ ! ${mode} =~ ^(EXERCISE|SOLUTION|SOLUTION-EXAM|EXAM|PRESENCE)$ ]]; then
-            PrintInternal "Function \"${FUNCNAME[0]}\" called with unexpected second argument (\$2=\"$2\")! Aborting..."; exit -1
+            PrintInternal "Function \"${FUNCNAME[0]}\" called with unexpected second argument (\$2=\"$2\")!"; exit -1
         fi
     else
         if [ ${EXHND_makeExerciseSheet} = 'TRUE' ] || [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
@@ -21,7 +21,7 @@ function GetFinalSheetFolderGlobalPathWithoutNumber(){
         elif [ ${EXHND_makePresenceSheet} = 'TRUE' ]; then
             mode='PRESENCE'
         else
-            PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario! Aborting..."; exit -1
+            PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario!"; exit -1
         fi
     fi
     if [ ${mode} = 'EXERCISE' ]; then
@@ -68,7 +68,7 @@ function __static__DetermineSheetNumber(){
 
 function SetSheetNumber(){
     if [ ${EXHND_makeExerciseSheet} = 'FALSE' ] && [ ${EXHND_makeSolutionSheet} = 'FALSE' ] && [ ${EXHND_makeExam} = 'FALSE' ] && [ ${EXHND_makePresenceSheet} = 'FALSE' ]; then
-        PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario! Aborting..."; exit -1
+        PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario!"; exit -1
     fi
     if [ "${EXHND_sheetNumber}" = '' ]; then
         EXHND_sheetNumber=$(__static__DetermineSheetNumber)
@@ -86,7 +86,7 @@ function CheckBlocksInFile(){
     blocksName=( $@ )
     for block in "${blocksName[@]}"; do
         if [ $(grep -c "^[[:blank:]]*%__BEGIN_${block}__%[[:blank:]]*$" ${filename}) -ne 1 ] || [ $(grep -c "^[[:blank:]]*%__END_${block}__%[[:blank:]]*$" ${filename}) -ne 1 ]; then
-            PrintError "Block %__BEGIN_${block}__%  ->  %__END_${block}__% not correctly found in \"${filename}\" file! Aborting..."; exit -2
+            PrintError "Block %__BEGIN_${block}__%  ->  %__END_${block}__% not correctly found in \"${filename}\" file!"; exit -2
         fi
     done
 }
@@ -142,7 +142,7 @@ function SetListOfFilesToBeUsedAndCheckThem(){
     elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
         EXHND_filesToBeUsedGlobalPath=( "${EXHND_choosenExercises[@]/#/${EXHND_solutionPoolFolder}/}" ) #Prepend to each array element (last / is a real / in path)
     else
-        PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario! Aborting..."; exit -1
+        PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario!"; exit -1
     fi
     __static__CheckSelectedFilesToBeUsed
 }
@@ -151,7 +151,7 @@ function SetListOfFilesToBeUsedAndCheckThem(){
 
 function CreateTemporaryCompilationFolder(){
     [ -d "${EXHND_compilationFolder}" ] && mv "${EXHND_compilationFolder}" "${EXHND_compilationFolder}_$(date +%d.%m.%Y_%H%M%S)"
-    mkdir "${EXHND_compilationFolder}" 2>/dev/null || { PrintError "Cannot create \"${EXHND_compilationFolder}\"! Aborting..." && exit -2; }
+    mkdir "${EXHND_compilationFolder}" 2>/dev/null || { PrintError "Cannot create \"${EXHND_compilationFolder}\"!" && exit -2; }
 }
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -232,7 +232,7 @@ function MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder(){
     elif [ ${EXHND_makeExam} = 'TRUE' ]; then
         newPdfFilename="${EXHND_temporaryFolder}/${EXHND_finalExamSheetPrefix}$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
     else
-        PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario! Aborting..."; exit -1
+        PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario!"; exit -1
     fi
     cp "${EXHND_mainFilename/.tex/.pdf}" "${newPdfFilename}" || exit -2
     xdg-open "${newPdfFilename}" >/dev/null 2>&1 &
@@ -261,7 +261,7 @@ function MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder(){
             mkdir "${destinationFolder}" || exit -2
         else
             if [ ${EXHND_fixFinal} = 'FALSE' ]; then
-                PrintError "Folder \"$(basename ${destinationFolder})\" for final sheet is already existing! Aborting..."; exit -2
+                PrintError "Folder \"$(basename ${destinationFolder})\" for final sheet is already existing!"; exit -2
             else
                 if [ "$(lsof +D "${destinationFolder}" 2>/dev/null)" != '' ]; then #std err of lsof is suppressed (it could contain warnings due to permissions on root files)
                     PrintError "Some process seems to be using some file in the" "  ${destinationFolder}" "folder. Cannot fix final sheet."; exit -1

@@ -24,7 +24,7 @@ function __static__IsInvokingPositionWrong(){
 
 function __static__CheckInvokingPosition(){
     if __static__IsInvokingPositionWrong; then
-        PrintError "Invoking position of the Exercise Handler seems to be wrong! Run the setup to create missing files/folders! Aborting..."; exit -1
+        PrintError "Invoking position of the Exercise Handler seems to be wrong! Run the setup to create missing files/folders!"; exit -1
     fi
 }
 
