@@ -128,7 +128,7 @@ function ProducePresenceSheetTexMainFile(){
     else
         numberOfStudents=$thresholdNumberOfStudents
     fi
-    arrayOfExerciseNumbers=($(__static__ParseExercisesString))
+    arrayOfExerciseNumbers=( $(__static__ParseExercisesString) ) || { PrintError -c "Final sheet folder needed to produce a presence sheet!"; exit -1; }
     exerciseNumberString=$(printf ",%s" ${arrayOfExerciseNumbers[@]})
     exerciseString=$(printf ",Ex%s" ${arrayOfExerciseNumbers[@]})
     rm -f ${EXHND_mainFilename}
