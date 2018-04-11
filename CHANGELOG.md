@@ -22,6 +22,7 @@ Refer also to the [TODO](TODO.md) file to get more information of the changes oc
 
 * :sos: Fixed minor bug in command line option parser. When no primary options were specified but still secondary ones were given, the script was terminating with a kind of obscure `bash` error. Now, in the same case, an understandable error is given to the user.
 * :sos: Fixed minor bug which was triggered using the `-P` option without any existing final sheet. An error was given but the script was not exiting at that point.
+* :heavy_check_mark: Before opening a new `pdf` file that is not final, all the previously opened `pdf` files from the temporary folder are closed (a SIGTERM is sent to them).
 
 ---
 

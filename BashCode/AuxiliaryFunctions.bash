@@ -220,7 +220,11 @@ function MakeCompilationInTemporaryFolder(){
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 function MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder(){
-    local newPdfFilename
+    local openPfdFromTemporaryFolderPids pidToBeClosed newPdfFilename
+    openPfdFromTemporaryFolderPids=( $(lsof +D "${EXHND_temporaryFolder}" 2>/dev/null | awk 'NR>1{if($9 ~ /\.pdf$/){print $2}}') )
+    for pidToBeClosed in ${openPfdFromTemporaryFolderPids[@]}; do
+        kill ${pidToBeClosed} || PrintWarning "Unable to send TERM signal to previously opened pdf files from \"$(basename ${EXHND_temporaryFolder})\" folder."
+    done
     if [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
         newPdfFilename="${EXHND_temporaryFolder}/${EXHND_finalExerciseSheetPrefix}$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
     elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
