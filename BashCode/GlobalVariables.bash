@@ -22,6 +22,7 @@ function DefineGlobalVariables(){
     readonly EXHND_listOfStudentsFilename="${EXHND_presenceSheetFolder}/students"
     readonly EXHND_figuresFolder="${EXHND_invokingDirectory}/Figures"
     readonly EXHND_temporaryFolder="${EXHND_invokingDirectory}/tmp"
+    readonly EXHND_temporaryPdfFilename="${EXHND_temporaryFolder}/LastPdfProduced.pdf"
     readonly EXHND_compilationFolder="${EXHND_temporaryFolder}/TemporaryCompilationFolder"
     readonly EXHND_optionsFilename="${EXHND_compilationFolder}/Options.tex"
     readonly EXHND_packagesFilename="${EXHND_compilationFolder}/Packages.tex"

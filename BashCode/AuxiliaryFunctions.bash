@@ -220,11 +220,7 @@ function MakeCompilationInTemporaryFolder(){
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 function MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder(){
-    local openPfdFromTemporaryFolderPids pidToBeClosed newPdfFilename
-    openPfdFromTemporaryFolderPids=( $(lsof +D "${EXHND_temporaryFolder}" 2>/dev/null | awk 'NR>1{if($9 ~ /\.pdf$/){print $2}}') )
-    for pidToBeClosed in ${openPfdFromTemporaryFolderPids[@]}; do
-        kill ${pidToBeClosed} || PrintWarning "Unable to send TERM signal to previously opened pdf files from \"$(basename ${EXHND_temporaryFolder})\" folder."
-    done
+    local newPdfFilename
     if [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
         newPdfFilename="${EXHND_temporaryFolder}/${EXHND_finalExerciseSheetPrefix}$(basename ${EXHND_mainFilename%.tex})_$(date +%d.%m.%Y_%H%M%S).pdf"
     elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
@@ -239,7 +235,11 @@ function MovePdfFileToTemporaryFolderOpenItAndRemoveCompilationFolder(){
         PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario!"; exit -1
     fi
     cp "${EXHND_mainFilename/.tex/.pdf}" "${newPdfFilename}" || exit -2
-    xdg-open "${newPdfFilename}" >/dev/null 2>&1 &
+    cp "${EXHND_mainFilename/.tex/.pdf}" "${EXHND_temporaryPdfFilename}" || exit -2
+    if [ $(lsof +D "${EXHND_temporaryFolder}" 2>/dev/null | awk 'NR>1{if($9 ~ /\.pdf$/){print $9}}' | grep -c "$(basename ${EXHND_temporaryPdfFilename})") -eq 0 ]; then
+        PrintInfo "Created pdf file will be opened in a moment!"
+        xdg-open "${EXHND_temporaryPdfFilename}" >/dev/null 2>&1 &
+    fi
     rm -r "${EXHND_compilationFolder}"
 }
 
