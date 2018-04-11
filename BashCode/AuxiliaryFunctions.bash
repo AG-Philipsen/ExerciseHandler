@@ -52,8 +52,9 @@ function __static__DetermineSheetNumber(){
         echo '1'
         return
     fi
-    lastSheetNumber=$(grep -o "[0-9]\+" <<< "$(basename ${finalFoldersArray[-1]})" | sed 's/^0*//')
-    if [[ $lastSheetNumber =~ ^[1-9][0-9]*$ ]]; then
+    lastSheetNumber=$(grep -o "[0-9]\+" <<< "$(basename ${finalFoldersArray[-1]})")
+    if [[ $lastSheetNumber =~ ^[0-9]+$ ]]; then
+        lastSheetNumber=$(awk '{print $1+0}' <<< "${lastSheetNumber}") #trick to remove leading zero but get zero if the number contains only zeroes
         if [ ${EXHND_makeExerciseSheet} = 'TRUE' ] || [ ${EXHND_makeExam} = 'TRUE' ]; then
             echo $((lastSheetNumber+1))
         elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ] || [ ${EXHND_makePresenceSheet} = 'TRUE' ]; then

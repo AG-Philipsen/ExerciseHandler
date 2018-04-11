@@ -23,6 +23,7 @@ Refer also to the [TODO](TODO.md) file to get more information of the changes oc
 * :sos: Fixed minor bug in command line option parser. When no primary options were specified but still secondary ones were given, the script was terminating with a kind of obscure `bash` error. Now, in the same case, an understandable error is given to the user.
 * :sos: Fixed minor bug which was triggered using the `-P` option without any existing final sheet. An error was given but the script was not exiting at that point.
 * :heavy_check_mark: Now, producing temporary sheets that are *not* final, the same `pdf` file in the temporary folder is updated and not reopened if already open. A copy of each produced `pdf` file is still saved in the temporary folder.
+* :heavy_check_mark: Using the option `-n 0`, sheets can start from zero. Now, in this scenario, the following is correctly created with 1 as sheet number (before this case was not considered and not working).
 
 ---
 
