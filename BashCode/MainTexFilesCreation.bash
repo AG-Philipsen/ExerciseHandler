@@ -142,6 +142,7 @@ function ProducePresenceSheetTexMainFile(){
     echo "\input{$(basename ${EXHND_packagesFilename%.tex})}"
     echo ''
     echo "\input{$(basename ${EXHND_definitionsFilename%.tex})}"
+    echo '\graphicspath{{'"${EXHND_figuresFolder}/"'}}'
     echo ''
     echo '\pagestyle{empty}'
     echo '\begin{document}'
