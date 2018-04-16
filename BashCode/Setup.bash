@@ -52,19 +52,19 @@ function MakeSetup(){
         PrintInfo "An empty template for the local definitions file \"$(basename ${EXHND_texLocaldefsFilename})\" to be filled out has been created."
     fi
     if [ -f ${EXHND_themeFilename} ]; then
-        mv "${EXHND_themeFilename}" "${EXHND_temporaryFolder}/$(basename ${EXHND_themeFilename})_$(date +%d.%m.%Y_%H%M%S)"
-        PrintInfo "Existing theme moved to temporary folder \"$(basename ${EXHND_temporaryFolder})\"."
-    fi
-    if [ "${EXHND_userDefinedTheme}" != '' ]; then
-        if [ ! -f "${EXHND_userDefinedTheme}" ]; then
-            PrintError "Provided theme file \"${EXHND_userDefinedTheme}\" not found." "Please, provide an existing (global) file name and run again the setup."
-            exit -1
-        else
-            cp "${EXHND_userDefinedTheme}" ${EXHND_themeFilename}
-            PrintInfo "User provided theme copied to invoking directory."
-        fi
+        PrintInfo "Found existing theme, leaving it untouched."
     else
-        cp ${EXHND_defaultTheme} ${EXHND_themeFilename}
-        PrintInfo "Default theme copied to invoking directory."
+        if [ "${EXHND_userDefinedTheme}" != '' ]; then
+            if [ ! -f "${EXHND_userDefinedTheme}" ]; then
+                PrintError "Provided theme file \"${EXHND_userDefinedTheme}\" not found." "Please, provide an existing (global) file name and run again the setup."
+                exit -1
+            else
+                cp "${EXHND_userDefinedTheme}" ${EXHND_themeFilename}
+                PrintInfo "User provided theme copied to invoking directory."
+            fi
+        else
+            cp ${EXHND_defaultTheme} ${EXHND_themeFilename}
+            PrintInfo "Default theme copied to invoking directory."
+        fi
     fi
 }
