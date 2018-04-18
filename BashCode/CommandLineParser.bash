@@ -34,7 +34,7 @@ function ParseCommandLineParameters(){
                                                   [${primaryOptions[1]}]=''
                                                   [${primaryOptions[2]}]='-a -e -p -s -n -f -x'
                                                   [${primaryOptions[3]}]='-e -n -p'
-                                                  [${primaryOptions[4]}]='-m -n -f -x'
+                                                  [${primaryOptions[4]}]='-m -e -n -f -x'
                                                   [${primaryOptions[5]}]='-e -n -s -f -x'
                                                   [${primaryOptions[6]}]=''
                                                   [${primaryOptions[7]}]='' )
@@ -83,13 +83,17 @@ function ParseCommandLineParameters(){
                 shift ;;
             --exercises )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
-                if [[ ${mutuallyExclusiveOptionsPassed[@]: -1} != '--makePresenceSheet'  &&  $2 =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]] ||
+                if [[ ${mutuallyExclusiveOptionsPassed[@]: -1} = '--makeSolutionSheet' ]]; then
+                    EXHND_showAlsoExercises='TRUE'
+                    shift
+                elif [[ ${mutuallyExclusiveOptionsPassed[@]: -1} != '--makePresenceSheet'  &&  $2 =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]] ||
                    [[ ${mutuallyExclusiveOptionsPassed[@]: -1}  = '--makePresenceSheet'  &&  $2 =~ ^[1-9][0-9]*([.][1-9][0-9]*)*([,][1-9][0-9]*([.][1-9][0-9]*)*)*$ ]]; then
                     EXHND_exercisesFromPoolAsNumbers="$2"
+                    shift 2
                 else
                     PrintError "The value of the option \"$1\" was not correctly specified!"; exit -1
                 fi
-                shift 2 ;;
+                ;;
             --exerciseSheetPostfix )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_exerciseSheetSubtitlePostfix="$2"
@@ -241,6 +245,7 @@ function __static__PrintHelp(){
                             ['-a']='Display all available exercise to let the user choose.\nBy default, only those still not used for final sheets are listed.'
                             ['-e']='Avoid interactive selection of exercises and choose them directly.\nUse a comma separated list, where ranges X-Y are allowed (boundaries included).\nOrder is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].'
                             ['-eP']='Specify the headers of the exercise columns. Use a comma separated\nlist, where sub-exercises X.Y are allowed (e.g. \"1,2.1,2.2,3\").'
+                            ['-eS']='Show also exercises in the solution sheet.'
                             ['-p']='Set the exercise sheet subtitle postfix.'
                             ['-pP']='Set the presence sheet full subtitle (present date if not given).'
                             ['-s']='Show solutions of exercises in the same file.'
@@ -256,6 +261,8 @@ function __static__PrintHelp(){
         for secondaryOption in ${secondaryToPrimaryOptionsMapping[${primaryOption}]}; do #on purpose not quoted to split secondary options
             if [ $primaryOption = '-P' ] && [[ $secondaryOption =~ ^-[ep]$ ]] ; then
                 secondaryOption+='P'
+            elif [ $primaryOption = '-S' ] && [[ $secondaryOption =~ ^-[e]$ ]] ; then
+                secondaryOption+='S'
             fi
             __static__AddOptionToHelper 'SECONDARY' ${secondaryOption}
         done

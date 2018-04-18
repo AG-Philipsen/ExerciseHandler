@@ -136,8 +136,8 @@ function __static__CheckSelectedFilesToBeUsed(){
 }
 
 function SetListOfFilesToBeUsedAndCheckThem(){
+    local exercise
     if [ ${EXHND_makeExerciseSheet} = 'TRUE' ] || [ ${EXHND_makeExam} = 'TRUE' ]; then
-        local exercise
         for exercise in ${EXHND_choosenExercises[@]}; do
             EXHND_filesToBeUsedGlobalPath+=( "${exercise/#/${EXHND_exercisePoolFolder}/}" )     #Prepend to each exercise the exercise pool (last / is a real / in path)
             if [ ${EXHND_showAlsoSolutions} = 'TRUE' ]; then
@@ -145,7 +145,12 @@ function SetListOfFilesToBeUsedAndCheckThem(){
             fi
         done
     elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
-        EXHND_filesToBeUsedGlobalPath=( "${EXHND_choosenExercises[@]/#/${EXHND_solutionPoolFolder}/}" ) #Prepend to each array element (last / is a real / in path)
+        for exercise in ${EXHND_choosenExercises[@]}; do
+            if [ ${EXHND_showAlsoExercises} = 'TRUE' ]; then
+                EXHND_filesToBeUsedGlobalPath+=( "${exercise/#/${EXHND_exercisePoolFolder}/}" ) #Prepend to each exercise the exercise pool (last / is a real / in path)
+            fi
+            EXHND_filesToBeUsedGlobalPath+=( "${exercise/#/${EXHND_solutionPoolFolder}/}" )     #Prepend to each exercise the solution pool (last / is a real / in path)
+        done
     else
         PrintInternal "Function \"${FUNCNAME[0]}\" called in unexpected scenario!"; exit -1
     fi
