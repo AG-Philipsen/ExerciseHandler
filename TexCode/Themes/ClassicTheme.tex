@@ -69,7 +69,11 @@
     }{}
     % Print current date as subtitle only for presence sheet
     \ifstrequal{#1}{presence-sheet}{
-        \centerline{\today{}}
+        \ifstrempty{#3}{
+            \centerline{\today}
+        }{
+            \centerline{\textit{#3}}
+        }
     }{}
     % Print exam date as subtitle for exam solution
     \ifstrequal{#1}{exam-solution}{

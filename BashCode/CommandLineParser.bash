@@ -33,7 +33,7 @@ function ParseCommandLineParameters(){
     declare -rA secondaryToPrimaryOptionsMapping=([${primaryOptions[0]}]='-t'
                                                   [${primaryOptions[1]}]=''
                                                   [${primaryOptions[2]}]='-a -e -p -s -n -f -x'
-                                                  [${primaryOptions[3]}]='-e -n'
+                                                  [${primaryOptions[3]}]='-e -n -p'
                                                   [${primaryOptions[4]}]='-m -n -f -x'
                                                   [${primaryOptions[5]}]='-e -n -s -f -x'
                                                   [${primaryOptions[6]}]=''
@@ -242,6 +242,7 @@ function __static__PrintHelp(){
                             ['-e']='Avoid interactive selection of exercises and choose them directly.\nUse a comma separated list, where ranges X-Y are allowed (boundaries included).\nOrder is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].'
                             ['-eP']='Specify the headers of the exercise columns. Use a comma separated\nlist, where sub-exercises X.Y are allowed (e.g. \"1,2.1,2.2,3\").'
                             ['-p']='Set the exercise sheet subtitle postfix.'
+                            ['-pP']='Set the presence sheet full subtitle (present date if not given).'
                             ['-s']='Show solutions of exercises in the same file.'
                             ['-m']='Make solution of exam instead of exercise sheet.'
                             ['-n']='Set the sheet number to be produced (either exercise or solution sheet).'
@@ -253,7 +254,7 @@ function __static__PrintHelp(){
     for primaryOption in ${primaryOptions[@]}; do
         __static__AddOptionToHelper 'PRIMARY' ${primaryOption}
         for secondaryOption in ${secondaryToPrimaryOptionsMapping[${primaryOption}]}; do #on purpose not quoted to split secondary options
-            if [ $primaryOption = '-P' ] && [ $secondaryOption = '-e' ]; then
+            if [ $primaryOption = '-P' ] && [[ $secondaryOption =~ ^-[ep]$ ]] ; then
                 secondaryOption+='P'
             fi
             __static__AddOptionToHelper 'SECONDARY' ${secondaryOption}
