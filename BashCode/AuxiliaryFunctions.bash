@@ -286,6 +286,9 @@ function MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder(){
             fi
         fi
     else
+        if [ ${EXHND_fixFinal} = 'TRUE' ]; then
+            PrintError "The final sheet directory \"${destinationFolder/${EXHND_invokingDirectory}\//}\" does not exist! Impossible to make a fix."; exit -1
+        fi
         mkdir "${destinationFolder}" || exit -2
     fi
     if [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
