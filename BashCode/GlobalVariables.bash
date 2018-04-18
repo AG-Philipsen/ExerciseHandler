@@ -19,7 +19,6 @@ function DefineGlobalVariables(){
     readonly EXHND_examLogFilename=".exam.log" #One in each final exam sheet folder
     readonly EXHND_presenceSheetFolder="${EXHND_invokingDirectory}/PresenceSheets"
     readonly EXHND_presenceSheetPrefix="PresenceSheet_"
-    readonly EXHND_listOfStudentsFilename="${EXHND_presenceSheetFolder}/students"
     readonly EXHND_figuresFolder="${EXHND_invokingDirectory}/Figures"
     readonly EXHND_temporaryFolder="${EXHND_invokingDirectory}/tmp"
     readonly EXHND_temporaryPdfFilename="${EXHND_temporaryFolder}/LastPdfProduced.pdf"
@@ -31,6 +30,7 @@ function DefineGlobalVariables(){
     readonly EXHND_mainFilename="${EXHND_compilationFolder}/MainFile.tex"
     EXHND_exerciseList=(); EXHND_choosenExercises=() #These arrays contain the basenames of the files
     EXHND_filesToBeUsedGlobalPath=() #This array contains the files for the final sheet
+    EXHND_listOfStudentsFilename="${EXHND_presenceSheetFolder}/students"
 
     #Variables with input from user
     EXHND_userDefinedTheme=''

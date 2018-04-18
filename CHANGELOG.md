@@ -29,6 +29,7 @@ Refer also to the [TODO](TODO.md) file to get more information of the changes oc
 * :heavy_plus_sign: The secondary option `-p` has been added as new one for the `-P` primary one. This allows the user to specify the *full* subtitle for the presence sheet. The subtitle is the present date in case such an option is not used. Consider to run the setup again in order to activate this feature (pulling is not enough). Remove or rename the file `ThemeInUse.tex` before running the setup, otherwise the improved theme will be set as in use.
 * :heavy_plus_sign: A new secondary option `-e` has been added to the `-S` primary one in order to be able to show also exercises when typesetting a solution sheet. The main difference between the combination `-E -s` and `-S -e` (which could seem equivalent) is that, using the second one, it is possible to finalise a solution sheet with also the exercises in it. Said differently, while `-E -s -f` is not allowed, `-S -e -f` can be used. The secondary option `-s` of `-E` might removed in the future.
 * :sos: The option `-x` was somehow working even if the final sheet had not been previously created. This was not intentional and it has now been forbidden.
+* :heavy_check_mark: It is now possible to specify a students filename as value of the primary option `-P`. This file has to be contained in the folder of the presence sheets, where the default `students` one is placed. If a file is passed, the student names in it are then used for the presence sheet.
 
 ---
 

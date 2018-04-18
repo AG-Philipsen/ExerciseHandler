@@ -68,6 +68,10 @@ function ParseCommandLineParameters(){
             --makePresenceSheet )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_makePresenceSheet='TRUE'
+                if [ "$2" != '' ] && [[ ! $2 =~ ^- ]]; then
+                    EXHND_listOfStudentsFilename="${EXHND_presenceSheetFolder}/$2"
+                    shift
+                fi
                 shift ;;
             --makeExam )
                 mutuallyExclusiveOptionsPassed+=( $1 )
@@ -238,7 +242,7 @@ function __static__PrintHelp(){
                             ['-N']='Create a new empty exercise and a new empty solution, which are added to the pools.\n\e[21mThe name of the exercise may be specified as argument, but it cannot start with \"-\".'
                             ['-E']='Create a new exercise sheet or fix a previous one.'
                             ['-S']='Create a new solution sheet or fix a previous one.'
-                            ['-P']='Create a new presence sheet.'
+                            ['-P']='Create a new presence sheet. \e[21mA students file to be used may be specified as argument, \nbut it cannot start with \"-\". This file is supposed to be in the "'"$(basename ${EXHND_presenceSheetFolder})"'" folder.'
                             ['-X']='Create a new exam or fix a previous one.'
                             ['-L']='Get list of exercise tex files used in already produced final exercises.'
                             ['-V']='Print the version in use of the Exercise Handler.'
