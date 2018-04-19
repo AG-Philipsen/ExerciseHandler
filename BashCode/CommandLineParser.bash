@@ -10,7 +10,7 @@ function ParseCommandLineParameters(){
                              ['-V']='--version'
                              ['-a']='--showAllExercises'
                              ['-e']='--exercises'
-                             ['-p']='--exerciseSheetPostfix'
+                             ['-p']='--sheetSubtitlePostfix'
                              ['-s']='--showAlsoSolutions'
                              ['-m']='--ofExam'
                              ['-n']='--sheetNumber'
@@ -98,7 +98,7 @@ function ParseCommandLineParameters(){
                     PrintError "The value of the option \"$1\" was not correctly specified!"; exit -1
                 fi
                 ;;
-            --exerciseSheetPostfix )
+            --sheetSubtitlePostfix )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_exerciseSheetSubtitlePostfix="$2"
                 shift 2 ;;
