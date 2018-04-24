@@ -191,6 +191,10 @@ function __static__ReplaceShortOptionsWithLongOnes(){
     local newOptions value
     newOptions=()
     for value in "$@"; do
+        if [ "${value}" = '' ]; then # Function __static__KeyInArray cannot be called with empty value!
+            newOptions+=( "${value}" )
+            continue
+        fi
         if __static__KeyInArray "${value}" mapOptions; then
             newOptions+=( ${mapOptions[$value]} )
         else
