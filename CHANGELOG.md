@@ -30,6 +30,7 @@ Refer also to the [TODO](TODO.md) file to get more information of the changes oc
 * :heavy_plus_sign: A new secondary option `-e` has been added to the `-S` primary one in order to be able to show also exercises when typesetting a solution sheet. The main difference between the combination `-E -s` and `-S -e` (which could seem equivalent) is that, using the second one, it is possible to finalise a solution sheet with also the exercises in it. Said differently, while `-E -s -f` is not allowed, `-S -e -f` can be used. The secondary option `-s` of `-E` might removed in the future.
 * :sos: The option `-x` was somehow working even if the final sheet had not been previously created. This was not intentional and it has now been forbidden.
 * :heavy_check_mark: It is now possible to specify a students filename as value of the primary option `-P`. This file has to be contained in the folder of the presence sheets, where the default `students` one is placed. If a file is passed, the student names in it are then used for the presence sheet.
+* :sos: A check to make the value of the option `-n` mandatory was missing.
 
 ---
 

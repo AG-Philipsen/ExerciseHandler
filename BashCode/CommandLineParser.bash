@@ -112,7 +112,11 @@ function ParseCommandLineParameters(){
                 shift ;;
             --sheetNumber )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
-                EXHND_sheetNumber="$2"
+                if [ "$2" != '' ] && [[ ! $2 =~ ^- ]]; then
+                    EXHND_sheetNumber="$2"
+                else
+                    PrintError "The value of the option \"$1\" was not correctly specified!"; exit -1
+                fi
                 shift 2 ;;
             --final )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
