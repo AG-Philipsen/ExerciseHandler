@@ -248,13 +248,21 @@
 {\par\vspace{\myskip}}
 
 \newcounter{Solution}
-\newenvironment{solution}[1][]
+\newenvironmentx{solution}[2][1=, 2=]
 {
     \refstepcounter{Solution}
     \ifstrempty{#1}{%
-        \noindent{\large\textbf{\Translate{solution-of} \theSolution}}\\[0.75ex]
+        \ifstrempty{#2}{%
+            \noindent{\large\textbf{\Translate{solution-of} \theSolution}}\\[0.75ex]
+        }{%
+            \noindent{\large\textbf{\Translate{solution-of} \theSolution}}\hfill\texttt{(#2 \translate{score-short})}\\[0.75ex]
+        }
     }{%
-        \noindent{\large\textbf{\Translate{solution-of} \theSolution}} $\;$[\textit{#1}]\\[0.75ex]
+        \ifstrempty{#2}{%
+            \noindent{\large\textbf{\Translate{solution-of} \theSolution}} $\;$[\textit{#1}]\\[0.75ex]
+        }{%
+            \noindent{\large\textbf{\Translate{solution-of} \theSolution}} $\;$[\textit{#1}]\hfill\texttt{(#2 \translate{score-short})}\\[0.75ex]
+        }
     }
 }
 {\par\vspace{\myskip}}

@@ -31,6 +31,7 @@ Refer also to the [TODO](TODO.md) file to get more information of the changes oc
 * :sos: The option `-x` was somehow working even if the final sheet had not been previously created. This was not intentional and it has now been forbidden.
 * :heavy_check_mark: It is now possible to specify a students filename as value of the primary option `-P`. This file has to be contained in the folder of the presence sheets, where the default `students` one is placed. If a file is passed, the student names in it are then used for the presence sheet.
 * :sos: A check to make the value of the option `-n` mandatory was missing.
+* :heavy_check_mark: Now the `solution` environment in the theme takes, optionally, also a second argument with the score of the exercise, exactly as the `exercise` environment.
 
 ---
 
