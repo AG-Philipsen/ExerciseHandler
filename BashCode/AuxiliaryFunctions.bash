@@ -300,8 +300,9 @@ function MoveSheetFilesToFinalFolderOpenPdfAndRemoveCompilationFolder(){
     #(moving before and renaming after is possible but require some more work)
     mv "${EXHND_mainFilename}"  "${EXHND_mainFilename%/*}/${newFilenameWithoutExtension}.tex" || exit -2
     for texFile in ${EXHND_compilationFolder}/*.tex; do
-        mv "${texFile}" "${destinationFolder}"
+        mv "${texFile}" "${destinationFolder}" || exit -2
     done
+    mv "${EXHND_mainFilename/.tex/.aux}" "${destinationFolder}/${newFilenameWithoutExtension}.aux" || exit -2 #For possible later external references
     cp "${EXHND_mainFilename/.tex/.pdf}" "${destinationFolder}/${newFilenameWithoutExtension}.pdf" || exit -2
     xdg-open "${destinationFolder}/${newFilenameWithoutExtension}.pdf" >/dev/null 2>&1 &
     rm -r "${EXHND_compilationFolder}"
