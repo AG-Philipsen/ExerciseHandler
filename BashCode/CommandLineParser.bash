@@ -16,7 +16,8 @@ function ParseCommandLineParameters(){
                              ['-n']='--sheetNumber'
                              ['-f']='--final'
                              ['-x']='--fix'
-                             ['-t']='--themeFile' )
+                             ['-t']='--themeFile' 
+                             ['-b']='--biWeeklySheet')
     local mutuallyExclusiveOptionsPassed; mutuallyExclusiveOptionsPassed=()
     #The following if is important because, if there are no command line options,
     #the readarray would still return an array with one empty option which would
@@ -33,7 +34,7 @@ function ParseCommandLineParameters(){
     declare -rA secondaryToPrimaryOptionsMapping=([${primaryOptions[0]}]='-t'
                                                   [${primaryOptions[1]}]=''
                                                   [${primaryOptions[2]}]='-a -e -p -s -n -f -x'
-                                                  [${primaryOptions[3]}]='-e -n -p'
+                                                  [${primaryOptions[3]}]='-e -n -p -b'
                                                   [${primaryOptions[4]}]='-m -e -n -f -x'
                                                   [${primaryOptions[5]}]='-e -n -s -f -x'
                                                   [${primaryOptions[6]}]=''
@@ -135,6 +136,10 @@ function ParseCommandLineParameters(){
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_userDefinedTheme="$2"
                 shift 2 ;;
+            --biWeeklySheet )
+                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
+                EXHND_isBiWeeklySheet='TRUE'
+                shift ;;
             *)
                 PrintError "Unrecognized option \"$1\"!"; exit -1; shift ;;
         esac

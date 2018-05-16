@@ -2,6 +2,7 @@
 \usepackage{babel}
 \usepackage{etoolbox}
 \usepackage{xargs}
+\usepackage{ifthen}
 \usepackage{pgfplotstable, array, booktabs, colortbl} %For \ExamCoverPage and \PresenceSheet
 %__END_PACKAGES__%
 
@@ -145,14 +146,17 @@
     \pagenumbering{arabic}% Arabic page numbers (and reset to 1)
 }
 
-\newcommand{\PresenceSheet}[5]{
+\newcommand{\PresenceSheet}[6]{
     \begingroup
         \centering
         %Some macros for later
+        \newbool{biWeekly}
+        \ifthenelse{\equal{#6}{TRUE}}{\setbool{biWeekly}{true}}{\setbool{biWeekly}{false}}
         \pgfmathsetmacro{\myNumberOfStudents}{#4}
         \pgfmathsetmacro{\myNumberOfExercises}{#3}
         \pgfmathsetmacro{\counter}{-1}
         \pgfmathsetmacro{\myColWidth}{0.31}
+        \pgfmathsetmacro{\myHalfColWidth}{0.155}
         \pgfmathsetmacro{\mySubColWidth}{\myColWidth / \myNumberOfExercises}
         %Table layout
         \setlength{\tabcolsep}{0pt}
@@ -160,6 +164,7 @@
         \setlength{\belowrulesep}{0pt}
         \renewcommand{\arraystretch}{2}
         \newcolumntype{C}{>{\centering\arraybackslash}p{\myColWidth\textwidth}}
+        \newcolumntype{S}{>{\centering\arraybackslash}p{\myHalfColWidth\textwidth}}
         \newcolumntype{D}{>{\centering\arraybackslash}p{0.07\textwidth}}
         \newcolumntype{E}{>{\centering\arraybackslash}p{\mySubColWidth\textwidth}}
         \newcolumntype{?}{!{\vrule width \heavyrulewidth}}
@@ -176,9 +181,11 @@
             }
         }{%
             \ifbool{switchOffExercisesColumnForPresenceSheet}{%
-                \edef\colNames{No.,Name,Signature}
+                \ifbool{biWeekly}{\edef\colNames{No.,Name,Signature1,Signature2}}
+                {\edef\colNames{No.,Name,Signature}}
             }{%
-                \edef\colNames{No.,Name,Signature#2}
+                \ifbool{biWeekly}{\edef\colNames{No.,Name,Signature1,Signature2#2}}
+                {\edef\colNames{No.,Name,Signature#2}}
             }
         }
         \ifbool{switchOffSignatureColumnForPresenceSheet}{%
@@ -189,17 +196,21 @@
             }
         }{%
             \ifbool{switchOffExercisesColumnForPresenceSheet}{%
-                \def\headerString{\toprule & & }
+                \ifbool{biWeekly}{\def\headerString{\toprule & & \multicolumn{2}{C?}{\textsc{Signatures}}}}
+                {\def\headerString{\toprule & & }}
             }{%
-                \def\headerString{\toprule & & & \multicolumn{\myNumberOfExercises}{C?}{\textsc{Exercises}}}
+                \ifbool{biWeekly}{\def\headerString{\toprule & & \multicolumn{2}{C?}{\textsc{Signatures}} & \multicolumn{\myNumberOfExercises}{C?}{\textsc{Exercises}}}}
+                {\def\headerString{\toprule & & & \multicolumn{\myNumberOfExercises}{C?}{\textsc{Exercises}}}}
             }
         }
         %Setup of columns
         \pgfplotstableset{%
             columns/No./.style={int detect,column type=?D?,column name=\textsc{\Translate{number-short}}},
-            columns/Name/.style={string type,column type=C?,column name=\textsc{\Translate{name}}},
-            columns/Signature/.style={string type,column type=C?,column name=\textsc{\Translate{signature}}}
+            columns/Name/.style={string type,column type=C?,column name=\textsc{\Translate{name}}}
         }
+        \ifbool{biWeekly}{\pgfplotstableset{columns/Signature1/.style={string type,column type=S?,column name=\textsc{\Translate{week} 1}}}
+                          \pgfplotstableset{columns/Signature2/.style={string type,column type=S?,column name=\textsc{\Translate{week} 2}}}}
+                         {\pgfplotstableset{columns/Signature/.style={string type,column type=C?,column name=\textsc{\Translate{signature}}}}}
         \pgfplotsforeachungrouped \j in {#1}{%
             \pgfmathsetmacro{\counter}{int(\counter+1)}
             \ifnumequal{\counter}{\myNumberOfExercises}{%
@@ -210,9 +221,10 @@
         }
         \pgfplotstableset{%
             create on use/No./.style={create col/set list={1,...,\myNumberOfStudents}},
-            create on use/Name/.style={create col/set list={#5}},
-            create on use/Signature/.style={}
+            create on use/Name/.style={create col/set list={#5}}
         }
+        \ifbool{biWeekly}{\pgfplotstableset{create on use/Signature1/.style={}, create on use/Signature2/.style={}}}
+                         {\pgfplotstableset{create on use/Signature/.style={}}}
         \pgfplotsforeachungrouped \i in {#1}{%
             \pgfplotstableset{create on use/Ex\i/.style={}}
         }

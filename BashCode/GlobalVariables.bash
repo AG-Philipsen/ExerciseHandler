@@ -56,5 +56,6 @@ function DefineGlobalVariables(){
     EXHND_isFinal='FALSE'
     EXHND_fixFinal='FALSE'
     EXHND_displayAlreadyUsedExercises='FALSE'
+    EXHND_isBiWeeklySheet='FALSE'
 
 }
