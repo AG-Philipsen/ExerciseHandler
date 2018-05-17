@@ -33,6 +33,7 @@ Refer also to the [TODO](TODO.md) file to get more information of the changes oc
 * :sos: A check to make the value of the option `-n` mandatory was missing.
 * :heavy_check_mark: Now the `solution` environment in the theme takes, optionally, also a second argument with the score of the exercise, exactly as the `exercise` environment.
 * :heavy_plus_sign: A new secondary option `-b` has been added to the `-P` primary one in order to be able to consider a sheet as valid for two weeks and then divide the signature column in two sub-columns.
+* :heavy_check_mark: The commands `\translate` and `\Translate` were renamed to `\EH@translate` and `\EH@Translate`, respectively. This requires now the proper use of `\mateatletter` and `\makeatother` to access and use them.
 
 ---
 
