@@ -88,11 +88,19 @@ function ParseCommandLineParameters(){
                 shift ;;
             --exercises )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
+                #To avoid headache and escape many characters it is sometimes better to put the
+                #regular expression into a variable and then use [[ ... =~ $var ]]. Nevertheless
+                #some peculiar POSIX regex rules have to be still considered like that to match
+                #a literal - one has to put it at the beginning or at the end of the group [].
+                #Read https://stackoverflow.com/a/18710850 or 'man 7 regex' for more information!
+                local regExNotPresenceSheet regExPresenceSheet
+                regExNotPresenceSheet='^[1-9][0-9]*([,-][1-9][0-9]*)*$'
+                regExPresenceSheet='^[-a-zA-Z0-9,. ()]+$'
                 if [[ ${mutuallyExclusiveOptionsPassed[@]: -1} = '--makeSolutionSheet' ]]; then
                     EXHND_showAlsoExercises='TRUE'
                     shift
-                elif [[ ${mutuallyExclusiveOptionsPassed[@]: -1} != '--makePresenceSheet'  &&  $2 =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]] ||
-                   [[ ${mutuallyExclusiveOptionsPassed[@]: -1}  = '--makePresenceSheet'  &&  $2 =~ ^[1-9][0-9]*([.][1-9][0-9]*)*([,][1-9][0-9]*([.][1-9][0-9]*)*)*$ ]]; then
+                elif [[ ${mutuallyExclusiveOptionsPassed[@]: -1} != '--makePresenceSheet'  &&  $2 =~ $regExNotPresenceSheet ]] ||
+                     [[ ${mutuallyExclusiveOptionsPassed[@]: -1}  = '--makePresenceSheet'  &&  $2 =~ $regExPresenceSheet ]]; then
                     EXHND_exercisesFromPoolAsNumbers="$2"
                     shift 2
                 else

@@ -111,10 +111,8 @@ function __static__ParseExercisesString(){
     if [[ $EXHND_exercisesFromPoolAsNumbers = "" ]]; then
         ReadOutExercisesFromFinalSheetLogFile
         seq 1 ${#EXHND_choosenExercises[@]}
-    elif [[ $EXHND_exercisesFromPoolAsNumbers =~ ^[1-9][0-9]*([.][1-9][0-9]*)*([,][1-9][0-9]*([.][1-9][0-9]*)*)*$ ]]; then
-        echo $EXHND_exercisesFromPoolAsNumbers | tr , "\n"
     else
-        printf "\e[38;5;9m The value of the option \e[1m-n\e[21m was not correctly specified for the creation of the Presence sheet!\n"; exit -1
+        echo $EXHND_exercisesFromPoolAsNumbers | tr , "\n"
     fi
 }
 
