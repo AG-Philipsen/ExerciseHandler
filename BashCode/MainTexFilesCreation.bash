@@ -147,7 +147,7 @@ function ProducePresenceSheetTexMainFile(){
     echo '    \Heading'
     echo "    \Sheet{presence-sheet}[${EXHND_sheetNumber}][${EXHND_exerciseSheetSubtitlePostfix}]"
     echo ''
-    echo "    \PresenceSheet{$exerciseNumberString}{$exerciseString}{${#arrayOfExerciseNumbers[@]}}{$numberOfStudents}{$students}{$EXHND_isBiWeeklySheet}"
+    echo "    \PresenceSheet{$exerciseNumberString}{$exerciseString}{${#arrayOfExerciseNumbers[@]}}{$numberOfStudents}{$students}{${EXHND_isBiWeeklySheet,,}}"
     echo '\end{document}'
     #Restore standard output
     exec 1>&3

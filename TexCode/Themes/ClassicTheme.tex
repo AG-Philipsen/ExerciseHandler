@@ -150,8 +150,6 @@
     \begingroup
         \centering
         %Some macros for later
-        \newbool{biWeekly}
-        \ifthenelse{\equal{#6}{TRUE}}{\setbool{biWeekly}{true}}{\setbool{biWeekly}{false}}
         \pgfmathsetmacro{\myNumberOfStudents}{#4}
         \pgfmathsetmacro{\myNumberOfExercises}{#3}
         \pgfmathsetmacro{\counter}{-1}
@@ -171,8 +169,10 @@
         %Show/hide columns depending on user setup
         \newbool{switchOffSignatureColumnForPresenceSheet}
         \newbool{switchOffExercisesColumnForPresenceSheet}
+        \newbool{biWeekly}
         \setbool{switchOffSignatureColumnForPresenceSheet}{\hideSignatureColumnInPresenceSheet}
         \setbool{switchOffExercisesColumnForPresenceSheet}{\hideExercisesColumnInPresenceSheet}
+        \setbool{biWeekly}{#6}
         \ifbool{switchOffSignatureColumnForPresenceSheet}{%
             \ifbool{switchOffExercisesColumnForPresenceSheet}{%
                 \edef\colNames{No.,Name}
