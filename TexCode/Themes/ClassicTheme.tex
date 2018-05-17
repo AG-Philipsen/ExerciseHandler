@@ -2,7 +2,6 @@
 \usepackage{babel}
 \usepackage{etoolbox}
 \usepackage{xargs}
-\usepackage{ifthen}
 \usepackage{pgfplotstable, array, booktabs, colortbl} %For \ExamCoverPage and \PresenceSheet
 %__END_PACKAGES__%
 
@@ -45,11 +44,13 @@
     \vspace{\myskip}
 }
 
+\makeatletter
+
 \newcommandx{\Sheet}[3][2=, 3=]{
     \ifstrempty{#2}{
-        \centerline{\Large\textbf{\Translate{#1}}}
+        \centerline{\Large\textbf{\EH@Translate{#1}}}
     }{
-        \centerline{\Large\textbf{\Translate{#1} #2}}
+        \centerline{\Large\textbf{\EH@Translate{#1} #2}}
     }
     % Print subtitle only for exercises
     \ifstrequal{#1}{exercise-sheet}{
@@ -78,7 +79,7 @@
     }{}
     % Print exam date as subtitle for exam solution
     \ifstrequal{#1}{exam-solution}{
-        \centerline{\Translate{exam-date}: \examDate{}}
+        \centerline{\EH@Translate{exam-date}: \examDate{}}
     }{}
     \vspace{2\myskip}
 }
@@ -87,7 +88,7 @@
     \thispagestyle{empty}
     \begingroup
         \large
-        \noindent\textbf{\Translate{duration}:} \examDuration  \hfill \textbf{\examDate}
+        \noindent\textbf{\EH@Translate{duration}:} \examDuration  \hfill \textbf{\examDate}
         \par% https://tex.stackexchange.com/a/91539
     \endgroup
     \vfill%
@@ -97,8 +98,8 @@
         \large
         \centering
         \begin{tabular}{rp{0.6\textwidth}}
-            \Translate{full-name}:  & \underline{\hspace{0.6\textwidth}} \\[3ex]
-            \Translate{ID-number}:  & \underline{\hspace{0.6\textwidth}} \\[4ex]
+            \EH@Translate{full-name}:  & \underline{\hspace{0.6\textwidth}} \\[3ex]
+            \EH@Translate{ID-number}:  & \underline{\hspace{0.6\textwidth}} \\[4ex]
         \end{tabular}
         %Prepare table formatting and layout
         \setlength{\aboverulesep}{0pt}
@@ -117,8 +118,8 @@
         %Prepare and make table
         \pgfplotstableset{%
                brackets/.style={postproc cell content/.append style={/pgfplots/table/@cell content/.add={\relax$\;\quad$/}{}}},
-               columns/Ex/.style={int detect,column type=?C|,column name=\textsc{\Translate{exercise}}},
-               columns/Score/.style={string type, brackets, column type=C?,column name=\textsc{\Translate{score}}},
+               columns/Ex/.style={int detect,column type=?C|,column name=\textsc{\EH@Translate{exercise}}},
+               columns/Score/.style={string type, brackets, column type=C?,column name=\textsc{\EH@Translate{score}}},
                create on use/Ex/.style={create col/set list={1,...,\numberOfExercises}},
                create on use/Score/.style={create col/set list={#2}},
         }
@@ -126,17 +127,17 @@
         \pgfplotstabletypeset[
                every head row/.style={before row=\toprule, after row=\midrule},
                every even row/.style={before row={\rowcolor{\myEveryEvenRowColor}}},
-               every last row/.style={after row=\midrule \textsc{\Translate{sum}:} & $\;\quad/\totalScore$ \\ \bottomrule}]{\loadedtable}
+               every last row/.style={after row=\midrule \textsc{\EH@Translate{sum}:} & $\;\quad/\totalScore$ \\ \bottomrule}]{\loadedtable}
         \par\vspace{\myskip}
         \newbool{examIsPassedOrFailed}
         \setbool{examIsPassedOrFailed}{\makeBinaryExam}
         \ifbool{examIsPassedOrFailed}{%
             \begin{tabular}{rp{2cm}p{2cm}}
-                \Translate{passed}: & \fbox{\phantom{X}}$\quad$\Translate{yes} & \fbox{\phantom{X}}$\quad$\Translate{no} \\
+                \EH@Translate{passed}: & \fbox{\phantom{X}}$\quad$\EH@Translate{yes} & \fbox{\phantom{X}}$\quad$\EH@Translate{no} \\
             \end{tabular}
         }{%
             \begin{tabular}{rp{10cm}}
-                \Translate{final-mark}:       & \underline{\hspace{9cm}} \\
+                \EH@Translate{final-mark}:       & \underline{\hspace{9cm}} \\
             \end{tabular}
         }
         \par% https://tex.stackexchange.com/a/91539
@@ -205,12 +206,12 @@
         }
         %Setup of columns
         \pgfplotstableset{%
-            columns/No./.style={int detect,column type=?D?,column name=\textsc{\Translate{number-short}}},
-            columns/Name/.style={string type,column type=C?,column name=\textsc{\Translate{name}}}
+            columns/No./.style={int detect,column type=?D?,column name=\textsc{\EH@Translate{number-short}}},
+            columns/Name/.style={string type,column type=C?,column name=\textsc{\EH@Translate{name}}}
         }
-        \ifbool{biWeekly}{\pgfplotstableset{columns/Signature1/.style={string type,column type=S?,column name=\textsc{\Translate{week} 1}}}
-                          \pgfplotstableset{columns/Signature2/.style={string type,column type=S?,column name=\textsc{\Translate{week} 2}}}}
-                         {\pgfplotstableset{columns/Signature/.style={string type,column type=C?,column name=\textsc{\Translate{signature}}}}}
+        \ifbool{biWeekly}{\pgfplotstableset{columns/Signature1/.style={string type,column type=S?,column name=\textsc{\EH@Translate{week} 1}}}
+                          \pgfplotstableset{columns/Signature2/.style={string type,column type=S?,column name=\textsc{\EH@Translate{week} 2}}}}
+                         {\pgfplotstableset{columns/Signature/.style={string type,column type=C?,column name=\textsc{\EH@Translate{signature}}}}}
         \pgfplotsforeachungrouped \j in {#1}{%
             \pgfmathsetmacro{\counter}{int(\counter+1)}
             \ifnumequal{\counter}{\myNumberOfExercises}{%
@@ -245,15 +246,15 @@
     \refstepcounter{Exercise}
     \ifstrempty{#1}{%
         \ifstrempty{#2}{%
-            \noindent{\large\textbf{\Translate{exercise} \theExercise}}\\[0.75ex]
+            \noindent{\large\textbf{\EH@Translate{exercise} \theExercise}}\\[0.75ex]
         }{%
-            \noindent{\large\textbf{\Translate{exercise} \theExercise}}\hfill\texttt{(#2 \translate{score-short})}\\[0.75ex]
+            \noindent{\large\textbf{\EH@Translate{exercise} \theExercise}}\hfill\texttt{(#2 \EH@translate{score-short})}\\[0.75ex]
         }
     }{%
         \ifstrempty{#2}{%
-            \noindent{\large\textbf{\Translate{exercise} \theExercise}} $\;$[\textit{#1}]\\[0.75ex]
+            \noindent{\large\textbf{\EH@Translate{exercise} \theExercise}} $\;$[\textit{#1}]\\[0.75ex]
         }{%
-            \noindent{\large\textbf{\Translate{exercise} \theExercise}} $\;$[\textit{#1}]\hfill\texttt{(#2 \translate{score-short})}\\[0.75ex]
+            \noindent{\large\textbf{\EH@Translate{exercise} \theExercise}} $\;$[\textit{#1}]\hfill\texttt{(#2 \EH@translate{score-short})}\\[0.75ex]
         }
     }
 }
@@ -265,19 +266,20 @@
     \refstepcounter{Solution}
     \ifstrempty{#1}{%
         \ifstrempty{#2}{%
-            \noindent{\large\textbf{\Translate{solution-of} \theSolution}}\\[0.75ex]
+            \noindent{\large\textbf{\EH@Translate{solution-of} \theSolution}}\\[0.75ex]
         }{%
-            \noindent{\large\textbf{\Translate{solution-of} \theSolution}}\hfill\texttt{(#2 \translate{score-short})}\\[0.75ex]
+            \noindent{\large\textbf{\EH@Translate{solution-of} \theSolution}}\hfill\texttt{(#2 \EH@translate{score-short})}\\[0.75ex]
         }
     }{%
         \ifstrempty{#2}{%
-            \noindent{\large\textbf{\Translate{solution-of} \theSolution}} $\;$[\textit{#1}]\\[0.75ex]
+            \noindent{\large\textbf{\EH@Translate{solution-of} \theSolution}} $\;$[\textit{#1}]\\[0.75ex]
         }{%
-            \noindent{\large\textbf{\Translate{solution-of} \theSolution}} $\;$[\textit{#1}]\hfill\texttt{(#2 \translate{score-short})}\\[0.75ex]
+            \noindent{\large\textbf{\EH@Translate{solution-of} \theSolution}} $\;$[\textit{#1}]\hfill\texttt{(#2 \EH@translate{score-short})}\\[0.75ex]
         }
     }
 }
 {\par\vspace{\myskip}}
 
+\makeatother
 
 %__END_DEFINITIONS__%

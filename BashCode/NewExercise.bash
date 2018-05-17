@@ -9,7 +9,9 @@ function __static__ProduceTemplate(){
     printf '%s\n'               '%__BEGIN_BODY__%'
     printf '\\begin{%s}\n'  "${environment}"
     if [ ${environment} = 'solution' ]; then
-        printf '    \Translate{solution-not-provided}.\n'
+        printf '    \\makeatletter\n'
+        printf '        \\EH@Translate{solution-not-provided}.\n'
+        printf '    \\makeatother.\n'
     else
         printf '\n'
     fi

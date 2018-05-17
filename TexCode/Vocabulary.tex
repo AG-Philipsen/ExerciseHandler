@@ -28,8 +28,10 @@
 \def\firstUpAux#1#2\relax{\uppercase{#1}#2}
 
 %Wrapper for \GetTranslation in order to have capital letter variant
-\newcommand{\translate}[1]{\CheckTranslation{#1}\GetTranslation{#1}}
-\newcommand{\Translate}[1]{\CheckTranslation{#1}\SaveTranslation{\tmpVar}{#1}\firstUp{\tmpVar}}
+\makeatletter
+  \newcommand{\EH@translate}[1]{\CheckTranslation{#1}\GetTranslation{#1}}
+  \newcommand{\EH@Translate}[1]{\CheckTranslation{#1}\SaveTranslation{\tmpVar}{#1}\firstUp{\tmpVar}}
+\makeatother
 
 %-----------------------------------------------------------%
 %Here in the following the translation, organised in blocks %
