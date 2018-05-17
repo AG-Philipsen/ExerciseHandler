@@ -16,7 +16,7 @@ function ParseCommandLineParameters(){
                              ['-n']='--sheetNumber'
                              ['-f']='--final'
                              ['-x']='--fix'
-                             ['-t']='--themeFile' 
+                             ['-t']='--themeFile'
                              ['-b']='--biWeeklySheet')
     local mutuallyExclusiveOptionsPassed; mutuallyExclusiveOptionsPassed=()
     #The following if is important because, if there are no command line options,
@@ -275,16 +275,18 @@ function __static__PrintHelp(){
                             ['-pP']='Set the presence sheet full subtitle (present date if not given).'
                             ['-s']='Show solutions of exercises in the same file.'
                             ['-m']='Make solution of exam instead of exercise sheet.'
-                            ['-n']='Set the sheet number to be produced (either exercise or solution sheet).'
+                            ['-n']='Set the number of the sheet to be produced.'
+                            ['-nP']='Set the presence sheet number.'
                             ['-f']='Move the produced pdf and auxiliary files to the corresponding final folder.'
                             ['-x']='Produce again a final sheet using its exercises and overwriting it.\nIt implies -f. Use -n to specify the exercise sheet number.'
-                            ['-t']='TeX theme file to be used.' )
+                            ['-t']='TeX theme file to be used.'
+                            ['-b']='Consider the exercise sheet valid for two weeks and divide then the signature column.' )
     local primaryOption secondaryOption
     __static__PrintHelpHeader
     for primaryOption in ${primaryOptions[@]}; do
         __static__AddOptionToHelper 'PRIMARY' ${primaryOption}
         for secondaryOption in ${secondaryToPrimaryOptionsMapping[${primaryOption}]}; do #on purpose not quoted to split secondary options
-            if [ $primaryOption = '-P' ] && [[ $secondaryOption =~ ^-[ep]$ ]] ; then
+            if [ $primaryOption = '-P' ] && [[ $secondaryOption =~ ^-[epn]$ ]] ; then
                 secondaryOption+='P'
             elif [ $primaryOption = '-S' ] && [[ $secondaryOption =~ ^-[e]$ ]] ; then
                 secondaryOption+='S'
