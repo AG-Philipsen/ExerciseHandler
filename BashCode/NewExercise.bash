@@ -11,7 +11,7 @@ function __static__ProduceTemplate(){
     if [ ${environment} = 'solution' ]; then
         printf '    \\makeatletter\n'
         printf '        \\EH@Translate{solution-not-provided}.\n'
-        printf '    \\makeatother.\n'
+        printf '    \\makeatother\n'
     else
         printf '\n'
     fi
