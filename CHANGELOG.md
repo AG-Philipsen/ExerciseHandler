@@ -34,6 +34,7 @@ Refer also to the [TODO](TODO.md) file to get more information of the changes oc
 * :heavy_check_mark: Now the `solution` environment in the theme takes, optionally, also a second argument with the score of the exercise, exactly as the `exercise` environment.
 * :heavy_plus_sign: A new secondary option `-b` has been added to the `-P` primary one in order to be able to consider a sheet as valid for two weeks and then divide the signature column in two sub-columns.
 * :heavy_check_mark: The commands `\translate` and `\Translate` were renamed to `\EH@translate` and `\EH@Translate`, respectively. This requires now the proper use of `\mateatletter` and `\makeatother` to access and use them.
+* :heavy_check_mark: The second optional argument of the `exercise` environment had to be an integer number to be accepted in the exam `-X` mode. Now a more general sum-of-integers-with-result format, e.g. `1+2+3=6`, can be specified. The old simple integer format is, of course, still valid.
 
 ---
 

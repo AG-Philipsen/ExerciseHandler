@@ -61,15 +61,16 @@ function __static__GetPointsFromExercises(){
         if [ $(grep -c '\\begin{solution}' ${exercise}) -ne 0 ]; then
             continue
         fi
-        score=$(grep '\\begin{exercise}\[.*\]\[[0-9]\+\]' ${exercise})
+        score=$(grep '\\begin{exercise}\[.*\]\[[=+0-9]\+\]' ${exercise})
         if [ "${score}" = '' ]; then
             PrintError "Exercise \"$(basename ${exercise})\" seems not to contain a score! Invalid for exam!"; exit -1
         fi
-        score=$(grep -o '\[[0-9]\+\]$' <<< "${score}" | grep -o '[0-9]\+')
-        if [[ ! ${score} =~ ^[0-9]+$ ]]; then
-            PrintInternal "Error extracting score from exercise \"$(basename ${exercise})\"!"; exit -1
+        score=$(grep -o '\[[=+0-9]\+\]$' <<< "${score}" | sed 's/[][]//g') # sed deletes the square brackets
+        #Ensures a string with, optionally sum of integers and result (e.g. 1+2+3=6 or simply 6)
+        if [[ ! ${score} =~ ^[0-9]+((\+[0-9]+)+=[0-9]+)?$ ]]; then
+            PrintInternal "Score \"${score}\" extracted from exercise \"$(basename ${exercise})\" is not valid!"; exit -1
         fi
-        allScores+="${score},"
+        allScores+="${score##*=}," #Fine with all formats, i.e. even if no = sign is present
     done
     echo ${allScores%?}
 }
