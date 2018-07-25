@@ -11,7 +11,7 @@ function PrintCodeVersion(){
     if [ $? -ne 0 ]; then
         PrintInternal "Unexpected error in \"${FUNCNAME}\" trying to obtain the closest git tag."; exit -1
     fi
-    tagDate=$(date -d "$(git tag -l "${gitTagShort}" --format='%(creatordate:short)')" +'%d %B %Y')
+    tagDate=$(date -d "$(git -C "${EXHND_repositoryDirectory}" tag -l "${gitTagShort}" --format='%(creatordate:short)')" +'%d %B %Y')
     if [ "${gitTagShort}" != "${gitTagLong}" ]; then
         PrintWarning "You are not using an official release of the Exercise Handler."\
                      "Unless you have a reason not to do so, it would be better"\
