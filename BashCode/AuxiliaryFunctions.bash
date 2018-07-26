@@ -8,7 +8,7 @@ function GetFinalSheetFolderGlobalPathWithoutNumber(){
             PrintInternal "Function \"${FUNCNAME[0]}\" called with unexpected second argument (\$2=\"$2\")!"; exit -1
         fi
     else
-        if [ ${EXHND_makeExerciseSheet} = 'TRUE' ] || [ ${EXHND_listUsedExercises} = 'TRUE' ]; then
+        if [ ${EXHND_makeExerciseSheet} = 'TRUE' ]; then
             mode='EXERCISE'
         elif [ ${EXHND_makeSolutionSheet} = 'TRUE' ]; then
             if [ ${EXHND_solutionOfExam} = 'TRUE' ]; then

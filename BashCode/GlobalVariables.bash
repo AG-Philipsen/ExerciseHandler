@@ -31,6 +31,8 @@ function DefineGlobalVariables(){
     EXHND_exerciseList=(); EXHND_choosenExercises=() #These arrays contain the basenames of the files
     EXHND_filesToBeUsedGlobalPath=() #This array contains the files for the final sheet
     EXHND_listOfStudentsFilename="${EXHND_presenceSheetFolder}/students"
+    readonly EXHND_tarballExerciseHandlerPostfix='_ExerciseHandler.tar'
+    readonly EXHND_tarballPdfPostfix='_pdfFiles.tar'
 
     #Variables with input from user
     EXHND_userDefinedTheme=''
@@ -38,6 +40,7 @@ function DefineGlobalVariables(){
     EXHND_exerciseSheetSubtitlePostfix=''
     EXHND_sheetNumber=''
     EXHND_exercisesFromPoolAsNumbers=''
+    EXHND_tarballPrefix="$(basename ${EXHND_invokingDirectory})"
 
     #Mutually exclusive options
     EXHND_doSetup='FALSE'
@@ -51,6 +54,7 @@ function DefineGlobalVariables(){
     EXHND_makeExam='FALSE'
     EXHND_listUsedExercises='FALSE'
     EXHND_printVersion='FALSE'
+    EXHND_exportFilesAsTar='FALSE'
 
     #Behaviour options
     EXHND_isFinal='FALSE'

@@ -28,6 +28,7 @@ source ${EXHND_repositoryDirectory}/BashCode/ListUsedExercises.bash       || exi
 source ${EXHND_repositoryDirectory}/BashCode/ExerciseSelection.bash       || exit -2
 source ${EXHND_repositoryDirectory}/BashCode/MainTexFilesCreation.bash    || exit -2
 source ${EXHND_repositoryDirectory}/BashCode/ProduceSheet.bash            || exit -2
+source ${EXHND_repositoryDirectory}/BashCode/InheritFiles.bash            || exit -2
 
 #------------------------------------------------------------------------------------------------------------------#
 
@@ -54,6 +55,8 @@ else
         ProduceExamSheet
     elif [ ${EXHND_makePresenceSheet} = 'TRUE' ]; then
         ProducePresenceSheet
+    elif [ ${EXHND_exportFilesAsTar} = 'TRUE' ]; then
+        CreateTarballsToLetWorkBeInherited
     else
         PrintWarning "No mutually exclusive option was specified!" "Use the \"--help\" option to get more information!"
     fi

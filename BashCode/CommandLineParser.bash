@@ -7,6 +7,7 @@ function ParseCommandLineParameters(){
                              ['-P']='--makePresenceSheet'
                              ['-X']='--makeExam'
                              ['-L']='--listUsedExercises'
+                             ['-T']='--exportFilesAsTar'
                              ['-V']='--version'
                              ['-a']='--showAllExercises'
                              ['-e']='--exercises'
@@ -30,7 +31,7 @@ function ParseCommandLineParameters(){
         set -- "${commandLineOptions[@]}"
     fi
     #Additional logic to distinguish between primary and secondary options
-    local primaryOptions; primaryOptions=( '-U' '-N' '-E' '-P' '-S' '-X' '-L' '-V' ) #To keep associative array "ordered"
+    local primaryOptions; primaryOptions=( '-U' '-N' '-E' '-P' '-S' '-X' '-L' '-T' '-V' ) #To keep associative array "ordered"
     declare -rA secondaryToPrimaryOptionsMapping=([${primaryOptions[0]}]='-t'
                                                   [${primaryOptions[1]}]=''
                                                   [${primaryOptions[2]}]='-a -e -p -s -n -f -x'
@@ -38,7 +39,8 @@ function ParseCommandLineParameters(){
                                                   [${primaryOptions[4]}]='-m -e -n -f -x'
                                                   [${primaryOptions[5]}]='-e -n -s -f -x'
                                                   [${primaryOptions[6]}]=''
-                                                  [${primaryOptions[7]}]='' )
+                                                  [${primaryOptions[7]}]=''
+                                                  [${primaryOptions[8]}]='' )
     #Parse options: here only long options are used
     while [ $# -gt 0 ]; do
         case $1 in
@@ -81,6 +83,14 @@ function ParseCommandLineParameters(){
             --listUsedExercises )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_listUsedExercises='TRUE'
+                shift ;;
+            --exportFilesAsTar )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_exportFilesAsTar='TRUE'
+                if [ "$2" != '' ] && [[ ! $2 =~ ^- ]]; then
+                    EXHND_tarballPrefix="$2"
+                    shift
+                fi
                 shift ;;
             --version )
                 mutuallyExclusiveOptionsPassed+=( $1 )
@@ -266,6 +276,7 @@ function __static__PrintHelp(){
                             ['-P']='Create a new presence sheet. \e[21mA students file to be used may be specified as argument, \nbut it cannot start with \"-\". This file is supposed to be in the "'"$(basename ${EXHND_presenceSheetFolder})"'" folder.'
                             ['-X']='Create a new exam or fix a previous one.'
                             ['-L']='Get list of exercise tex files used in already produced final exercises.'
+                            ['-T']='Create a tarball with all final pdf files as well as a ready-to-be-inherited archive.\n\e[21mA prefix for the tarball names (not starting with \"-\") may be specified as argument.'
                             ['-V']='Print the version in use of the Exercise Handler.'
                             ['-a']='Display all available exercise to let the user choose.\nBy default, only those still not used for final sheets are listed.'
                             ['-e']='Avoid interactive selection of exercises and choose them directly.\nUse a comma separated list, where ranges X-Y are allowed (boundaries included).\nOrder is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].'
