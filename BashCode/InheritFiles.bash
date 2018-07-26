@@ -106,3 +106,17 @@ function CreateTarballsToLetWorkBeInherited() {
         __static__CreateTarball  "${exerciseHandlerTarball}"  'ALL'
     fi
 }
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+function InheritPastWorkFromTarballSettingUpWorkspace(){
+    #Abort if present folder is not empty
+    if [ -n "$(ls -A ${EXHND_invokingDirectory})" ]; then
+        PrintError "To inherit previous work, you must run the Exercise Handler from an empty directory!"
+    fi
+    #Extract archive except the README
+    tar -xf "${EXHND_tarballFilename}" --exclude="README"
+    PrintInfo "Previous work correctly inherited." "Running the Exercise Handler setup complete the environment."
+    #Run the setup
+    MakeSetup
+}

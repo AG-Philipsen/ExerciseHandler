@@ -8,6 +8,7 @@ function ParseCommandLineParameters(){
                              ['-X']='--makeExam'
                              ['-L']='--listUsedExercises'
                              ['-T']='--exportFilesAsTar'
+                             ['-I']='--importFilesFromTar'
                              ['-V']='--version'
                              ['-a']='--showAllExercises'
                              ['-e']='--exercises'
@@ -31,7 +32,7 @@ function ParseCommandLineParameters(){
         set -- "${commandLineOptions[@]}"
     fi
     #Additional logic to distinguish between primary and secondary options
-    local primaryOptions; primaryOptions=( '-U' '-N' '-E' '-P' '-S' '-X' '-L' '-T' '-V' ) #To keep associative array "ordered"
+    local primaryOptions; primaryOptions=( '-U' '-N' '-E' '-P' '-S' '-X' '-L' '-T' '-I' '-V' ) #To keep associative array "ordered"
     declare -rA secondaryToPrimaryOptionsMapping=([${primaryOptions[0]}]='-t'
                                                   [${primaryOptions[1]}]=''
                                                   [${primaryOptions[2]}]='-a -e -p -s -n -f -x'
@@ -40,7 +41,8 @@ function ParseCommandLineParameters(){
                                                   [${primaryOptions[5]}]='-e -n -s -f -x'
                                                   [${primaryOptions[6]}]=''
                                                   [${primaryOptions[7]}]=''
-                                                  [${primaryOptions[8]}]='' )
+                                                  [${primaryOptions[8]}]=''
+                                                  [${primaryOptions[9]}]='' )
     #Parse options: here only long options are used
     while [ $# -gt 0 ]; do
         case $1 in
@@ -92,10 +94,24 @@ function ParseCommandLineParameters(){
                     shift
                 fi
                 shift ;;
+            --importFilesFromTar )
+                mutuallyExclusiveOptionsPassed+=( $1 )
+                EXHND_importFilesFromTar='TRUE'
+                if [ "$2" != '' ] && [[ ! $2 =~ ^- ]]; then
+                    EXHND_tarballFilename="$2"
+                    if [[ ! ${EXHND_tarballFilename} =~ ${EXHND_tarballExerciseHandlerPostfix}$ ]]; then
+                        PrintError "The expected tarball file must end with \"${EXHND_tarballExerciseHandlerPostfix}\"."; exit -1
+                    fi
+                    shift
+                else
+                    PrintError "The value of the option \"$1\" was not correctly specified!"; exit -1
+                fi
+                shift ;;
             --version )
                 mutuallyExclusiveOptionsPassed+=( $1 )
                 EXHND_printVersion='TRUE'
                 shift ;;
+
             --exercises )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 #To avoid headache and escape many characters it is sometimes better to put the
@@ -277,6 +293,7 @@ function __static__PrintHelp(){
                             ['-X']='Create a new exam or fix a previous one.'
                             ['-L']='Get list of exercise tex files used in already produced final exercises.'
                             ['-T']='Create a tarball with all final pdf files as well as a ready-to-be-inherited archive.\n\e[21mA prefix for the tarball names (not starting with \"-\") may be specified as argument.'
+                            ['-I']='Use the tarball specified as value to setup the evironment based on previous work.\n\e[21mThis option must be used from an empty folder and the specified tarball should\nhave been produced with the -T option and it has to end with "'"${EXHND_tarballExerciseHandlerPostfix}"'".'
                             ['-V']='Print the version in use of the Exercise Handler.'
                             ['-a']='Display all available exercise to let the user choose.\nBy default, only those still not used for final sheets are listed.'
                             ['-e']='Avoid interactive selection of exercises and choose them directly.\nUse a comma separated list, where ranges X-Y are allowed (boundaries included).\nOrder is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].'

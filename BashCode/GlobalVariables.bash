@@ -41,6 +41,7 @@ function DefineGlobalVariables(){
     EXHND_sheetNumber=''
     EXHND_exercisesFromPoolAsNumbers=''
     EXHND_tarballPrefix="$(basename ${EXHND_invokingDirectory})"
+    EXHND_tarballFilename=''
 
     #Mutually exclusive options
     EXHND_doSetup='FALSE'
@@ -55,6 +56,7 @@ function DefineGlobalVariables(){
     EXHND_listUsedExercises='FALSE'
     EXHND_printVersion='FALSE'
     EXHND_exportFilesAsTar='FALSE'
+    EXHND_importFilesFromTar='FALSE'
 
     #Behaviour options
     EXHND_isFinal='FALSE'

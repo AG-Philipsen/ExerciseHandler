@@ -39,6 +39,8 @@ FurtherChecksOnCommandLineOptions
 
 if [ ${EXHND_doSetup} = 'TRUE' ]; then
     MakeSetup
+elif [ ${EXHND_importFilesFromTar} = 'TRUE' ]; then
+    InheritPastWorkFromTarballSettingUpWorkspace
 else
     MakePreliminaryChecks
     if [ ${EXHND_printVersion} = 'TRUE' ]; then
@@ -57,6 +59,8 @@ else
         ProducePresenceSheet
     elif [ ${EXHND_exportFilesAsTar} = 'TRUE' ]; then
         CreateTarballsToLetWorkBeInherited
+    elif [ ${EXHND_importFilesFromTar} = 'TRUE' ]; then
+        InheritPastWorkFromTarballSettingUpWorkspace
     else
         PrintWarning "No mutually exclusive option was specified!" "Use the \"--help\" option to get more information!"
     fi

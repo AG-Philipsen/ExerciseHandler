@@ -37,6 +37,7 @@ Refer also to the [TODO](TODO.md) file to get more information of the changes oc
 * :heavy_check_mark: The second optional argument of the `exercise` environment had to be an integer number to be accepted in the exam `-X` mode. Now a more general sum-of-integers-with-result format, e.g. `1+2+3=6`, can be specified. The old simple integer format is, of course, still valid.
 * :sos: The date of the last release in the `-V` option was wrong and it is now correct.
 * :heavy_plus_sign: A new primary `-T` option was added in order to create some tarballs of the work done during the teaching period. This option is intended to prepare the work to be inherited by someone else, who will use the `Exercise Handler` as well. At the moment two tarballs are created. The first contains all the final pdf sheets which were produced and is intendend more as overview of what was done. The second is instead the needed one to inherit material and it contains all the needed files plus a README file to provide additional information.
+* :heavy_plus_sign: A new primary `-I` option was added to inherit previous work done with the `Exercise Handler` (which has been exported via the `-T` option). Refer to the help for more information.
 
 ---
 
