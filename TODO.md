@@ -22,7 +22,6 @@ Refer to the [CHANGELOG](https://github.com/AG-Philipsen/ExerciseHandler/blob/ma
 
 ### Normal priority
 
- - [ ] :new: :memo: Add a secondary `-i` option to `-U` in order to *inherit* the exercises and the solutions from a previous lecture. Give the possibility to specify a path in which there should be an `Exercises`, `Solutions` and a `Figures` folder which are copied to the place from which `-U` is run. Add documentation (Wiki)
  - [ ] :memo: :question: It would be nice if figures used in sheets would be copied to the final folder. At the same time we did not come up with a good way to do this. Which figures should be copied? One could deduce them from the `.tex` files but different users could include them differently (e.g. wrap `\includegraphics` in an own macro)! Moreover `\graphicspath` should be changed and a fix of the sheet which is about fixing a figure is not immediate (we could not move from `Figures` to the final folder because otherwise the user should know that to fix (s)he should work in the final folder; we could still copy from `Figures` to the final folders and repeat this copy at each fix...). Is this what we want? Is it maintainable? Disuss this point in the documentation (Wiki).
  
  
@@ -46,6 +45,8 @@ Refer to the [CHANGELOG](https://github.com/AG-Philipsen/ExerciseHandler/blob/ma
 
 ## Past work
 
+ - [X] :new: :memo: Add a secondary `-i` option to `-U` in order to *inherit* the exercises and the solutions from a previous lecture. Give the possibility to specify a path in which there should be an `Exercises`, `Solutions` and a `Figures` folder which are copied to the place from which `-U` is run. Add documentation (Wiki)  
+ **EDIT:** At the end we decided to introduce new primary options `-I` and `-T`.
  - [X] :new: Often, it happens that, producing a new sheet, several compilations are done after each other and, then, one quickly ends up with many `pdf` files opened in different windows. Since it is known that a not final sheet is opened from the `tmp` folder, it would be useful to close all open `pdf` files before opening a new one.  
  **EDIT:** *Done, but then removed, see edit of following item.*
  - [X] :new: :memo: Some users could not like to have a new `pdf` opened in a new window at each compilation and they could wish to have the same one updated. This could be implemented using a `pdf` file with a given, fixed name in the **`tmp`** folder, which would be updated at each time that the `ExerciseHandler` is invoqued with a new secondary option. Then, if such a `pdf` is already open, nothing is done, otherwise it is open. To update the fixed-name `pdf` file means to compile as usual in the `TemporaryCompilationFolder` and, then, to move the produced `pdf` to `tmp/fixedNameFile.pdf`.  
