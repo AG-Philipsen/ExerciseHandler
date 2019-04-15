@@ -20,6 +20,7 @@ Refer also to the [TODO](TODO.md) file to get more information of the changes oc
 
 ## [Unreleased]
 
+* :heavy_plus_sign: A watermark is printed on exercise sheets so that people might discover this tool looking at exercise sheets e.g. online.
 * :sos: Fixed minor bug in command line option parser. When no primary options were specified but still secondary ones were given, the script was terminating with a kind of obscure `bash` error. Now, in the same case, an understandable error is given to the user.
 * :sos: Fixed minor bug which was triggered using the `-P` option without any existing final sheet. An error was given but the script was not exiting at that point.
 * :heavy_check_mark: Now, producing temporary sheets that are *not* final, the same `pdf` file in the temporary folder is updated and not reopened if already open. A copy of each produced `pdf` file is still saved in the temporary folder.
