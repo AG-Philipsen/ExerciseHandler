@@ -117,6 +117,18 @@ function __static__ParseExercisesString(){
     fi
 }
 
+function __static__AreExerciseToBeHidden(){
+    local toBeHidden
+    toBeHidden="$(sed -n 's/^\\newcommand{\\hideExercisesColumnInPresenceSheet}{\(true\|false\)}.*$/\1/p' "${EXHND_texLocaldefsFilename}")"
+    if [ ${toBeHidden} != 'true' ] && [ ${toBeHidden} != 'false' ]; then
+        PrintError "Unable to read out value of boolean \"\\\\hideExercisesColumnInPresenceSheet\" from \"$(basename "${EXHND_texLocaldefsFilename}")\" file! Invalid for exam!"; exit -1
+    elif [ ${toBeHidden} = 'true' ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 function ProducePresenceSheetTexMainFile(){
     local students numberOfStudents arrayOfExerciseNumbers exerciseNumberString exerciseString
     students=$(awk 'BEGIN {ORS=","}$0 ~ /^[[:space:]]*$/{next}{ print $0 }' $EXHND_listOfStudentsFilename)
@@ -127,9 +139,11 @@ function ProducePresenceSheetTexMainFile(){
     else
         numberOfStudents=$thresholdNumberOfStudents
     fi
-    arrayOfExerciseNumbers=( $(__static__ParseExercisesString) ) || { PrintError -c "Final sheet folder needed to produce a presence sheet!"; exit -1; }
-    exerciseNumberString=$(printf ",%s" ${arrayOfExerciseNumbers[@]})
-    exerciseString=$(printf ",Ex%s" ${arrayOfExerciseNumbers[@]})
+    if ! __static__AreExerciseToBeHidden; then
+        arrayOfExerciseNumbers=( $(__static__ParseExercisesString) ) || { PrintError -c "Final sheet folder needed to produce a presence sheet!"; exit -1; }
+        exerciseNumberString=$(printf ",%s" ${arrayOfExerciseNumbers[@]})
+        exerciseString=$(printf ",Ex%s" ${arrayOfExerciseNumbers[@]})
+    fi
     rm -f ${EXHND_mainFilename}
     #Redirect standard output to file
     exec 3>&1 1>${EXHND_mainFilename}
