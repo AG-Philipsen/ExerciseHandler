@@ -153,20 +153,6 @@
         %Some macros for later
         \pgfmathsetmacro{\myNumberOfStudents}{#4}
         \pgfmathsetmacro{\myNumberOfExercises}{#3}
-        \pgfmathsetmacro{\counter}{-1}
-        \pgfmathsetmacro{\myColWidth}{0.31}
-        \pgfmathsetmacro{\myHalfColWidth}{0.155}
-        \pgfmathsetmacro{\mySubColWidth}{\myColWidth / \myNumberOfExercises}
-        %Table layout
-        \setlength{\tabcolsep}{0pt}
-        \setlength{\aboverulesep}{0pt}
-        \setlength{\belowrulesep}{0pt}
-        \renewcommand{\arraystretch}{2}
-        \newcolumntype{C}{>{\centering\arraybackslash}p{\myColWidth\textwidth}}
-        \newcolumntype{S}{>{\centering\arraybackslash}p{\myHalfColWidth\textwidth}}
-        \newcolumntype{D}{>{\centering\arraybackslash}p{0.07\textwidth}}
-        \newcolumntype{E}{>{\centering\arraybackslash}p{\mySubColWidth\textwidth}}
-        \newcolumntype{?}{!{\vrule width \heavyrulewidth}}
         %Show/hide columns depending on user setup
         \newbool{switchOffSignatureColumnForPresenceSheet}
         \newbool{switchOffExercisesColumnForPresenceSheet}
@@ -204,6 +190,25 @@
                 {\def\headerString{\toprule & & & \multicolumn{\myNumberOfExercises}{C?}{\textsc{Exercises}}}}
             }
         }
+        %Few more macros
+        \pgfmathsetmacro{\counter}{-1}
+        \pgfmathsetmacro{\myColWidth}{0.31}
+        \pgfmathsetmacro{\myHalfColWidth}{0.155}
+        \ifbool{switchOffExercisesColumnForPresenceSheet}{}{%
+            \pgfmathsetmacro{\mySubColWidth}{\myColWidth / \myNumberOfExercises}
+        }
+        %Table layout
+        \setlength{\tabcolsep}{0pt}
+        \setlength{\aboverulesep}{0pt}
+        \setlength{\belowrulesep}{0pt}
+        \renewcommand{\arraystretch}{2}
+        \newcolumntype{C}{>{\centering\arraybackslash}p{\myColWidth\textwidth}}
+        \newcolumntype{S}{>{\centering\arraybackslash}p{\myHalfColWidth\textwidth}}
+        \newcolumntype{D}{>{\centering\arraybackslash}p{0.07\textwidth}}
+        \ifbool{switchOffExercisesColumnForPresenceSheet}{}{%
+            \newcolumntype{E}{>{\centering\arraybackslash}p{\mySubColWidth\textwidth}}
+        }
+        \newcolumntype{?}{!{\vrule width \heavyrulewidth}}
         %Setup of columns
         \pgfplotstableset{%
             columns/No./.style={int detect,column type=?D?,column name=\textsc{\EH@Translate{number-short}}},
