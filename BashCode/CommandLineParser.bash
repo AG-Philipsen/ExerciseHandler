@@ -174,6 +174,10 @@ function ParseCommandLineParameters(){
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_isBiWeeklySheet='TRUE'
                 shift ;;
+            --doNotPrintWatermark )
+                #This option is general and it is on purpose NOT in the help, since the user should not use it...
+                EXHND_doNotPrintWatermark='TRUE'
+                shift ;;
             *)
                 PrintError "Unrecognized option \"$1\"!"; exit -1; shift ;;
         esac

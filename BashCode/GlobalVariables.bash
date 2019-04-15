@@ -63,5 +63,5 @@ function DefineGlobalVariables(){
     EXHND_fixFinal='FALSE'
     EXHND_displayAlreadyUsedExercises='FALSE'
     EXHND_isBiWeeklySheet='FALSE'
-
+    EXHND_doNotPrintWatermark='FALSE'
 }

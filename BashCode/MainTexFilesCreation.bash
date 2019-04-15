@@ -1,3 +1,14 @@
+function __static__AddWatermarkToSheet(){
+    echo '\usepackage{draftwatermark}'
+    echo '\SetWatermarkAngle{90}'
+    echo '\SetWatermarkColor[rgb]{0.6,0.6,0.6}'
+    echo '\SetWatermarkFontSize{3mm}'
+    echo '\SetWatermarkScale{1}'
+    echo '\SetWatermarkHorCenter{0.98\paperwidth}'
+    echo '\SetWatermarkVerCenter{0.90\paperheight}'
+    echo '\SetWatermarkText{Produced with the \,{\color[rgb]{0.4,0.4,0.4}\texttt{ExerciseHandler}}}'
+}
+
 function ProduceExerciseTexMainFile(){
     rm -f ${EXHND_mainFilename}
     #Redirect standard output to file
@@ -6,6 +17,10 @@ function ProduceExerciseTexMainFile(){
     echo "\input{$(basename ${EXHND_optionsFilename%.tex})}"
     echo ''
     echo '\documentclass[a4paper]{article}'
+    echo ''
+    if [ ${EXHND_doNotPrintWatermark} != 'TRUE' ]; then
+        __static__AddWatermarkToSheet
+    fi
     echo ''
     echo "\input{$(basename ${EXHND_packagesFilename%.tex})}"
     echo ''
