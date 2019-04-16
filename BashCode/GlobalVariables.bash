@@ -2,7 +2,8 @@ function DefineGlobalVariables(){
 
     #Global internal variables
     readonly EXHND_vocabularyFilename="${EXHND_repositoryDirectory}/TexCode/Vocabulary.tex"
-    readonly EXHND_defaultTheme="${EXHND_repositoryDirectory}/TexCode/Themes/ClassicTheme.tex"
+    readonly EXHND_themesDirectory="${EXHND_repositoryDirectory}/TexCode/Themes"
+    readonly EXHND_defaultTheme="${EXHND_themesDirectory}/ClassicTheme.tex"
     readonly EXHND_invokingDirectory="$(pwd)"
     readonly EXHND_themeFilename="${EXHND_invokingDirectory}/ThemeInUse.tex"
     readonly EXHND_texLocaldefsFilename="${EXHND_invokingDirectory}/TexLocaldefs.tex"
@@ -35,7 +36,7 @@ function DefineGlobalVariables(){
     readonly EXHND_tarballPdfPostfix='_pdfFiles.tar'
 
     #Variables with input from user
-    EXHND_userDefinedTheme=''
+    EXHND_themeToBeUsed=''
     EXHND_newExerciseFilename=''
     EXHND_exerciseSheetSubtitlePostfix=''
     EXHND_sheetNumber=''
@@ -64,4 +65,5 @@ function DefineGlobalVariables(){
     EXHND_displayAlreadyUsedExercises='FALSE'
     EXHND_isBiWeeklySheet='FALSE'
     EXHND_doNotPrintWatermark='FALSE'
+    EXHND_chooseTheme='FALSE'
 }

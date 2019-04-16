@@ -18,7 +18,6 @@ function ParseCommandLineParameters(){
                              ['-n']='--sheetNumber'
                              ['-f']='--final'
                              ['-x']='--fix'
-                             ['-t']='--themeFile'
                              ['-b']='--biWeeklySheet')
     local mutuallyExclusiveOptionsPassed; mutuallyExclusiveOptionsPassed=()
     #The following if is important because, if there are no command line options,
@@ -33,7 +32,7 @@ function ParseCommandLineParameters(){
     fi
     #Additional logic to distinguish between primary and secondary options
     local primaryOptions; primaryOptions=( '-U' '-N' '-E' '-P' '-S' '-X' '-L' '-T' '-I' '-V' ) #To keep associative array "ordered"
-    declare -rA secondaryToPrimaryOptionsMapping=([${primaryOptions[0]}]='-t'
+    declare -rA secondaryToPrimaryOptionsMapping=([${primaryOptions[0]}]=''
                                                   [${primaryOptions[1]}]=''
                                                   [${primaryOptions[2]}]='-a -e -p -s -n -f -x'
                                                   [${primaryOptions[3]}]='-e -n -p -b'
@@ -166,10 +165,6 @@ function ParseCommandLineParameters(){
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_displayAlreadyUsedExercises='TRUE'
                 shift ;;
-            --themeFile )
-                __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
-                EXHND_userDefinedTheme="$2"
-                shift 2 ;;
             --biWeeklySheet )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
                 EXHND_isBiWeeklySheet='TRUE'
@@ -311,7 +306,6 @@ function __static__PrintHelp(){
                             ['-nP']='Set the presence sheet number.'
                             ['-f']='Move the produced pdf and auxiliary files to the corresponding final folder.'
                             ['-x']='Produce again a final sheet using its exercises and overwriting it.\nIt implies -f. Use -n to specify the exercise sheet number.'
-                            ['-t']='TeX theme file to be used.'
                             ['-b']='Consider the exercise sheet valid for two weeks and divide then the signature column.' )
     local primaryOption secondaryOption
     __static__PrintHelpHeader

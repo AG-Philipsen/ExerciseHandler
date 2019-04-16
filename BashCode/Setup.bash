@@ -36,6 +36,30 @@ function __static__CreateTexLocaldefsTemplate(){
     exec 1>&3
 }
 
+function __static__ChooseThemeToBeUsed(){
+    local availableThemes theme
+    availableThemes=( $(find ${EXHND_themesDirectory} -maxdepth 1 -name "*Theme.tex") )
+    if [ ${#availableThemes[@]} -gt 1 ]; then
+        PS3="$(printf "\n\e[38;5;14mChoose the theme to be using by the Exercise Handler: \e[38;5;219m")"
+        printf "\e[38;5;14mCheck out at https://github.com/AG-Philipsen/ExerciseHandler hoe the availables themes look like!\n\n\e[38;5;219m"
+        select theme in ${availableThemes[@]##*/}; do
+            if [[ ${REPLY} =~ ^[1-9][0-9]*$ ]] && [ ${REPLY} -le ${#availableThemes[@]} ]; then
+                printf "\n\e[0m"
+                EXHND_themeToBeUsed="${EXHND_themesDirectory}/${theme}"
+                return
+            fi
+        done
+    else
+        if [ "${availableThemes[0]}" != "${EXHND_defaultTheme}" ]; then
+            PrintInternal "Default theme not found."
+            exit -1
+        else
+            EXHND_themeToBeUsed=${EXHND_defaultTheme}
+        fi
+    fi
+}
+
+
 function MakeSetup(){
     mkdir -p\
           ${EXHND_exercisePoolFolder}\
@@ -54,17 +78,12 @@ function MakeSetup(){
     if [ -f ${EXHND_themeFilename} ]; then
         PrintInfo "Found existing theme, leaving it untouched."
     else
-        if [ "${EXHND_userDefinedTheme}" != '' ]; then
-            if [ ! -f "${EXHND_userDefinedTheme}" ]; then
-                PrintError "Provided theme file \"${EXHND_userDefinedTheme}\" not found." "Please, provide an existing (global) file name and run again the setup."
-                exit -1
-            else
-                cp "${EXHND_userDefinedTheme}" ${EXHND_themeFilename}
-                PrintInfo "User provided theme copied to invoking directory."
-            fi
+        __static__ChooseThemeToBeUsed
+        if [ -f "${EXHND_themeToBeUsed}" ]; then
+            cp "${EXHND_themeToBeUsed}" ${EXHND_themeFilename}
+            PrintInfo "Theme \"$(basename ${EXHND_themeToBeUsed})\" copied to invoking directory as \"$(basename ${EXHND_themeFilename})\"."
         else
-            cp ${EXHND_defaultTheme} ${EXHND_themeFilename}
-            PrintInfo "Default theme copied to invoking directory."
+            PrintInternal "Theme to be used not found."
         fi
     fi
 }
