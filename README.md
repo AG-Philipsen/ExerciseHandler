@@ -40,6 +40,37 @@ If this file is not filled out properly, you will be warned in successive runs.
 In the set-up phase you will also choose a LaTeX theme, possibly the provided classic one or your own (after having read some detail in the relevant [Wiki page](https://github.com/AG-Philipsen/ExerciseHandler/wiki/The-LaTeX-theme)).
 
 
+## Available Themes
+
+### Classic theme
+
+* Do not use `\\` LaTeX code in the `\semester` command in your `TexLocaldefs.tex` file.
+
+<table>
+  <tr>
+    <td>
+      <img src="/../theme_examples/ThemeExamples/ClassicTheme.png?raw=true" alt="Classic Theme" width="300">
+    </td>
+  </tr>
+</table>
+
+### Summer-Blackboard <sub><sup>(left)</sup></sub> and Winter-Blackboard <sub><sup>(right)</sup></sub> themes
+                  
+* Eligible for use of `\\` LaTeX code in the `\semester` command in the `TexLocaldefs.tex` file.
+                  
+<table>
+  <tr>
+    <td>
+      <img src="/../theme_examples/ThemeExamples/SummerBlackboardTheme.png?raw=true" alt="Summer Blackboard" width="300">
+    </td>
+    <td>&nbsp;</td>
+    <td>
+      <img src="/../theme_examples/ThemeExamples/WinterBlackboardTheme.png?raw=true" alt="Winter Blackboard" width="300">
+    </td>
+  </tr>
+</table>
+
+
 ## Authors
 
 The `Exercise Handler` has been developed since 2016 by a few [contributors](https://github.com/AG-Philipsen/ExerciseHandler/graphs/contributors) willing to be contacted by users for suggestions, feedbacks, bug reports, etc.
