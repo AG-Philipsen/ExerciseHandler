@@ -116,7 +116,7 @@ function InheritPastWorkFromTarballSettingUpWorkspace(){
     fi
     #Extract archive except the README
     tar -xf "${EXHND_tarballFilename}" --exclude="README"
-    PrintInfo "Previous work correctly inherited." "Running the Exercise Handler setup complete the environment."
+    PrintInfo "Previous work correctly inherited." "Running the Exercise Handler setup to complete the environment."
     #Run the setup
     MakeSetup
 }

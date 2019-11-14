@@ -41,7 +41,7 @@ function __static__ChooseThemeToBeUsed(){
     availableThemes=( $(find ${EXHND_themesDirectory} -maxdepth 1 -name "*Theme.tex") )
     if [ ${#availableThemes[@]} -gt 1 ]; then
         PS3="$(printf "\n\e[38;5;14mChoose the theme to be using by the Exercise Handler: \e[38;5;219m")"
-        printf "\e[38;5;14mCheck out at https://github.com/AG-Philipsen/ExerciseHandler hoe the availables themes look like!\n\n\e[38;5;219m"
+        printf "\e[38;5;14mCheck out at https://github.com/AG-Philipsen/ExerciseHandler how the availables themes look like!\n\n\e[38;5;219m"
         select theme in ${availableThemes[@]##*/}; do
             if [[ ${REPLY} =~ ^[1-9][0-9]*$ ]] && [ ${REPLY} -le ${#availableThemes[@]} ]; then
                 printf "\n\e[0m"
