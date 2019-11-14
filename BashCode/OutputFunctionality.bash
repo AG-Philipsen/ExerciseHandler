@@ -20,7 +20,7 @@ function __static__PrintMessageToScreen()
     #each line except the first one (i.e. as many spaces as the chars in typeOfMessage).
     fullMessage="$(printf "$messageColor%s\n   ${typeOfMessage//?/ }" "$@")"
     if [ $continuation = 'FALSE' ]; then
-        printf "$initialEndline \e[1m\e[4m${messageColor}${typeOfMessage}\033[24m:\033[21m ${fullMessage//%/%%}\n\033[0m"
+        printf "$initialEndline \e[1m\e[4m${messageColor}${typeOfMessage}\033[24m:\033[22m ${fullMessage//%/%%}\n\033[0m"
     else
         printf "$initialEndline ${messageColor}${typeOfMessage}  ${fullMessage//%/%%}\n\033[0m"
     fi

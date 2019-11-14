@@ -249,7 +249,7 @@ function __static__PrintHelpHeader(){
     printf "         / _/ _>  < / _/ / , _// /__ _/ / _\ \ / _/      / _  // __ | /    // // // /__ / _/ / , _/   \n"
     printf "        /___//_/|_|/___//_/|_| \___//___//___//___/     /_//_//_/ |_|/_/|_//____//____//___//_/|_|    \n"
     printf "                                                                                                      \n"
-    printf "\n\e[21m"
+    printf "\n\e[22m"
     printf "     This script is intended to structure the work associated to the tutorials of a lecture. For more \n"
     printf "     information about the general functionality refer to the README file. Here in the following you  \n"
     printf "     find a list of existing command line options together with a minimal explanation of each one.    \n"
@@ -275,9 +275,9 @@ function __static__AddOptionToHelper(){
 }
 
 function __static__PrintHelpFooter(){
-    printf "\n\e[38;5;14m  \e[1m\e[4mNOTES\e[24m:\e[21m"
-    printf " 1) The \e[1;38;5;208morange\e[21;38;5;14m options are mutually exclusive!\n"
-    printf "         2) The \e[1;38;5;228mcream\e[21;38;5;14m options are secondary to the primary previously specified.\n"
+    printf "\n\e[38;5;14m  \e[1m\e[4mNOTES\e[24m:\e[22m"
+    printf " 1) The \e[1;38;5;208morange\e[22;38;5;14m options are mutually exclusive!\n"
+    printf "         2) The \e[1;38;5;228mcream\e[22;38;5;14m options are secondary to the primary previously specified.\n"
     printf "         3) Values of the options have to be specified after the option leaving a space (no = sign is accepted).\n"
     printf "         4) Short options can be combined, e.g. \e[38;5;177m-Efn 3\e[38;5;14m is equivalent to \e[38;5;177m-E -f -n 3\e[38;5;14m."
     printf "\e[0m\n\n\n"
@@ -285,14 +285,14 @@ function __static__PrintHelpFooter(){
 
 function __static__PrintHelp(){
     declare -rA optionHelp=(['-U']='Set up of the evironment creating local definitions template and folders.'
-                            ['-N']='Create a new empty exercise and a new empty solution, which are added to the pools.\n\e[21mThe name of the exercise may be specified as argument, but it cannot start with \"-\".'
+                            ['-N']='Create a new empty exercise and a new empty solution, which are added to the pools.\n\e[22mThe name of the exercise may be specified as argument, but it cannot start with \"-\".'
                             ['-E']='Create a new exercise sheet or fix a previous one.'
                             ['-S']='Create a new solution sheet or fix a previous one.'
-                            ['-P']='Create a new presence sheet. \e[21mA students file to be used may be specified as argument, \nbut it cannot start with \"-\". This file is supposed to be in the "'"$(basename ${EXHND_presenceSheetFolder})"'" folder.'
+                            ['-P']='Create a new presence sheet. \e[22mA students file to be used may be specified as argument, \nbut it cannot start with \"-\". This file is supposed to be in the "'"$(basename ${EXHND_presenceSheetFolder})"'" folder.'
                             ['-X']='Create a new exam or fix a previous one.'
                             ['-L']='Get list of exercise tex files used in already produced final exercises.'
-                            ['-T']='Create a tarball with all final pdf files as well as a ready-to-be-inherited archive.\n\e[21mA prefix for the tarball names (not starting with \"-\") may be specified as argument.'
-                            ['-I']='Use the tarball specified as value to setup the evironment based on previous work.\n\e[21mThis option must be used from an empty folder and the specified tarball should\nhave been produced with the -T option and it has to end with "'"${EXHND_tarballExerciseHandlerPostfix}"'".'
+                            ['-T']='Create a tarball with all final pdf files as well as a ready-to-be-inherited archive.\n\e[22mA prefix for the tarball names (not starting with \"-\") may be specified as argument.'
+                            ['-I']='Use the tarball specified as value to setup the evironment based on previous work.\n\e[22mThis option must be used from an empty folder and the specified tarball should\nhave been produced with the -T option and it has to end with "'"${EXHND_tarballExerciseHandlerPostfix}"'".'
                             ['-V']='Print the version in use of the Exercise Handler.'
                             ['-a']='Display all available exercise to let the user choose.\nBy default, only those still not used for final sheets are listed.'
                             ['-e']='Avoid interactive selection of exercises and choose them directly.\nUse a comma separated list, where ranges X-Y are allowed (boundaries included).\nOrder is respected, e.g. \"7,3-1,9\" is expanded to [7 3 2 1 9].'

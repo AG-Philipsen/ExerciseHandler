@@ -41,7 +41,7 @@ function __static__PrintListOfExercises(){
     else
         local givenList index numberOfTerminalColumns longestFilenameLength\
               tableColumnsWidth maxNumberOfColumnsInTable stringFormat
-        printf "\e[1;38;5;207m List of exercises found in the pool\e[21m:\n\n\e[0m"
+        printf "\e[1;38;5;207m List of exercises found in the pool\e[22m:\n\n\e[0m"
         givenList=( $@ )
         index=0
         for index in "${!givenList[@]}" ; do
@@ -92,11 +92,11 @@ function __static__PickupExercises(){
     while read selectedExercises; do #Here selectedExercises is a variable
         [ "${selectedExercises}" = '' ] && printf "\e[u\e[1A" && continue
         if [[ ! ${selectedExercises} =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]]; then
-            printf "\n\e[1;38;5;208m Invalid input!\e[21m\e[38;5;14m Please, insert the exercise numbers: \e[0m\e[s"; continue
+            printf "\n\e[1;38;5;208m Invalid input!\e[22m\e[38;5;14m Please, insert the exercise numbers: \e[0m\e[s"; continue
         fi
         selectedExercises=( $(__static__GetArrayFromCommaSeparatedListOfIntegersAcceptingRanges ${selectedExercises}) ) #Here selectedExercises becomes an array!
         if __static__IsAnyExerciseNotExisting ${#givenList[@]} ${selectedExercises[@]}; then
-            printf "\n\e[1;38;5;208m Not existent exercise inserted!\e[21m\e[38;5;14m Please, insert the exercise numbers: \e[0m\e[s"; continue 2
+            printf "\n\e[1;38;5;208m Not existent exercise inserted!\e[22m\e[38;5;14m Please, insert the exercise numbers: \e[0m\e[s"; continue 2
         fi
         break
     done
