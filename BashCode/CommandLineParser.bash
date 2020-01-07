@@ -134,7 +134,11 @@ function ParseCommandLineParameters(){
                 ;;
             --sheetSubtitlePostfix )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
-                EXHND_exerciseSheetSubtitlePostfix="$2"
+                if [ "$2" != '' ] && [[ ! $2 =~ ^- ]]; then
+                    EXHND_exerciseSheetSubtitlePostfix="$2"
+                else
+                    PrintError "The value of the option \"$1\" was not correctly specified!"; exit -1
+                fi
                 shift 2 ;;
             --showAlsoSolutions )
                 __static__CheckSecondaryOption ${mutuallyExclusiveOptionsPassed[@]: -1} $1
