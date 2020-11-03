@@ -219,7 +219,7 @@ function MakeCompilationInTemporaryFolder(){
     local index
     cd ${EXHND_compilationFolder}
     for index in {1..2}; do
-        pdflatex -interaction=batchmode ${EXHND_mainFilename} >/dev/null 2>&1
+        pdflatex -halt-on-error -interaction=batchmode ${EXHND_mainFilename} >/dev/null 2>&1
         if [ $? -ne 0 ]; then
             PrintError "Error occurred in pdflatex compilation!! Files can be found in \"${EXHND_compilationFolder}\" directory to investigate!"
             exit 0
